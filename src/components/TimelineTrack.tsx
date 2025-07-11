@@ -25,11 +25,11 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   getLeft
 }) => {
   return (
-    <div className="flex items-center gap-3 mb-2">
-      <div className={`w-28 text-right pr-3 text-sm font-semibold ${trackColor} select-none`}>
+    <div className="flex items-center gap-3 mb-1">
+      <div className={`w-28 text-right pr-3 text-sm font-medium ${trackColor} select-none`}>
         {trackLabel}
       </div>
-      <div className="relative flex-1 h-10 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200 shadow-sm overflow-visible" style={{ zIndex }}>
+      <div className="relative flex-1 h-8 bg-gray-50 border border-gray-200 overflow-visible" style={{ zIndex }}>
         {clips.map((clip, i) => {
           const startPercent = getLeft(clip.start_ms);
           const widthPercent = getWidth(clip.start_ms, clip.end_ms);

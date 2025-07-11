@@ -17,7 +17,7 @@ export const BaseClip: React.FC<BaseClipProps> = ({
 }) => {
   return (
     <div
-      className={`absolute h-10 ${color} text-sm text-white flex items-center justify-center rounded-md shadow-md border border-white/20 hover:shadow-lg transition-all duration-200 hover:opacity-90 hover:brightness-110`}
+      className={`absolute h-8 ${color} text-sm text-white flex items-center justify-center rounded border border-white/20 hover:opacity-90 transition-opacity duration-200`}
       style={{
         left: startPercent + '%',
         width: widthPercent + '%',

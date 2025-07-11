@@ -22,10 +22,10 @@ export const AudioClip: React.FC<AudioClipProps> = ({
     <BaseClip
       startPercent={startPercent}
       widthPercent={widthPercent}
-      color="bg-gradient-to-r from-blue-500 to-blue-600"
+      color="bg-blue-500"
       title={title}
     >
-      <span className="px-3 text-xs truncate text-ellipsis overflow-hidden font-medium">
+      <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
         {speaker}: {clip.audio_generation_params?.text}
       </span>
     </BaseClip>
