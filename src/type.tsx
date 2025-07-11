@@ -1,3 +1,5 @@
+type ImageGenerationType = "text_to_image" | "image_to_image";
+
 interface Timeline {
     audio_track: AudioClip[];
     visual_track: VisualClip[];
@@ -23,7 +25,6 @@ interface AudioClip extends BaseClip {
     audio_asset_id?: string;
 }
 
-type ImageGenerationType = "text_to_image" | "image_to_image";
 
 interface ImageGenerationParams {
     type: ImageGenerationType;
