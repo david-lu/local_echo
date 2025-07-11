@@ -26,8 +26,7 @@ export const AudioClip: React.FC<AudioClipProps> = ({
       title={title}
     >
       <span className="px-4">
-        🎤 {speaker}<br/>
-        {msToSec(clip.start_ms)} - {msToSec(clip.end_ms)}
+        🎤 {speaker}<br/> {clip.audio_generation_params?.text}
       </span>
     </BaseClip>
   );

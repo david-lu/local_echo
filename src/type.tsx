@@ -12,7 +12,6 @@ export const BaseClipSchema = z.object({
 export type BaseClip = z.infer<typeof BaseClipSchema>;
 
 export const AudioGenerationParamsSchema = z.object({
-    speaker: z.string(),
     text: z.string(),
     speed: z.number(),
     stability: z.number()

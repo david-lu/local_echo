@@ -6,7 +6,6 @@
       "end_ms": 5000,
       "speaker": "narrator",
       "audio_generation_params": {
-        "speaker": "narrator",
         "text": "Welcome to our presentation. Today we'll explore the fascinating world of artificial intelligence.",
         "speed": 1.0,
         "stability": 0.8
@@ -20,7 +19,6 @@
       "end_ms": 12000,
       "speaker": "expert",
       "audio_generation_params": {
-        "speaker": "expert",
         "text": "AI has revolutionized how we approach problem-solving and automation across various industries.",
         "speed": 0.9,
         "stability": 0.9
