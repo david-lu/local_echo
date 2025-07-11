@@ -44,7 +44,7 @@ export const timelineEditorFunction = {
                 },
                 speaker: {
                   type: "string",
-                  description: "Speaker for audio clips"
+                  description: "Speaker for the current clip"
                 },
                 audio_generation_params: {
                   type: "object",
@@ -62,17 +62,21 @@ export const timelineEditorFunction = {
                       type: "number",
                       description: "Speech stability"
                     }
-                  }
+                  },
+                  required: ["text", "speed", "stability"],
+                  additionalProperties: false
                 }
               },
-              required: ["id", "type", "start_ms", "end_ms"]
+              required: ["id", "type", "start_ms", "end_ms", "speaker"],
+              additionalProperties: false
             },
             targetId: {
               type: "string",
               description: "ID of clip to remove"
             }
           },
-          required: ["action", "track"]
+          required: ["action", "track"],
+          additionalProperties: false
         }
       },
       message: {

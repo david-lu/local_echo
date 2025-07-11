@@ -192,11 +192,6 @@ const App: React.FC = () => {
           </div>
         )}
 
-        <div className="mt-6 bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Timeline:</h3>
-          <p className="text-gray-600">Audio: {currentTimeline.audio_track.length} clips</p>
-          <p className="text-gray-600">Visual: {currentTimeline.visual_track.length} clips</p>
-        </div>
       </main>
       
       <footer className="w-full fixed left-0 bottom-0 z-50 bg-transparent">
