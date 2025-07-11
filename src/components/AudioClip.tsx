@@ -25,8 +25,8 @@ export const AudioClip: React.FC<AudioClipProps> = ({
       color="bg-blue-500"
       title={title}
     >
-      <span className="px-4">
-        🎤 {speaker}<br/> {clip.audio_generation_params?.text}
+      <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
+        {speaker}: {clip.audio_generation_params?.text}
       </span>
     </BaseClip>
   );

@@ -17,7 +17,7 @@ export const BaseClip: React.FC<BaseClipProps> = ({
 }) => {
   return (
     <div
-      className={`absolute h-14 ${color} text-base text-white flex items-center justify-center rounded shadow-lg`}
+      className={`absolute h-8 ${color} text-sm text-white flex items-center justify-center rounded shadow-lg`}
       style={{
         left: startPercent + '%',
         width: widthPercent + '%',

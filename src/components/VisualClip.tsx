@@ -30,9 +30,8 @@ export const VisualClip: React.FC<VisualClipProps> = ({
       color="bg-green-500"
       title={title}
     >
-      <span className="px-4">
-        {icon} {content}<br/>
-        {msToSec(clip.start_ms)} - {msToSec(clip.end_ms)}
+      <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
+        {icon} {content}
       </span>
     </BaseClip>
   );
