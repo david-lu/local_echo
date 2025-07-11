@@ -27,11 +27,11 @@ export const VisualClip: React.FC<VisualClipProps> = ({
     <BaseClip
       startPercent={startPercent}
       widthPercent={widthPercent}
-      color="bg-green-500"
+      color="bg-gradient-to-r from-emerald-500 to-emerald-600"
       title={title}
     >
-      <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
-        {icon} {clip.speaker || 'NONE'} - {content}
+      <span className="px-3 text-xs truncate text-ellipsis overflow-hidden font-medium">
+        {icon} {content}
       </span>
     </BaseClip>
   );

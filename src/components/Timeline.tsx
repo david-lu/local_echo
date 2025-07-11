@@ -25,41 +25,40 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
   const secondMarkings = Array.from({ length: totalSeconds + 1 }, (_, i) => i);
 
   return (
-    <div className="w-screen bg-white border-t border-gray-300 shadow-2xl">
+    <div className="w-screen bg-gradient-to-br from-gray-50 to-white border-t border-gray-200 shadow-lg">
       <div className="mx-auto" style={{maxWidth: '100vw'}}>
-        <h2 className="text-2xl font-bold mb-2 px-6 pt-4">Timeline Visualization</h2>
-        <div className="flex flex-col gap-1 px-6 pb-4">
-          {/* Visual Track */}
-          <TimelineTrack
-            clips={timeline.visual_track}
-            trackLabel="Visual Track"
-            trackColor="text-green-700"
-            icon="🖼️"
-            maxEnd={maxEnd}
-            zIndex={1}
-            getWidth={getWidth}
-            getLeft={getLeft}
-          />
-
+        <h2 className="text-2xl font-bold mb-4 px-6 pt-6 text-gray-800">Timeline Visualization</h2>
+        <div className="flex flex-col gap-2 px-6 pb-6">
           {/* Audio Track */}
           <TimelineTrack
             clips={timeline.audio_track}
             trackLabel="Audio Track"
-            trackColor="text-blue-700"
+            trackColor="text-blue-600"
             icon="🎤"
             maxEnd={maxEnd}
             zIndex={2}
             getWidth={getWidth}
             getLeft={getLeft}
           />
-        
+          
+          {/* Visual Track */}
+          <TimelineTrack
+            clips={timeline.visual_track}
+            trackLabel="Visual Track"
+            trackColor="text-emerald-600"
+            icon="🖼️"
+            maxEnd={maxEnd}
+            zIndex={1}
+            getWidth={getWidth}
+            getLeft={getLeft}
+          />
           
           {/* Timeline axis with second markings */}
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-3">
             <div className="w-28" />
-            <div className="relative flex-1 h-4">
+            <div className="relative flex-1 h-6">
               {/* Main timeline line */}
-              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-1 bg-gray-400 rounded" />
+              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full" />
               
               {/* Second markings */}
               {secondMarkings.map((second) => {
@@ -67,28 +66,28 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
                 return (
                   <div
                     key={second}
-                    className="absolute top-0 bottom-0 w-px bg-gray-300"
+                    className="absolute top-0 bottom-0 w-px bg-gray-200"
                     style={{ left: `${position}%` }}
                   >
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-gray-500" />
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-3 bg-gray-400 rounded-sm" />
                   </div>
                 );
               })}
               
               {/* Time labels */}
-              <div className="flex justify-between absolute left-0 right-0 top-full mt-1 text-xs text-gray-500">
+              <div className="flex justify-between absolute left-0 right-0 top-full mt-2 text-xs font-medium text-gray-500">
                 <span>0s</span>
                 <span>{msToSec(maxEnd)}</span>
               </div>
               
               {/* Second labels */}
-              <div className="absolute left-0 right-0 top-full mt-3">
+              <div className="absolute left-0 right-0 top-full mt-4">
                 {secondMarkings.slice(1, -1).map((second) => {
                   const position = (second * 1000 / maxEnd) * 100;
                   return (
                     <div
                       key={second}
-                      className="absolute text-xs text-gray-400"
+                      className="absolute text-xs text-gray-400 font-medium"
                       style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
                     >
                       {second}s
