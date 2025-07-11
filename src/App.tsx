@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
 import { timeline } from './timelineConverter';
+import TimelineVisualizer from './TimelineVisualizer';
 
 const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
@@ -137,6 +138,8 @@ const App: React.FC = () => {
             </div>
           )}
         </div>
+        {/* Timeline Visualizer */}
+        <TimelineVisualizer timeline={timeline} />
       </main>
     </div>
   );
