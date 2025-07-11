@@ -4,7 +4,11 @@ import { z } from 'zod';
 export const ImageGenerationTypeSchema = z.enum(["text_to_image", "image_to_image"]);
 export type ImageGenerationType = z.infer<typeof ImageGenerationTypeSchema>;
 
+export const EventTypeSchema = z.enum(["replace", "add", "remove"]);
+export type EventType = z.infer<typeof EventTypeSchema>;
+
 export const BaseClipSchema = z.object({
+    id: z.string(),
     start_ms: z.number(),
     end_ms: z.number(),
     speaker: z.string().optional()
@@ -69,3 +73,15 @@ export const TimelineSchema = z.object({
     visual_track: z.array(VisualClipSchema)
 });
 export type Timeline = z.infer<typeof TimelineSchema>;
+
+export const EventSchema = z.object({
+    type: EventTypeSchema,
+    id: z.string(),
+    data: z.union([AudioClipSchema, VisualClipSchema])
+});
+export type Event = z.infer<typeof EventSchema>;
+
+export const ServerResponseSchema = z.object({
+    events: z.array(EventSchema)
+});
+export type ServerResponse = z.infer<typeof ServerResponseSchema>;
