@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
+import { timeline } from './timelineConverter';
 
 const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
@@ -12,6 +13,8 @@ const App: React.FC = () => {
 
   // Create a ref to store the OpenAI client
   const openAIClientRef = useRef<OpenAI | null>(null);
+
+  console.log(timeline);
 
   // Initialize OpenAI client
   const initializeOpenAI = (): OpenAI | null => {

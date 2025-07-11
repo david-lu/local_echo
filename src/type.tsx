@@ -1,61 +1,72 @@
-type ImageGenerationType = "text_to_image" | "image_to_image";
+import { z } from 'zod';
 
-interface Timeline {
-    audio_track: AudioClip[];
-    visual_track: VisualClip[];
-}
+// Zod schemas
+export const ImageGenerationTypeSchema = z.enum(["text_to_image", "image_to_image"]);
+export type ImageGenerationType = z.infer<typeof ImageGenerationTypeSchema>;
 
-interface BaseClip {
-    start_ms: number;
-    end_ms: number;
-    speaker?: string
-}
+export const BaseClipSchema = z.object({
+    start_ms: z.number(),
+    end_ms: z.number(),
+    speaker: z.string().optional()
+});
+export type BaseClip = z.infer<typeof BaseClipSchema>;
 
-interface AudioGenerationParams {
-    speaker: string;
-    text: string;
-    speed: number;
-    stability: number;
-}
+export const AudioGenerationParamsSchema = z.object({
+    speaker: z.string(),
+    text: z.string(),
+    speed: z.number(),
+    stability: z.number()
+});
+export type AudioGenerationParams = z.infer<typeof AudioGenerationParamsSchema>;
 
-interface AudioClip extends BaseClip {
-    type: "audio";
-    audio_generation_params?: AudioGenerationParams;
-    audio_task_id?: string;
-    audio_asset_id?: string;
-}
+export const AudioClipSchema = BaseClipSchema.extend({
+    type: z.literal("audio"),
+    audio_generation_params: AudioGenerationParamsSchema.optional(),
+    audio_task_id: z.string().optional(),
+    audio_asset_id: z.string().optional()
+});
+export type AudioClip = z.infer<typeof AudioClipSchema>;
 
+export const ImageGenerationParamsSchema = z.object({
+    type: ImageGenerationTypeSchema,
+    ai_model_id: z.string(),
+    prompt: z.string(),
+    aspect_ratio: z.string()
+});
+export type ImageGenerationParams = z.infer<typeof ImageGenerationParamsSchema>;
 
-interface ImageGenerationParams {
-    type: ImageGenerationType;
-    ai_model_id: string;
-    prompt: string;
-    aspect_ratio: string;
-}
+export const ImageToImageGenerationParamsSchema = ImageGenerationParamsSchema.extend({
+    type: z.literal("image_to_image"),
+    reference_image_asset_id: z.string()
+});
+export type ImageToImageGenerationParams = z.infer<typeof ImageToImageGenerationParamsSchema>;
 
-interface ImageToImageGenerationParams extends ImageGenerationParams {
-    type: "image_to_image";
-    reference_image_asset_id: string;
-}
+export const TextToImageGenerationParamsSchema = ImageGenerationParamsSchema.extend({
+    type: z.literal("text_to_image")
+});
+export type TextToImageGenerationParams = z.infer<typeof TextToImageGenerationParamsSchema>;
 
-interface TextToImageGenerationParams extends ImageGenerationParams {
-    type: "text_to_image";
-}
+export const VideoGenerationParamsSchema = z.object({
+    type: z.literal("video"),
+    ai_model_id: z.string(),
+    description: z.string(),
+    aspect_ratio: z.string()
+});
+export type VideoGenerationParams = z.infer<typeof VideoGenerationParamsSchema>;
 
-interface VideoGenerationParams {
-    type: "video";
-    ai_model_id: string;
-    description: string;
-    aspect_ratio: string;
-}
+export const VisualClipSchema = BaseClipSchema.extend({
+    type: z.literal("visual"),
+    image_generation_params: z.union([TextToImageGenerationParamsSchema, ImageToImageGenerationParamsSchema]).optional(),
+    image_task_id: z.string().optional(),
+    image_asset_id: z.string().optional(),
+    video_generation_params: VideoGenerationParamsSchema.optional(),
+    video_task_id: z.string().optional(),
+    video_asset_id: z.string().optional()
+});
+export type VisualClip = z.infer<typeof VisualClipSchema>;
 
-interface VisualClip extends BaseClip {
-    type: "visual";
-    image_generation_params?: TextToImageGenerationParams | ImageToImageGenerationParams;
-    image_task_id?: string;
-    image_asset_id?: string;
-
-    video_generation_params?: VideoGenerationParams;
-    video_task_id?: string;
-    video_asset_id?: string;
-}
+export const TimelineSchema = z.object({
+    audio_track: z.array(AudioClipSchema),
+    visual_track: z.array(VisualClipSchema)
+});
+export type Timeline = z.infer<typeof TimelineSchema>;
