@@ -29,18 +29,6 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
       <div className="mx-auto" style={{maxWidth: '100vw'}}>
         <h2 className="text-2xl font-bold mb-2 px-6 pt-4">Timeline Visualization</h2>
         <div className="flex flex-col gap-1 px-6 pb-4">
-          {/* Audio Track */}
-          <TimelineTrack
-            clips={timeline.audio_track}
-            trackLabel="Audio Track"
-            trackColor="text-blue-700"
-            icon="🎤"
-            maxEnd={maxEnd}
-            zIndex={2}
-            getWidth={getWidth}
-            getLeft={getLeft}
-          />
-          
           {/* Visual Track */}
           <TimelineTrack
             clips={timeline.visual_track}
@@ -52,6 +40,19 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
             getWidth={getWidth}
             getLeft={getLeft}
           />
+
+          {/* Audio Track */}
+          <TimelineTrack
+            clips={timeline.audio_track}
+            trackLabel="Audio Track"
+            trackColor="text-blue-700"
+            icon="🎤"
+            maxEnd={maxEnd}
+            zIndex={2}
+            getWidth={getWidth}
+            getLeft={getLeft}
+          />
+        
           
           {/* Timeline axis with second markings */}
           <div className="flex items-center gap-2 mt-1">

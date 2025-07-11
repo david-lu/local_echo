@@ -21,7 +21,7 @@ export const VisualClip: React.FC<VisualClipProps> = ({
     ? clip.image_generation_params?.prompt || 'Image'
     : clip.video_generation_params?.description || 'Video';
   
-  const title = `Visual: ${isImage ? 'Image' : 'Video'} (${msToSec(clip.start_ms)} - ${msToSec(clip.end_ms)})`;
+  const title = `${isImage ? 'Image' : 'Video'}`;
 
   return (
     <BaseClip
@@ -31,7 +31,7 @@ export const VisualClip: React.FC<VisualClipProps> = ({
       title={title}
     >
       <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
-        {icon} {content}
+        {icon} {clip.speaker || 'NONE'} - {content}
       </span>
     </BaseClip>
   );
