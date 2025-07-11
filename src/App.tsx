@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
 import { timeline } from './timelineConverter';
-import TimelineVisualizer from './TimelineVisualizer';
+import Timeline from './components/Timeline';
 
 const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
@@ -14,8 +14,6 @@ const App: React.FC = () => {
 
   // Create a ref to store the OpenAI client
   const openAIClientRef = useRef<OpenAI | null>(null);
-
-  console.log(timeline);
 
   // Initialize OpenAI client
   const initializeOpenAI = (): OpenAI | null => {
@@ -83,7 +81,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
@@ -92,7 +90,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="flex-1 max-w-4xl mx-auto py-6 sm:px-6 lg:px-8 w-full">
         <div className="px-4 py-6 sm:px-0">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex gap-4">
@@ -138,9 +136,11 @@ const App: React.FC = () => {
             </div>
           )}
         </div>
-        {/* Timeline Visualizer */}
-        <TimelineVisualizer timeline={timeline} />
       </main>
+      {/* Timeline as a sticky footer */}
+      <footer className="w-full fixed left-0 bottom-0 z-50 bg-transparent">
+        <Timeline timeline={timeline} />
+      </footer>
     </div>
   );
 };
