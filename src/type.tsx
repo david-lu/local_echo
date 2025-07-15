@@ -1,13 +1,5 @@
 import { z } from 'zod';
 
-// Chat message interface
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: Date;
-}
-
 // Core timeline schemas
 export const BaseClipSchema = z.object({
     id: z.string(),
@@ -79,12 +71,13 @@ export const TimelineSchema = z.object({
 });
 export type Timeline = z.infer<typeof TimelineSchema>;
 
+// Mutation schemas using extension pattern
 export const MutationTypeSchema = z.enum(["add_visual", "remove_visual", "add_audio", "remove_audio", "modify_visual", "modify_audio"]);
 export type MutationType = z.infer<typeof MutationTypeSchema>;
 
 export const MutationSchema = z.object({
     type: MutationTypeSchema,
-    clip: z.union([AudioClipSchema, VisualClipSchema])
+    clip: z.union([AudioClipSchema, VisualClipSchema]).optional()
 });
 export type Mutation = z.infer<typeof MutationSchema>;
 
@@ -118,5 +111,26 @@ export const ModifyVisualMutationSchema = MutationSchema.extend({
 });
 export type ModifyVisualMutation = z.infer<typeof ModifyVisualMutationSchema>;
 
-export const MutationsSchema = z.array(z.union([AddVisualMutationSchema, AddAudioMutationSchema, RemoveVisualMutationSchema, RemoveAudioMutationSchema, ModifyVisualMutationSchema]));
-export type Mutations = z.infer<typeof MutationsSchema>;
+export const ModifyAudioMutationSchema = MutationSchema.extend({
+    type: z.literal("modify_audio"),
+    clip: AudioClipSchema
+});
+export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
+
+
+// Chat message schema
+export const MessageSchema = z.object({
+  id: z.string(),
+  role: z.enum(['user', 'assistant', 'system']),
+  content: z.string(),
+  timestamp: z.date(),
+  mutations: z.array(z.union([
+    AddVisualMutationSchema,
+    AddAudioMutationSchema,
+    RemoveVisualMutationSchema,
+    RemoveAudioMutationSchema,
+    ModifyVisualMutationSchema,
+    ModifyAudioMutationSchema
+    ]))
+});
+export type Message = z.infer<typeof MessageSchema>;
