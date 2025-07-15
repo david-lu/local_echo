@@ -77,7 +77,6 @@ export type MutationType = z.infer<typeof MutationTypeSchema>;
 
 export const MutationSchema = z.object({
     type: MutationTypeSchema,
-    clip: z.union([AudioClipSchema, VisualClipSchema]).optional()
 });
 export type Mutation = z.infer<typeof MutationSchema>;
 
