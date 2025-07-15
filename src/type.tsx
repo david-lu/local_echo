@@ -5,7 +5,7 @@ export const BaseClipSchema = z.object({
     id: z.string(),
     start_ms: z.number(),
     end_ms: z.number(),
-    speaker: z.string().optional()
+    speaker: z.string().nullable()
 });
 export type BaseClip = z.infer<typeof BaseClipSchema>;
 
@@ -18,9 +18,9 @@ export type AudioGenerationParams = z.infer<typeof AudioGenerationParamsSchema>;
 
 export const AudioClipSchema = BaseClipSchema.extend({
     type: z.literal("audio"),
-    audio_generation_params: AudioGenerationParamsSchema.optional(),
-    audio_task_id: z.string().optional(),
-    audio_asset_id: z.string().optional()
+    audio_generation_params: AudioGenerationParamsSchema.nullable(),
+    audio_task_id: z.string().nullable(),
+    audio_asset_id: z.string().nullable()
 });
 export type AudioClip = z.infer<typeof AudioClipSchema>;
 
@@ -56,12 +56,12 @@ export type VideoGenerationParams = z.infer<typeof VideoGenerationParamsSchema>;
 
 export const VisualClipSchema = BaseClipSchema.extend({
     type: z.literal("visual"),
-    image_generation_params: z.union([TextToImageGenerationParamsSchema, ImageToImageGenerationParamsSchema]).optional(),
-    image_task_id: z.string().optional(),
-    image_asset_id: z.string().optional(),
-    video_generation_params: VideoGenerationParamsSchema.optional(),
-    video_task_id: z.string().optional(),
-    video_asset_id: z.string().optional()
+    image_generation_params: z.union([TextToImageGenerationParamsSchema, ImageToImageGenerationParamsSchema]).nullable(),
+    image_task_id: z.string().nullable(),
+    image_asset_id: z.string().nullable(),
+    video_generation_params: VideoGenerationParamsSchema.nullable(),
+    video_task_id: z.string().nullable(),
+    video_asset_id: z.string().nullable()
 });
 export type VisualClip = z.infer<typeof VisualClipSchema>;
 
@@ -77,6 +77,7 @@ export type MutationType = z.infer<typeof MutationTypeSchema>;
 
 export const MutationSchema = z.object({
     type: MutationTypeSchema,
+    clip: z.union([AudioClipSchema, VisualClipSchema]).nullable()
 });
 export type Mutation = z.infer<typeof MutationSchema>;
 
@@ -116,7 +117,6 @@ export const ModifyAudioMutationSchema = MutationSchema.extend({
 });
 export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
 
-
 // Chat message schemas
 export const UserMessageSchema = z.object({
   id: z.string(),
@@ -138,7 +138,7 @@ export const SystemMessageSchema = z.object({
     RemoveAudioMutationSchema,
     ModifyVisualMutationSchema,
     ModifyAudioMutationSchema
-  ])).optional()
+  ])).nullable()
 });
 export type SystemMessage = z.infer<typeof SystemMessageSchema>;
 
