@@ -2,12 +2,13 @@ import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
 import { timeline } from './timelineConverter';
 import Timeline from './components/Timeline';
-import { Timeline as TimelineType } from './type';
+import ChatContainer from './components/ChatContainer';
+import { Message } from './type';
 import { getTimelineEditorPrompt } from './prompts';
 
 const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
-  const [response, setResponse] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [currentTimeline, setCurrentTimeline] = useState(timeline);
@@ -38,6 +39,16 @@ const App: React.FC = () => {
     }
   };
 
+  const addMessage = (role: 'user' | 'assistant' | 'system', content: string) => {
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      role,
+      content,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!userInput.trim()) return;
@@ -46,6 +57,9 @@ const App: React.FC = () => {
       return;
     }
 
+    const userMessage = userInput.trim();
+    setUserInput('');
+    addMessage('user', userMessage);
     setLoading(true);
     setError(null);
 
@@ -56,28 +70,36 @@ const App: React.FC = () => {
         return;
       }
 
+      // Build conversation history for the API
+      const conversationHistory = [
+        {
+          role: "system" as const,
+          content: getTimelineEditorPrompt(
+            currentTimeline.audio_track.length,
+            currentTimeline.visual_track.length
+          )
+        },
+        ...messages
+          .filter(msg => msg.role !== 'system')
+          .map(msg => ({
+            role: msg.role as 'user' | 'assistant',
+            content: msg.content
+          })),
+        {
+          role: "user" as const,
+          content: userMessage
+        }
+      ];
+
       const chatResponse = await client.chat.completions.create({
         model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: getTimelineEditorPrompt(
-              currentTimeline.audio_track.length,
-              currentTimeline.visual_track.length
-            )
-          },
-          {
-            role: "user",
-            content: userInput
-          }
-        ],
+        messages: conversationHistory,
         max_tokens: 1000
       });
 
       const responseContent = chatResponse.choices[0]?.message?.content;
       if (responseContent) {
-        setResponse(responseContent);
-        setUserInput('');
+        addMessage('assistant', responseContent);
       } else {
         throw new Error('No response received from OpenAI');
       }
@@ -85,6 +107,7 @@ const App: React.FC = () => {
     } catch (error: any) {
       console.error('Error:', error);
       setError(`Error: ${error.message}`);
+      addMessage('assistant', `Sorry, I encountered an error: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -92,7 +115,11 @@ const App: React.FC = () => {
 
   const resetTimeline = () => {
     setCurrentTimeline(timeline);
-    setResponse('');
+    setMessages([]);
+  };
+
+  const clearChat = () => {
+    setMessages([]);
   };
 
   return (
@@ -101,17 +128,35 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <h1 className="text-xl font-semibold text-gray-900">Timeline Editor</h1>
-            <button
-              onClick={resetTimeline}
-              className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            >
-              Reset
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={clearChat}
+                className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Clear Chat
+              </button>
+              <button
+                onClick={resetTimeline}
+                className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Reset Timeline
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-4xl mx-auto py-6 px-4">
+      <main className="flex-1 max-w-4xl mx-auto py-6 px-4 flex flex-col h-full">
+        <div className="flex-1 mb-4">
+          <ChatContainer messages={messages} loading={loading} />
+        </div>
+
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
+            <p className="text-red-800">{error}</p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-4">
             <input
@@ -120,31 +165,17 @@ const App: React.FC = () => {
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Describe timeline changes..."
               disabled={loading}
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500"
+              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             />
             <button 
               type="submit" 
-              disabled={loading} 
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400"
+              disabled={loading || !userInput.trim()} 
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {loading ? 'Processing...' : 'Apply'}
+              {loading ? 'Processing...' : 'Send'}
             </button>
           </div>
         </form>
-
-        {error && (
-          <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-red-800">{error}</p>
-          </div>
-        )}
-        
-        {response && (
-          <div className="mt-6 bg-white shadow rounded-lg p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Response:</h3>
-            <p className="text-gray-700">{response}</p>
-          </div>
-        )}
-
       </main>
       
       <footer className="w-full fixed left-0 bottom-0 z-50 bg-transparent">
