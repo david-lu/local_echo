@@ -78,3 +78,45 @@ export const TimelineSchema = z.object({
     visual_track: z.array(VisualClipSchema)
 });
 export type Timeline = z.infer<typeof TimelineSchema>;
+
+export const MutationTypeSchema = z.enum(["add_visual", "remove_visual", "add_audio", "remove_audio", "modify_visual", "modify_audio"]);
+export type MutationType = z.infer<typeof MutationTypeSchema>;
+
+export const MutationSchema = z.object({
+    type: MutationTypeSchema,
+    clip: z.union([AudioClipSchema, VisualClipSchema])
+});
+export type Mutation = z.infer<typeof MutationSchema>;
+
+export const AddVisualMutationSchema = MutationSchema.extend({
+    type: z.literal("add_visual"),
+    clip: VisualClipSchema
+});
+export type AddVisualMutation = z.infer<typeof AddVisualMutationSchema>;
+
+export const AddAudioMutationSchema = MutationSchema.extend({
+    type: z.literal("add_audio"),
+    clip: AudioClipSchema
+});
+export type AddAudioMutation = z.infer<typeof AddAudioMutationSchema>;
+
+export const RemoveVisualMutationSchema = MutationSchema.extend({
+    type: z.literal("remove_visual"),
+    clip_id: z.string()
+});
+export type RemoveVisualMutation = z.infer<typeof RemoveVisualMutationSchema>;
+
+export const RemoveAudioMutationSchema = MutationSchema.extend({
+    type: z.literal("remove_audio"),
+    clip_id: z.string()
+});
+export type RemoveAudioMutation = z.infer<typeof RemoveAudioMutationSchema>;
+
+export const ModifyVisualMutationSchema = MutationSchema.extend({
+    type: z.literal("modify_visual"),
+    clip: VisualClipSchema
+});
+export type ModifyVisualMutation = z.infer<typeof ModifyVisualMutationSchema>;
+
+export const MutationsSchema = z.array(z.union([AddVisualMutationSchema, AddAudioMutationSchema, RemoveVisualMutationSchema, RemoveAudioMutationSchema, ModifyVisualMutationSchema]));
+export type Mutations = z.infer<typeof MutationsSchema>;
