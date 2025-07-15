@@ -62,14 +62,6 @@ const App: React.FC = () => {
         content: getTimelineEditorPrompt(timeline)
       },
       ...messages
-        .map(msg => ({
-          role: "user" as const,
-          content: msg.content
-        })),
-      {
-        role: "user" as const,
-        content: userMessage
-      }
     ];
   };
 
