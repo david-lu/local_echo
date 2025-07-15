@@ -39,7 +39,7 @@ const App: React.FC = () => {
     }
   };
 
-  const addMessage = (role: 'user' | 'assistant' | 'system', content: string) => {
+  const addMessage = (role: 'user' | 'system', content: string) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       role,
@@ -99,7 +99,7 @@ const App: React.FC = () => {
 
       const responseContent = chatResponse.choices[0]?.message?.content;
       if (responseContent) {
-        addMessage('assistant', responseContent);
+        addMessage('system', responseContent);
       } else {
         throw new Error('No response received from OpenAI');
       }
@@ -107,7 +107,7 @@ const App: React.FC = () => {
     } catch (error: any) {
       console.error('Error:', error);
       setError(`Error: ${error.message}`);
-      addMessage('assistant', `Sorry, I encountered an error: ${error.message}`);
+      addMessage('system', `Sorry, I encountered an error: ${error.message}`);
     } finally {
       setLoading(false);
     }

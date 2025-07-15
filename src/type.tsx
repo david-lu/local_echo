@@ -117,10 +117,18 @@ export const ModifyAudioMutationSchema = MutationSchema.extend({
 export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
 
 
-// Chat message schema
-export const MessageSchema = z.object({
+// Chat message schemas
+export const UserMessageSchema = z.object({
   id: z.string(),
-  role: z.enum(['user', 'assistant', 'system']),
+  role: z.literal('user'),
+  content: z.string(),
+  timestamp: z.date()
+});
+export type UserMessage = z.infer<typeof UserMessageSchema>;
+
+export const SystemMessageSchema = z.object({
+  id: z.string(),
+  role: z.literal('system'),
   content: z.string(),
   timestamp: z.date(),
   mutations: z.array(z.union([
@@ -130,6 +138,13 @@ export const MessageSchema = z.object({
     RemoveAudioMutationSchema,
     ModifyVisualMutationSchema,
     ModifyAudioMutationSchema
-    ]))
+  ])).optional()
 });
+export type SystemMessage = z.infer<typeof SystemMessageSchema>;
+
+// Union of all message types
+export const MessageSchema = z.discriminatedUnion("role", [
+  UserMessageSchema,
+  SystemMessageSchema
+]);
 export type Message = z.infer<typeof MessageSchema>;
