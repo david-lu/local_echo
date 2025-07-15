@@ -2,11 +2,12 @@ import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
 import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
-import { Message } from './type';
+import { Message, SystemMessageSchema } from './type';
 import { getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './sampleTimeline.json';
 import { Timeline as TimelineType } from './type';
+import { zodResponseFormat } from 'openai/helpers/zod';
 
 const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
@@ -20,6 +21,8 @@ const App: React.FC = () => {
 
   // Create a ref to store the OpenAI client
   const openAIClientRef = useRef<OpenAI | null>(null);
+
+  console.log(zodResponseFormat(SystemMessageSchema, "message"));
 
   // Initialize OpenAI client
   const initializeOpenAI = (): OpenAI | null => {
@@ -88,10 +91,11 @@ const App: React.FC = () => {
 
       const conversationHistory = buildConversationHistory(currentTimeline, messages);
 
-      const chatResponse = await client.chat.completions.create({
+      const chatResponse = await client.chat.completions.parse({
         model: "gpt-4o-mini",
         messages: conversationHistory,
-        max_tokens: 1000
+        max_tokens: 1000,
+        response_format: zodResponseFormat(SystemMessageSchema, "message"),
       });
 
       const responseContent = chatResponse.choices[0]?.message?.content;
