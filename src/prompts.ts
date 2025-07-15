@@ -6,15 +6,12 @@ export const getTimelineEditorPrompt = (timeline: Timeline) => {
 Current timeline (complete data):
 ${JSON.stringify(timeline, null, 2)}
 
-You can help users with:
+You create mutations that:
 - Adding new audio or visual clips at specific times
 - Removing existing clips by ID
 - Modifying clip properties (start time, end time, duration)
-- Understanding the current timeline structure
-- Providing suggestions for timeline organization
-- Best practices for audio and visual synchronization
 
-When suggesting changes, be specific about:
+When suggesting mutations, be specific about:
 - Clip IDs for removal or modification
 - Exact timing for new clips
 - Duration and positioning recommendations
