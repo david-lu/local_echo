@@ -1,17 +1,19 @@
 import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
-import { timeline } from './timelineConverter';
 import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
 import { Message } from './type';
 import { getTimelineEditorPrompt } from './prompts';
+import { parseTimeline } from './timelineConverter';
+import timelineJson from './sampleTimeline.json';
+import { Timeline as TimelineType } from './type';
 
 const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentTimeline, setCurrentTimeline] = useState(timeline);
+  const [currentTimeline, setCurrentTimeline] = useState(parseTimeline(timelineJson));
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
@@ -49,6 +51,20 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, newMessage]);
   };
 
+  const buildConversationHistory = (timeline: TimelineType, messages: Message[]) => {
+    return [
+      {
+        role: "system" as const,
+        content: getTimelineEditorPrompt(timeline)
+      },
+      ...messages
+        .map(msg => ({
+          role: "user" as const,
+          content: msg.content
+        })),
+    ];
+  };
+
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     if (!userInput.trim()) return;
@@ -70,26 +86,7 @@ const App: React.FC = () => {
         return;
       }
 
-      // Build conversation history for the API
-      const conversationHistory = [
-        {
-          role: "system" as const,
-          content: getTimelineEditorPrompt(
-            currentTimeline.audio_track.length,
-            currentTimeline.visual_track.length
-          )
-        },
-        ...messages
-          .filter(msg => msg.role !== 'system')
-          .map(msg => ({
-            role: msg.role as 'user' | 'assistant',
-            content: msg.content
-          })),
-        {
-          role: "user" as const,
-          content: userMessage
-        }
-      ];
+      const conversationHistory = buildConversationHistory(currentTimeline, messages);
 
       const chatResponse = await client.chat.completions.create({
         model: "gpt-4o-mini",
@@ -114,7 +111,7 @@ const App: React.FC = () => {
   };
 
   const resetTimeline = () => {
-    setCurrentTimeline(timeline);
+    setCurrentTimeline({audio_track: [], visual_track: []});
     setMessages([]);
   };
 

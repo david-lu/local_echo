@@ -1,5 +1,4 @@
 import { TimelineSchema, Timeline } from './type';
-import timelineJson from './sampleTimeline.json';
 
 // Convert JSON to Timeline with Zod validation
 export function parseTimeline(jsonData: unknown): Timeline {
@@ -12,8 +11,6 @@ export function safeParseTimeline(jsonData: unknown): Timeline | null {
   return result.success ? result.data : null;
 }
 
-// Convert the JSON file to Timeline
-export const timeline: Timeline = parseTimeline(timelineJson);
 
 // Example usage:
 // const myTimeline = parseTimeline(jsonData);
