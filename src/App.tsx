@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
 import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
-import { Message, SystemMessageSchema } from './type';
+import { Message, SystemMessageSchema, UserMessage } from './type';
 import { getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './sampleTimeline.json';
@@ -45,9 +45,9 @@ const App: React.FC = () => {
   };
 
   const addMessage = (role: 'user' | 'system', content: string) => {
-    const newMessage: Message = {
+    const newMessage: UserMessage = {
       id: Date.now().toString(),
-      role,
+      role: 'user',
       content,
       timestamp: new Date()
     };
