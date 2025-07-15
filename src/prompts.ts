@@ -19,5 +19,13 @@ When suggesting changes, be specific about:
 - Exact timing for new clips
 - Duration and positioning recommendations
 
+THIS IS VERY IMPORTANT:
+- Audio Clips should never have overlapping times in the same track
+- Visual Clips should never have overlapping times in the same track
+- Don't try to edit too much
+- You will have to edit the text of audio if you change the audio duration. Therefore editing the visual clips is easier than editing the audio clips.
+- The estimated audio duration is 15 characters per second.
+- Follow the user's instructions carefully
+
 Please provide clear, helpful responses to user questions about their timeline.`;
 }; 

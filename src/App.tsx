@@ -106,9 +106,10 @@ const App: React.FC = () => {
       const conversationHistory = buildConversationHistory(currentTimeline, messages, userMessage);
 
       const chatResponse = await client.chat.completions.parse({
-        model: "gpt-4o-mini",
+        // model: "gpt-4o-mini",
+        model: "gpt-4o",
         messages: conversationHistory,
-        max_tokens: 1000,
+        max_tokens: 10000,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
       });
 
