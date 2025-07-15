@@ -46,24 +46,13 @@ const App: React.FC = () => {
   };
 
   const addMessage = (role: 'user' | 'system', content: string, mutations?: any[]) => {
-    if (role === 'user') {
-      const newMessage: UserMessage = {
-        id: Date.now().toString(),
-        role: 'user',
-        content,
-        timestamp: Date.now().toString()
-      };
-      setMessages(prev => [...prev, newMessage]);
-    } else {
-      const newMessage: SystemMessage = {
-        id: Date.now().toString(),
-        role: 'system',
-        content,
-        timestamp: Date.now().toString(),
-        mutations: mutations || null
-      };
-      setMessages(prev => [...prev, newMessage]);
-    }
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      role: role,
+      content,
+      timestamp: Date.now().toString(),
+      mutations: mutations || null
+    }]);
   };
 
   const buildConversationHistory = (timeline: TimelineType, messages: Message[], userMessage: string) => {
@@ -73,7 +62,6 @@ const App: React.FC = () => {
         content: getTimelineEditorPrompt(timeline)
       },
       ...messages
-        .filter(msg => msg.role === 'user')
         .map(msg => ({
           role: "user" as const,
           content: msg.content
@@ -105,6 +93,7 @@ const App: React.FC = () => {
       }
 
       const conversationHistory = buildConversationHistory(currentTimeline, messages, userMessage);
+      console.log('CONVERSATION HISTORY', conversationHistory);
 
       const chatResponse = await client.chat.completions.parse({
         // model: "gpt-4o-mini",
