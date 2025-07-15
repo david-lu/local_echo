@@ -4,10 +4,10 @@
       "id": "audio_clip_001",
       "type": "audio",
       "start_ms": 0,
-      "end_ms": 5000,
+      "end_ms": 4000,
       "speaker": "narrator",
       "audio_generation_params": {
-        "text": "Welcome to our presentation. Today we'll explore the fascinating world of artificial intelligence.",
+        "text": "FUCK YOU CUSTOMER!",
         "speed": 1.0,
         "stability": 0.8
       },
@@ -52,7 +52,7 @@
       "id": "visual_clip_002",
       "type": "visual",
       "start_ms": 3000,
-      "end_ms": 8000,
+      "end_ms": 7000,
       "speaker": "expert",
       "image_generation_params": {
         "type": "text_to_image",

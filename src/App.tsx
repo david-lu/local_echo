@@ -9,6 +9,7 @@ import { parseTimeline } from './timelineConverter';
 import timelineJson from './sampleTimeline.json';
 import { Timeline as TimelineType } from './type';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import { applyMutations } from './mutationApplier';
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -116,11 +117,23 @@ const App: React.FC = () => {
       const response = chatResponse.choices[0]?.message;
       if (response && response.content) {
         // The response is parsed according to our schema, so we can access the content
-        addMessage('system', response.parsed!.content);
-        console.log('RESPONSE', response);
+        const systemMessage = response.parsed!;
+        console.log('SYSTEM MESSAGE', systemMessage);
+        addMessage('system', systemMessage.content, systemMessage.mutations || undefined);
         
-        // For now, we'll handle mutations separately when we implement them
-        // The parse method gives us the structured data, but we need to handle it properly
+        // Apply mutations to the timeline if any exist
+        if (systemMessage.mutations && systemMessage.mutations.length > 0) {
+          try {
+            const updatedTimeline = applyMutations(currentTimeline, systemMessage.mutations);
+            setCurrentTimeline(updatedTimeline);
+            console.log('Applied mutations:', systemMessage.mutations);
+          } catch (mutationError) {
+            console.error('Error applying mutations:', mutationError);
+            setError(`Failed to apply timeline changes: ${mutationError instanceof Error ? mutationError.message : 'Unknown error'}`);
+          }
+        }
+        
+        console.log('RESPONSE', response);
       } else {
         throw new Error('No response received from OpenAI');
       }
