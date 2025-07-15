@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
 import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
-import { Message, SystemMessageSchema, UserMessage } from './type';
+import ChatInput from './components/ChatInput';
+import { Message, SystemMessageSchema, UserMessage, SystemMessage } from './type';
 import { getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './sampleTimeline.json';
@@ -10,7 +11,6 @@ import { Timeline as TimelineType } from './type';
 import { zodResponseFormat } from 'openai/helpers/zod';
 
 const App: React.FC = () => {
-  const [userInput, setUserInput] = useState<string>('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,40 +44,54 @@ const App: React.FC = () => {
     }
   };
 
-  const addMessage = (role: 'user' | 'system', content: string) => {
-    const newMessage: UserMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, newMessage]);
+  const addMessage = (role: 'user' | 'system', content: string, mutations?: any[]) => {
+    if (role === 'user') {
+      const newMessage: UserMessage = {
+        id: Date.now().toString(),
+        role: 'user',
+        content,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, newMessage]);
+    } else {
+      const newMessage: SystemMessage = {
+        id: Date.now().toString(),
+        role: 'system',
+        content,
+        timestamp: new Date(),
+        mutations: mutations || null
+      };
+      setMessages(prev => [...prev, newMessage]);
+    }
   };
 
-  const buildConversationHistory = (timeline: TimelineType, messages: Message[]) => {
+  const buildConversationHistory = (timeline: TimelineType, messages: Message[], userMessage: string) => {
     return [
       {
         role: "system" as const,
         content: getTimelineEditorPrompt(timeline)
       },
       ...messages
+        .filter(msg => msg.role === 'user')
         .map(msg => ({
           role: "user" as const,
           content: msg.content
         })),
+      {
+        role: "user" as const,
+        content: userMessage
+      }
     ];
   };
 
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
-    e.preventDefault();
-    if (!userInput.trim()) return;
+  const handleSubmit = async (message: string): Promise<void> => {
+    if (!message.trim()) return;
     if (!apiKey) {
       setError('OpenAI API key not found.');
       return;
     }
 
-    const userMessage = userInput.trim();
-    setUserInput('');
+    const userMessage = message.trim();
     addMessage('user', userMessage);
     setLoading(true);
     setError(null);
@@ -89,7 +103,7 @@ const App: React.FC = () => {
         return;
       }
 
-      const conversationHistory = buildConversationHistory(currentTimeline, messages);
+      const conversationHistory = buildConversationHistory(currentTimeline, messages, userMessage);
 
       const chatResponse = await client.chat.completions.parse({
         model: "gpt-4o-mini",
@@ -98,9 +112,14 @@ const App: React.FC = () => {
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
       });
 
-      const responseContent = chatResponse.choices[0]?.message?.content;
-      if (responseContent) {
-        addMessage('system', responseContent);
+      const response = chatResponse.choices[0]?.message;
+      if (response && response.content) {
+        // The response is parsed according to our schema, so we can access the content
+        addMessage('system', response.content);
+        console.log('RESPONSE', response);
+        
+        // For now, we'll handle mutations separately when we implement them
+        // The parse method gives us the structured data, but we need to handle it properly
       } else {
         throw new Error('No response received from OpenAI');
       }
@@ -147,39 +166,23 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="flex-1 max-w-4xl mx-auto py-6 px-4 flex flex-col h-full">
-        <div className="flex-1 mb-4">
-          <ChatContainer messages={messages} loading={loading} />
+      <main className="flex-1 flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto py-6 px-4">
+            <ChatContainer messages={messages} loading={loading} />
+            
+            {error && (
+              <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
+                <p className="text-red-800">{error}</p>
+              </div>
+            )}
+          </div>
         </div>
-
-        {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-red-800">{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-4">
-            <input
-              type="text"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Describe timeline changes..."
-              disabled={loading}
-              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-            />
-            <button 
-              type="submit" 
-              disabled={loading || !userInput.trim()} 
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Processing...' : 'Send'}
-            </button>
-          </div>
-        </form>
+        
+        <ChatInput onSubmit={handleSubmit} loading={loading} />
       </main>
       
-      <footer className="w-full fixed left-0 bottom-0 z-50 bg-transparent">
+      <footer className="w-full bg-transparent">
         <Timeline timeline={currentTimeline} />
       </footer>
     </div>
