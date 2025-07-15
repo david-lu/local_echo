@@ -22,7 +22,7 @@ const App: React.FC = () => {
   // Create a ref to store the OpenAI client
   const openAIClientRef = useRef<OpenAI | null>(null);
 
-  console.log(zodResponseFormat(SystemMessageSchema, "message"));
+  // console.log(zodResponseFormat(SystemMessageSchema, "message"));
 
   // Initialize OpenAI client
   const initializeOpenAI = (): OpenAI | null => {
@@ -50,7 +50,7 @@ const App: React.FC = () => {
         id: Date.now().toString(),
         role: 'user',
         content,
-        timestamp: new Date()
+        timestamp: Date.now().toString()
       };
       setMessages(prev => [...prev, newMessage]);
     } else {
@@ -58,7 +58,7 @@ const App: React.FC = () => {
         id: Date.now().toString(),
         role: 'system',
         content,
-        timestamp: new Date(),
+        timestamp: Date.now().toString(),
         mutations: mutations || null
       };
       setMessages(prev => [...prev, newMessage]);
@@ -115,7 +115,7 @@ const App: React.FC = () => {
       const response = chatResponse.choices[0]?.message;
       if (response && response.content) {
         // The response is parsed according to our schema, so we can access the content
-        addMessage('system', response.content);
+        addMessage('system', response.parsed!.content);
         console.log('RESPONSE', response);
         
         // For now, we'll handle mutations separately when we implement them

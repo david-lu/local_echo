@@ -25,7 +25,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         </div>
         <div className="text-sm whitespace-pre-wrap">{message.content}</div>
         <div className={`text-xs mt-1 ${isUser ? 'text-indigo-200' : 'text-gray-500'}`}>
-          {message.timestamp.toLocaleTimeString()}
+          {message.timestamp}
         </div>
       </div>
     </div>

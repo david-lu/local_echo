@@ -74,18 +74,6 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
             </div>
           </div>
           
-          {/* Audio Track */}
-          <TimelineTrack
-            clips={timeline.audio_track}
-            trackLabel="Audio Track"
-            trackColor="text-blue-600"
-            icon="🎤"
-            maxEnd={maxEnd}
-            zIndex={2}
-            getWidth={getWidth}
-            getLeft={getLeft}
-          />
-          
           {/* Visual Track */}
           <TimelineTrack
             clips={timeline.visual_track}
@@ -94,6 +82,18 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline }) => {
             icon="🖼️"
             maxEnd={maxEnd}
             zIndex={1}
+            getWidth={getWidth}
+            getLeft={getLeft}
+          />
+
+          {/* Audio Track */}
+          <TimelineTrack
+            clips={timeline.audio_track}
+            trackLabel="Audio Track"
+            trackColor="text-blue-600"
+            icon="🎤"
+            maxEnd={maxEnd}
+            zIndex={2}
             getWidth={getWidth}
             getLeft={getLeft}
           />

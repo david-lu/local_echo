@@ -122,7 +122,7 @@ export const UserMessageSchema = z.object({
   id: z.string(),
   role: z.literal('user'),
   content: z.string(),
-  timestamp: z.date()
+  timestamp: z.string()
 });
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 
@@ -130,7 +130,7 @@ export const SystemMessageSchema = z.object({
   id: z.string(),
   role: z.literal('system'),
   content: z.string(),
-  timestamp: z.date(),
+  timestamp: z.string(),
   mutations: z.array(z.union([
     AddVisualMutationSchema,
     AddAudioMutationSchema,
