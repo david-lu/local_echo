@@ -2,13 +2,8 @@ import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
 import { timeline } from './timelineConverter';
 import Timeline from './components/Timeline';
-import { 
-  ChatCompletionResponseSchema, 
-  TimelineResponseSchema,
-  TimelineEvent,
-  Timeline as TimelineType 
-} from './type';
-import { getTimelineEditorPrompt, timelineEditorFunction } from './prompts';
+import { Timeline as TimelineType } from './type';
+import { getTimelineEditorPrompt } from './prompts';
 
 const App: React.FC = () => {
   const [userInput, setUserInput] = useState<string>('');
@@ -41,29 +36,6 @@ const App: React.FC = () => {
       setError('Failed to initialize OpenAI client.');
       return null;
     }
-  };
-
-  const applyEvents = (events: TimelineEvent[], timeline: TimelineType): TimelineType => {
-    let updatedTimeline = { ...timeline };
-
-    for (const event of events) {
-      if (event.action === 'add' && event.clip) {
-        const trackKey = event.track === 'audio' ? 'audio_track' : 'visual_track';
-        if (event.track === 'audio') {
-          updatedTimeline.audio_track = [...updatedTimeline.audio_track, event.clip as any];
-        } else {
-          updatedTimeline.visual_track = [...updatedTimeline.visual_track, event.clip as any];
-        }
-      } else if (event.action === 'remove' && event.targetId) {
-        if (event.track === 'audio') {
-          updatedTimeline.audio_track = updatedTimeline.audio_track.filter((clip: any) => clip.id !== event.targetId);
-        } else {
-          updatedTimeline.visual_track = updatedTimeline.visual_track.filter((clip: any) => clip.id !== event.targetId);
-        }
-      }
-    }
-
-    return updatedTimeline;
   };
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -99,35 +71,16 @@ const App: React.FC = () => {
             content: userInput
           }
         ],
-        tools: [
-          {
-            type: "function",
-            function: timelineEditorFunction
-          }
-        ],
-        tool_choice: {
-          type: "function",
-          function: {
-            name: "modify_timeline"
-          }
-        },
         max_tokens: 1000
       });
 
-      const validatedResponse = ChatCompletionResponseSchema.parse(chatResponse);
-      const toolCall = validatedResponse.choices[0]?.message?.tool_calls?.[0];
-      
-      if (!toolCall || toolCall.function.name !== "modify_timeline") {
-        throw new Error('No valid timeline modification received');
+      const responseContent = chatResponse.choices[0]?.message?.content;
+      if (responseContent) {
+        setResponse(responseContent);
+        setUserInput('');
+      } else {
+        throw new Error('No response received from OpenAI');
       }
-
-      const functionArgs = JSON.parse(toolCall.function.arguments);
-      const timelineResponse = TimelineResponseSchema.parse(functionArgs);
-        
-      const updatedTimeline = applyEvents(timelineResponse.events, currentTimeline);
-      setCurrentTimeline(updatedTimeline);
-      setResponse(timelineResponse.message);
-      setUserInput('');
 
     } catch (error: any) {
       console.error('Error:', error);
