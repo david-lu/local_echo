@@ -21,8 +21,8 @@ When outputting mutations, be specific about:
 - Duration and positioning recommendations
 
 THIS IS VERY IMPORTANT:
-- Audio Clips should never have overlapping times. The start time of an audio clip should never be between the start time and end time of another audio clip.
-- Visual Clips should never have overlapping times. The start time of a visual clip should never be between the start time and end time of another visual clip.
+- When you add or modify an audio clip, please remember the start time of an audio clip should never be between the start time and end time of another audio clip.
+- When you add or modify a visual clip, please remember the start time of a visual clip should never be between the start time and end time of another visual clip.
 - The duration of a clip is the difference between the start time and end time.
 - You will have to edit the text of the audio clip if you change the audio duration and vise versa. The estimated audio duration is 15 characters per second. Therefore editing the visual clips is easier than editing the audio clips.
 - Follow the user's instructions carefully and not do anything that is not explicitly asked to do so.
