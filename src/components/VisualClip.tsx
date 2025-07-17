@@ -29,6 +29,7 @@ export const VisualClip: React.FC<VisualClipProps> = ({
       widthPercent={widthPercent}
       color="bg-emerald-500"
       title={title}
+      clipData={clip}
     >
       <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
         {icon} {content}

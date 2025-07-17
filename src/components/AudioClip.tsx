@@ -24,6 +24,7 @@ export const AudioClip: React.FC<AudioClipProps> = ({
       widthPercent={widthPercent}
       color="bg-blue-500"
       title={title}
+      clipData={clip}
     >
       <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
         {speaker}: {clip.audio_generation_params?.text}
