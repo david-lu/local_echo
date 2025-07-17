@@ -7,7 +7,7 @@
       "end_ms": 4000,
       "speaker": "narrator",
       "audio_generation_params": {
-        "text": "FUCK YOU CUSTOMER!",
+        "text": "HELLO!",
         "speed": 1.0,
         "stability": 0.8
       },
