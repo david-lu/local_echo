@@ -84,6 +84,7 @@ export type MutationType = z.infer<typeof MutationTypeSchema>;
 
 export const MutationSchema = z.object({
     type: MutationTypeSchema.describe("Type of mutation to perform"),
+    description: z.string().describe("Description of what the mutation is doing"),
     clip: z.union([AudioClipSchema, VisualClipSchema]).nullable().describe("Clip data for add/modify operations, null for remove operations")
 }).describe("Base mutation schema with type and optional clip data");
 export type Mutation = z.infer<typeof MutationSchema>;
