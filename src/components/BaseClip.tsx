@@ -1,5 +1,4 @@
 import React from 'react';
-import JsonPopup from './JsonPopup';
 
 interface BaseClipProps {
   startPercent: number;
@@ -7,7 +6,7 @@ interface BaseClipProps {
   color: string;
   title: string;
   children: React.ReactNode;
-  clipData?: any; // Add optional clip data for JSON popup
+  onClick?: () => void;
 }
 
 export const BaseClip: React.FC<BaseClipProps> = ({
@@ -16,32 +15,22 @@ export const BaseClip: React.FC<BaseClipProps> = ({
   color,
   title,
   children,
-  clipData
+  onClick
 }) => {
-  const clipElement = (
+  return (
     <div
-      className={`absolute h-8 ${color} text-sm text-white flex items-center justify-center rounded border border-white/20 hover:opacity-90 transition-opacity duration-200`}
+      className={`absolute h-8 ${color} text-sm text-white flex items-center justify-center rounded border border-white/20 hover:opacity-90 transition-opacity duration-200 cursor-pointer`}
       style={{
         left: startPercent + '%',
         width: widthPercent + '%',
         top: 0
       }}
       title={title}
+      onClick={onClick}
     >
       {children}
     </div>
   );
-
-  // If clip data is provided, wrap with JSON popup
-  if (clipData) {
-    return (
-      <JsonPopup data={clipData}>
-        {clipElement}
-      </JsonPopup>
-    );
-  }
-
-  return clipElement;
 };
 
 export default BaseClip; 

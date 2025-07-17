@@ -12,6 +12,7 @@ interface TimelineTrackProps {
   zIndex: number;
   getWidth: (start: number, end: number) => number;
   getLeft: (start: number) => number;
+  onClipClick?: (clip: AudioClipType | VisualClipType) => void;
 }
 
 export const TimelineTrack: React.FC<TimelineTrackProps> = ({
@@ -22,7 +23,8 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   maxEnd,
   zIndex,
   getWidth,
-  getLeft
+  getLeft,
+  onClipClick
 }) => {
   return (
     <div className="flex items-center gap-3 mb-1">
@@ -41,6 +43,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
                 clip={clip}
                 startPercent={startPercent}
                 widthPercent={widthPercent}
+                onClick={() => onClipClick?.(clip)}
               />
             );
           } else {
@@ -50,6 +53,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
                 clip={clip}
                 startPercent={startPercent}
                 widthPercent={widthPercent}
+                onClick={() => onClipClick?.(clip)}
               />
             );
           }

@@ -1,9 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { OpenAI } from 'openai';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
 import ChatInput from './components/ChatInput';
-import { Message, SystemMessageSchema, UserMessage, SystemMessage } from './type';
+import ClipDisplayer from './components/ClipDisplayer';
+import { Message, SystemMessageSchema, UserMessage, SystemMessage, AudioClip, VisualClip } from './type';
 import { AGENT_PROMPT, getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './sampleTimeline.json';
@@ -17,6 +19,7 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentTimeline, setCurrentTimeline] = useState(parseTimeline(timelineJson));
   const [partialMessage, setPartialMessage] = useState<SystemMessage | null>(null);
+  const [selectedClip, setSelectedClip] = useState<AudioClip | VisualClip | null>(null);
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
@@ -161,35 +164,55 @@ const App: React.FC = () => {
 
   const displayTimeline = partialMessage ? applyMutations(currentTimeline, (partialMessage.mutations ?? []).slice(0, -1)) : currentTimeline;
 
+  const handleClipClick = (clip: AudioClip | VisualClip) => {
+    setSelectedClip(clip);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       <div className="flex-1 flex flex-col min-h-0">
-        {/* Chat and Timeline Container */}
-        <div className="flex-1 flex min-h-0">
-          {/* Chat Section */}
-          <div className="flex-1 flex flex-col min-h-0">
-            <div className="flex-1 overflow-hidden">
-              <div className="h-full max-w-4xl mx-auto">
-                <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
-                
-                {error && (
-                  <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
-                    <p className="text-red-800">{error}</p>
-                  </div>
-                )}
+        <PanelGroup direction="horizontal">
+          <Panel defaultSize={50} minSize={30}>
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 overflow-hidden">
+                <div className="h-full max-w-4xl mx-auto">
+                  <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
+                  
+                  {error && (
+                    <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
+                      <p className="text-red-800">{error}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex-shrink-0">
+                <ChatInput onSubmit={handleSubmit} loading={loading} />
               </div>
             </div>
-            
-            <div className="flex-shrink-0">
-              <ChatInput onSubmit={handleSubmit} loading={loading} />
+          </Panel>
+          
+          <PanelResizeHandle className="w-1 bg-gray-300 hover:bg-gray-400 transition-colors" />
+          
+          <Panel defaultSize={50} minSize={40}>
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* ClipDisplayer */}
+              <div className="flex-1 min-h-0">
+                <ClipDisplayer selectedClip={selectedClip} />
+              </div>
+              
+              {/* Timeline */}
+              <div className="flex-shrink-0 h-48">
+                <Timeline 
+                  timeline={displayTimeline} 
+                  onClearChat={clearChat} 
+                  onResetTimeline={resetTimeline}
+                  onClipClick={handleClipClick}
+                />
+              </div>
             </div>
-          </div>
-
-          {/* Timeline Section */}
-          <div className="flex-1 min-w-0">
-            <Timeline timeline={displayTimeline} onClearChat={clearChat} onResetTimeline={resetTimeline} />
-          </div>
-        </div>
+          </Panel>
+        </PanelGroup>
       </div>
     </div>
   );

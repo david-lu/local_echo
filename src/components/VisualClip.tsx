@@ -6,6 +6,7 @@ interface VisualClipProps {
   clip: VisualClipType;
   startPercent: number;
   widthPercent: number;
+  onClick?: () => void;
 }
 
 const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
@@ -13,7 +14,8 @@ const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
 export const VisualClip: React.FC<VisualClipProps> = ({
   clip,
   startPercent,
-  widthPercent
+  widthPercent,
+  onClick
 }) => {
   const isImage = !!clip.image_generation_params;
   const icon = isImage ? '🖼️' : '🎬';
@@ -29,7 +31,7 @@ export const VisualClip: React.FC<VisualClipProps> = ({
       widthPercent={widthPercent}
       color="bg-emerald-500"
       title={title}
-      clipData={clip}
+      onClick={onClick}
     >
       <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
         {icon} {content}

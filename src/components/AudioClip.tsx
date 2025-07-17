@@ -6,6 +6,7 @@ interface AudioClipProps {
   clip: AudioClipType;
   startPercent: number;
   widthPercent: number;
+  onClick?: () => void;
 }
 
 const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
@@ -13,7 +14,8 @@ const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
 export const AudioClip: React.FC<AudioClipProps> = ({
   clip,
   startPercent,
-  widthPercent
+  widthPercent,
+  onClick
 }) => {
   const speaker = clip.speaker || 'Audio';
   const title = `Audio: ${speaker} (${msToSec(clip.start_ms)} - ${msToSec(clip.end_ms)})`;
@@ -24,9 +26,7 @@ export const AudioClip: React.FC<AudioClipProps> = ({
       widthPercent={widthPercent}
       color="bg-blue-500"
       title={title}
-      clipData={{...clip, 
-        duration: clip.end_ms - clip.start_ms,
-        estimate_duration: (clip.audio_generation_params?.text?.length || 0) / 15}}
+      onClick={onClick}
     >
       <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
         {speaker}: {clip.audio_generation_params?.text}

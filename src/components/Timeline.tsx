@@ -1,16 +1,17 @@
 import React from 'react';
-import { Timeline as TimelineType } from '../type';
+import { Timeline as TimelineType, AudioClip, VisualClip } from '../type';
 import TimelineTrack from './TimelineTrack';
 
 interface TimelineProps {
   timeline: TimelineType;
   onClearChat?: () => void;
   onResetTimeline?: () => void;
+  onClipClick?: (clip: AudioClip | VisualClip) => void;
 }
 
 const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
 
-export const Timeline: React.FC<TimelineProps> = ({ timeline, onClearChat, onResetTimeline }) => {
+export const Timeline: React.FC<TimelineProps> = ({ timeline, onClearChat, onResetTimeline, onClipClick }) => {
   // Find the max end time for scaling
   const maxEnd = Math.max(
     ...timeline.audio_track.map(c => c.end_ms),
@@ -27,7 +28,7 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline, onClearChat, onRes
   const secondMarkings = Array.from({ length: totalSeconds + 1 }, (_, i) => i);
 
   return (
-    <div className="h-full bg-white border-l border-gray-200 flex flex-col">
+    <div className="h-full bg-white flex flex-col">
       <div className="flex-shrink-0 p-4 border-b border-gray-200">
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-800">Timeline</h2>
@@ -98,25 +99,27 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline, onClearChat, onRes
           {/* Visual Track */}
           <TimelineTrack
             clips={timeline.visual_track}
-            trackLabel="Visual Track"
+            trackLabel="Visual"
             trackColor="text-emerald-600"
             icon="🖼️"
             maxEnd={maxEnd}
             zIndex={1}
             getWidth={getWidth}
             getLeft={getLeft}
+            onClipClick={onClipClick}
           />
 
           {/* Audio Track */}
           <TimelineTrack
             clips={timeline.audio_track}
-            trackLabel="Audio Track"
+            trackLabel="Audio"
             trackColor="text-blue-600"
             icon="🎤"
             maxEnd={maxEnd}
             zIndex={2}
             getWidth={getWidth}
             getLeft={getLeft}
+            onClipClick={onClipClick}
           />
         </div>
       </div>
