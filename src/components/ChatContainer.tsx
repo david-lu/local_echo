@@ -1,13 +1,14 @@
 import React, { useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
-import { Message } from '../type';
+import { Message, SystemMessage } from '../type';
 
 interface ChatContainerProps {
   messages: Message[];
   loading: boolean;
+  partialMessage?: SystemMessage | null;
 }
 
-const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading }) => {
+const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partialMessage }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -16,7 +17,9 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading }) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, partialMessage]);
+
+  const displayMessages = partialMessage ? [...messages, partialMessage] : messages;
 
   return (
     <div className="flex-1 overflow-y-auto bg-gray-50 rounded-lg border border-gray-200">
@@ -26,12 +29,12 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading }) => {
             <p>Start a conversation about your timeline...</p>
           </div>
         ) : (
-          messages.map((message) => (
+          displayMessages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))
         )}
         
-        {loading && (
+        {loading && !partialMessage && (
           <div className="flex justify-start mb-4">
             <div className="bg-white text-gray-900 border border-gray-200 rounded-lg px-4 py-2">
               <div className="text-sm font-medium mb-1">Assistant</div>

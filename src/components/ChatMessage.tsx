@@ -24,6 +24,21 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           {isUser ? 'You' : isSystem ? 'Assistant' : 'System'}
         </div>
         <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+        
+        {/* Display mutation descriptions if they exist */}
+        {isSystem && message.mutations && message.mutations.length > 0 && (
+          <div className="mt-2 pt-2 border-t border-gray-200">
+            <div className="text-xs font-medium text-gray-600 mb-1">Timeline Changes:</div>
+            <div className="space-y-1">
+              {message.mutations.map((mutation, index) => (
+                <div key={index} className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
+                  {mutation.description}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
         <div className={`text-xs mt-1 ${isUser ? 'text-indigo-200' : 'text-gray-500'}`}>
           {message.timestamp}
         </div>

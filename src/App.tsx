@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [currentTimeline, setCurrentTimeline] = useState(parseTimeline(timelineJson));
+  const [partialMessage, setPartialMessage] = useState<SystemMessage | null>(null);
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
@@ -94,15 +95,18 @@ const App: React.FC = () => {
       const stream = client.chat.completions.stream({
         // model: "gpt-4o",
         // max_tokens: 10000,
-        model: "o3-mini",
-        max_completion_tokens: 10000,
+        model: "o3",
+        max_completion_tokens: 5000,
         messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
       })
       .on("refusal.done", () => console.log("request refused"))
       .on("content.delta", ({ snapshot, parsed }) => {
-        console.log("content:", snapshot);
-        console.log("parsed:", parsed);
+        // console.log("content:", snapshot);
+        console.log("NEW parsed:", parsed);
+        if (parsed && typeof parsed === 'object' && 'content' in parsed) {
+          setPartialMessage(parsed as SystemMessage);
+        }
         console.log();
       })
       .on("content.done", (props) => {
@@ -142,6 +146,7 @@ const App: React.FC = () => {
       addMessage('system', `Sorry, I encountered an error: ${error.message}`);
     } finally {
       setLoading(false);
+      setPartialMessage(null); // Clear partial message when stream finishes
     }
   };
 
@@ -153,6 +158,8 @@ const App: React.FC = () => {
   const clearChat = () => {
     setMessages([]);
   };
+
+  const displayTimeline = partialMessage ? applyMutations(currentTimeline, (partialMessage.mutations ?? []).slice(0, -1)) : currentTimeline;
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -181,7 +188,7 @@ const App: React.FC = () => {
       <main className="flex-1 flex flex-col">
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto py-6 px-4">
-            <ChatContainer messages={messages} loading={loading} />
+            <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
             
             {error && (
               <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
@@ -195,7 +202,7 @@ const App: React.FC = () => {
       </main>
       
       <footer className="w-full bg-transparent">
-        <Timeline timeline={currentTimeline} />
+        <Timeline timeline={displayTimeline} />
       </footer>
     </div>
   );
