@@ -173,7 +173,7 @@ const App: React.FC = () => {
       <div className="flex-1 flex flex-col min-h-0">
         <PanelGroup direction="horizontal">
           <Panel defaultSize={50} minSize={30}>
-            <div className="flex-1 flex flex-col min-h-0">
+            <div className="h-full flex flex-col">
               <div className="flex-1 overflow-hidden">
                 <div className="h-full max-w-4xl mx-auto">
                   <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
@@ -195,7 +195,7 @@ const App: React.FC = () => {
           <PanelResizeHandle className="w-1 bg-gray-300 hover:bg-gray-400 transition-colors" />
           
           <Panel defaultSize={50} minSize={40}>
-            <div className="flex-1 flex flex-col min-h-0">
+            <div className="h-full flex flex-col">
               {/* ClipDisplayer */}
               <div className="flex-1 min-h-0">
                 <ClipDisplayer selectedClip={selectedClip} />
