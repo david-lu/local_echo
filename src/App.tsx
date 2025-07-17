@@ -92,10 +92,11 @@ const App: React.FC = () => {
       console.log('CONVERSATION HISTORY', conversationHistory);
 
       const stream = client.chat.completions.stream({
-        // model: "gpt-4o-mini",
-        model: "o3-2025-04-16",
-        messages: conversationHistory,
+        // model: "gpt-4o",
+        // max_tokens: 10000,
+        model: "o3-mini",
         max_completion_tokens: 10000,
+        messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
       })
       .on("refusal.done", () => console.log("request refused"))
@@ -109,7 +110,6 @@ const App: React.FC = () => {
       });
 
       await stream.done();
-
       const finalCompletion = await stream.finalChatCompletion();
 
       const response = finalCompletion.choices[0]?.message;
