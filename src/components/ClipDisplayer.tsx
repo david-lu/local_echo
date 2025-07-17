@@ -6,6 +6,11 @@ interface ClipDisplayerProps {
 }
 
 export const ClipDisplayer: React.FC<ClipDisplayerProps> = ({ selectedClip }) => {
+  const clip: any = {...selectedClip};
+  if (clip.type === 'audio') {
+    clip.duration_ms = clip.end_ms - clip.start_ms;
+    clip.estimated_duration_ms = (clip.audio_generation_params?.text?.length ?? 0) / 15 * 1000;
+  }
   if (!selectedClip) {
     return (
       <div className="h-full bg-gray-50 flex flex-col">
@@ -34,7 +39,7 @@ export const ClipDisplayer: React.FC<ClipDisplayerProps> = ({ selectedClip }) =>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
         <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs whitespace-pre-wrap break-words">
-          <pre className="whitespace-pre-wrap break-words">{JSON.stringify(selectedClip, null, 2)}</pre>
+          <pre className="whitespace-pre-wrap break-words">{JSON.stringify(clip, null, 2)}</pre>
         </div>
       </div>
     </div>
