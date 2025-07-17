@@ -187,7 +187,7 @@ const App: React.FC = () => {
               </div>
               
               <div className="flex-shrink-0">
-                <ChatInput onSubmit={handleSubmit} loading={loading} />
+                <ChatInput onSubmit={handleSubmit} loading={loading} onClearChat={clearChat} />
               </div>
             </div>
           </Panel>
@@ -202,10 +202,9 @@ const App: React.FC = () => {
               </div>
               
               {/* Timeline */}
-              <div className="flex-shrink-0 h-48">
+              <div className="flex-shrink-0 h-40">
                 <Timeline 
                   timeline={displayTimeline} 
-                  onClearChat={clearChat} 
                   onResetTimeline={resetTimeline}
                   onClipClick={handleClipClick}
                 />
