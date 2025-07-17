@@ -40,7 +40,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="bg-white border-b border-gray-200 px-6 py-4">
+    <div className="bg-zinc-900 border-t border-zinc-800 p-4">
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
         <div className="flex gap-3">
           <div className="flex-1">
@@ -51,14 +51,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
               placeholder={placeholder}
               disabled={loading}
               rows={1}
-              className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 h-full text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-500"
+              className="w-full resize-none rounded-lg border border-zinc-700 px-4 py-3 h-full text-sm bg-zinc-800 text-zinc-100 placeholder-zinc-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-zinc-900 disabled:text-zinc-500"
             />
           </div>
           <div className="flex items-end">
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 font-medium text-sm h-full"
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-zinc-700 disabled:cursor-not-allowed transition-colors duration-200 font-medium text-sm h-full"
             >
               {loading ? (
                 <div className="flex items-center gap-2">
@@ -72,14 +72,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         </div>
         <div className="mt-2 flex justify-between items-center">
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-zinc-400">
             Press Enter to send, Shift+Enter for new line
           </div>
           {onClearChat && (
             <button
               type="button"
               onClick={onClearChat}
-              className="text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 px-2 py-1 rounded transition-colors"
+              className="text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 px-2 py-1 rounded transition-colors"
             >
               Clear Chat
             </button>

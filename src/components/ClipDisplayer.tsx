@@ -13,12 +13,12 @@ export const ClipDisplayer: React.FC<ClipDisplayerProps> = ({ selectedClip }) =>
   }
   if (!selectedClip) {
     return (
-      <div className="h-full bg-gray-50 flex flex-col">
-        <div className="flex-shrink-0 p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Clip Details</h2>
+      <div className="h-full bg-zinc-900 flex flex-col">
+        <div className="flex-shrink-0 p-4 border-b border-zinc-800">
+          <h2 className="text-lg font-semibold text-zinc-100">Clip Details</h2>
         </div>
         <div className="flex-1 p-4">
-          <div className="text-center text-gray-500 py-8">
+          <div className="text-center text-zinc-400 py-8">
             <p>Click on a clip to view its details...</p>
           </div>
         </div>
@@ -30,15 +30,15 @@ export const ClipDisplayer: React.FC<ClipDisplayerProps> = ({ selectedClip }) =>
   const duration = selectedClip.end_ms - selectedClip.start_ms;
 
   return (
-    <div className="h-full bg-gray-50 flex flex-col">
-      <div className="flex-shrink-0 p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-800">Clip Details</h2>
-        <p className="text-sm text-gray-600 mt-1">
+    <div className="h-full bg-zinc-900 flex flex-col">
+      <div className="flex-shrink-0 p-4 border-b border-zinc-800">
+        <h2 className="text-lg font-semibold text-zinc-100">Clip Details</h2>
+        <p className="text-sm text-zinc-400 mt-1">
           {clipType} Clip • {duration}ms • {selectedClip.speaker || 'No speaker'}
         </p>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs whitespace-pre-wrap break-words">
+        <div className="bg-zinc-950 text-emerald-400 p-4 rounded-lg font-mono text-xs whitespace-pre-wrap break-words border border-zinc-800">
           <pre className="whitespace-pre-wrap break-words">{JSON.stringify(clip, null, 2)}</pre>
         </div>
       </div>

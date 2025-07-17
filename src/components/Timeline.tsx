@@ -24,20 +24,20 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline, onResetTimeline, o
   const getLeft = (start: number) => (start / maxEnd) * 100;
 
   return (
-    <div className="h-full bg-gradient-to-br from-gray-50 to-white border-t border-gray-200 flex flex-col">
-      <div className="flex-shrink-0 p-2 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
+    <div className="h-full bg-zinc-900 border-t border-zinc-800 flex flex-col">
+      <div className="flex-shrink-0 p-2 border-b border-zinc-800 bg-zinc-950">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-            <h2 className="text-sm font-semibold text-gray-800">Timeline</h2>
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+            <h2 className="text-sm font-semibold text-zinc-200">Timeline</h2>
+            <span className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded-full">
               {msToSec(maxEnd)}
             </span>
           </div>
           <div className="flex gap-1">
             <button
               onClick={onResetTimeline}
-              className="px-2 py-1 text-xs border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
+              className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
             >
               Reset
             </button>

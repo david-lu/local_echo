@@ -169,18 +169,18 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
+    <div className="h-screen flex flex-col bg-zinc-950">
       <div className="flex-1 flex flex-col min-h-0">
         <PanelGroup direction="horizontal">
           <Panel defaultSize={50} minSize={30}>
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col bg-zinc-900">
               <div className="flex-1 overflow-hidden">
                 <div className="h-full max-w-4xl mx-auto">
                   <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
                   
                   {error && (
-                    <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
-                      <p className="text-red-800">{error}</p>
+                    <div className="mt-4 bg-red-900/50 border border-red-700 rounded-md p-4">
+                      <p className="text-red-300">{error}</p>
                     </div>
                   )}
                 </div>
@@ -192,10 +192,10 @@ const App: React.FC = () => {
             </div>
           </Panel>
           
-          <PanelResizeHandle className="w-1 bg-gray-300 hover:bg-gray-400 transition-colors" />
+          <PanelResizeHandle className="w-1 bg-zinc-700 hover:bg-zinc-600 transition-colors" />
           
           <Panel defaultSize={50} minSize={40}>
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col bg-zinc-900">
               {/* ClipDisplayer */}
               <div className="flex-1 min-h-0">
                 <ClipDisplayer selectedClip={selectedClip} />

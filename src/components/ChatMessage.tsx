@@ -14,10 +14,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
       <div
         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
           isUser
-            ? 'bg-indigo-600 text-white'
+            ? 'bg-blue-600 text-white'
             : isSystem
-            ? 'bg-white text-gray-900 border border-gray-200'
-            : 'bg-gray-100 text-gray-700'
+            ? 'bg-zinc-800 text-zinc-100 border border-zinc-700'
+            : 'bg-zinc-700 text-zinc-100'
         }`}
       >
         <div className="text-sm font-medium mb-1">
@@ -27,11 +27,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         
         {/* Display mutation descriptions if they exist */}
         {isSystem && message.mutations && message.mutations.length > 0 && (
-          <div className="mt-2 pt-2 border-t border-gray-200">
-            <div className="text-xs font-medium text-gray-600 mb-1">Timeline Changes:</div>
+          <div className="mt-2 pt-2 border-t border-zinc-700">
+            <div className="text-xs font-medium text-zinc-400 mb-1">Timeline Changes:</div>
             <div className="space-y-1">
               {message.mutations.map((mutation, index) => (
-                <div key={index} className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded">
+                <div key={index} className="text-xs text-zinc-400 bg-zinc-900 px-2 py-1 rounded">
                   {mutation.description}
                 </div>
               ))}
@@ -39,7 +39,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
           </div>
         )}
         
-        <div className={`text-xs mt-1 ${isUser ? 'text-indigo-200' : 'text-gray-500'}`}>
+        <div className={`text-xs mt-1 ${isUser ? 'text-blue-200' : 'text-zinc-400'}`}>
           {message.timestamp}
         </div>
       </div>

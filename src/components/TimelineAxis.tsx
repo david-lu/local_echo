@@ -12,9 +12,9 @@ export const TimelineAxis: React.FC<TimelineAxisProps> = ({ maxEnd }) => {
   return (
     <div className="flex items-center gap-2 mb-2 h-6">
       <div className="w-12 flex-shrink-0" />
-      <div className="relative flex-1 h-3">
+      <div className="relative flex-1 h-3 bg-zinc-800 border border-zinc-700 rounded">
         {/* Main timeline line */}
-        <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-gray-400 rounded-full" />
+        <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-zinc-600 rounded-full" />
         
         {/* Second markings */}
         {secondMarkings.map((second) => {
@@ -22,7 +22,7 @@ export const TimelineAxis: React.FC<TimelineAxisProps> = ({ maxEnd }) => {
           return (
             <div
               key={second}
-              className="absolute top-0 bottom-0 w-px bg-gray-400"
+              className="absolute top-0 bottom-0 w-px bg-zinc-600"
               style={{ left: `${position}%` }}
             >
             
@@ -37,7 +37,7 @@ export const TimelineAxis: React.FC<TimelineAxisProps> = ({ maxEnd }) => {
             return (
               <div
                 key={second}
-                className="absolute text-xs text-gray-500 font-medium"
+                className="absolute text-xs text-zinc-400 font-medium"
                 style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
               >
                 {second}
