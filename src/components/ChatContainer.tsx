@@ -22,8 +22,8 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
   const displayMessages = partialMessage ? [...messages, partialMessage] : messages;
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50 rounded-lg border border-gray-200">
-      <div className="p-4 space-y-4">
+    <div className="h-full flex flex-col bg-gray-50 rounded-lg border border-gray-200">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             <p>Start a conversation about your timeline...</p>

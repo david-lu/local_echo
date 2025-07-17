@@ -162,48 +162,35 @@ const App: React.FC = () => {
   const displayTimeline = partialMessage ? applyMutations(currentTimeline, (partialMessage.mutations ?? []).slice(0, -1)) : currentTimeline;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-xl font-semibold text-gray-900">Timeline Editor</h1>
-            <div className="flex gap-2">
-              <button
-                onClick={clearChat}
-                className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Clear Chat
-              </button>
-              <button
-                onClick={resetTimeline}
-                className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Reset Timeline
-              </button>
+    <div className="h-screen flex flex-col bg-gray-100">
+      <div className="flex-1 flex flex-col min-h-0">
+        {/* Chat and Timeline Container */}
+        <div className="flex-1 flex min-h-0">
+          {/* Chat Section */}
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="flex-1 overflow-hidden">
+              <div className="h-full max-w-4xl mx-auto py-4 px-4">
+                <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
+                
+                {error && (
+                  <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
+                    <p className="text-red-800">{error}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex-shrink-0">
+              <ChatInput onSubmit={handleSubmit} loading={loading} />
             </div>
           </div>
-        </div>
-      </header>
 
-      <main className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto py-6 px-4">
-            <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
-            
-            {error && (
-              <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-4">
-                <p className="text-red-800">{error}</p>
-              </div>
-            )}
+          {/* Timeline Section */}
+          <div className="flex-1 min-w-0">
+            <Timeline timeline={displayTimeline} onClearChat={clearChat} onResetTimeline={resetTimeline} />
           </div>
         </div>
-        
-        <ChatInput onSubmit={handleSubmit} loading={loading} />
-      </main>
-      
-      <footer className="w-full bg-transparent">
-        <Timeline timeline={displayTimeline} />
-      </footer>
+      </div>
     </div>
   );
 };
