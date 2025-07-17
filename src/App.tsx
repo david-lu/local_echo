@@ -202,7 +202,7 @@ const App: React.FC = () => {
               </div>
               
               {/* Timeline */}
-              <div className="flex-shrink-0 h-40">
+              <div className="flex-shrink-0 h-44">
                 <Timeline 
                   timeline={displayTimeline} 
                   onResetTimeline={resetTimeline}
