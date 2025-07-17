@@ -1,0 +1,230 @@
+{
+  "audio_track": [
+    {
+      "id": "product_intro",
+      "type": "audio",
+      "start_ms": 0,
+      "end_ms": 4000,
+      "speaker": "demo_host",
+      "audio_generation_params": {
+        "text": "Today we're excited to showcase our revolutionary AI-powered platform that transforms how teams collaborate and innovate.",
+        "speed": 1.0,
+        "stability": 0.85
+      },
+      "audio_task_id": "task_demo_intro_001",
+      "audio_asset_id": "asset_demo_intro_001"
+    },
+    {
+      "id": "feature_overview",
+      "type": "audio",
+      "start_ms": 5000,
+      "end_ms": 12000,
+      "speaker": "product_manager",
+      "audio_generation_params": {
+        "text": "Our platform combines real-time collaboration, intelligent automation, and predictive analytics. Let me walk you through the key features that set us apart from traditional solutions.",
+        "speed": 0.9,
+        "stability": 0.9
+      },
+      "audio_task_id": "task_feature_001",
+      "audio_asset_id": "asset_feature_001"
+    },
+    {
+      "id": "collaboration_demo",
+      "type": "audio",
+      "start_ms": 13000,
+      "end_ms": 22000,
+      "speaker": "demo_host",
+      "audio_generation_params": {
+        "text": "Watch as team members from different locations collaborate in real-time. The AI assistant suggests improvements, identifies potential issues, and helps maintain consistency across all documents.",
+        "speed": 0.95,
+        "stability": 0.88
+      },
+      "audio_task_id": "task_collab_001",
+      "audio_asset_id": "asset_collab_001"
+    },
+    {
+      "id": "automation_showcase",
+      "type": "audio",
+      "start_ms": 23000,
+      "end_ms": 32000,
+      "speaker": "tech_lead",
+      "audio_generation_params": {
+        "text": "The automation engine learns from your team's patterns and automates repetitive tasks. It can generate reports, schedule meetings, and even predict project timelines with remarkable accuracy.",
+        "speed": 0.85,
+        "stability": 0.92
+      },
+      "audio_task_id": "task_automation_001",
+      "audio_asset_id": "asset_automation_001"
+    },
+    {
+      "id": "analytics_demo",
+      "type": "audio",
+      "start_ms": 33000,
+      "end_ms": 42000,
+      "speaker": "data_scientist",
+      "audio_generation_params": {
+        "text": "Our analytics dashboard provides unprecedented insights into team performance, project health, and productivity trends. The AI identifies patterns that humans might miss.",
+        "speed": 0.9,
+        "stability": 0.9
+      },
+      "audio_task_id": "task_analytics_001",
+      "audio_asset_id": "asset_analytics_001"
+    },
+    {
+      "id": "integration_demo",
+      "type": "audio",
+      "start_ms": 43000,
+      "end_ms": 52000,
+      "speaker": "demo_host",
+      "audio_generation_params": {
+        "text": "Seamless integration with your existing tools means no disruption to your workflow. Connect with Slack, Microsoft Teams, Jira, and over 50 other popular platforms.",
+        "speed": 0.95,
+        "stability": 0.87
+      },
+      "audio_task_id": "task_integration_001",
+      "audio_asset_id": "asset_integration_001"
+    },
+    {
+      "id": "pricing_announcement",
+      "type": "audio",
+      "start_ms": 53000,
+      "end_ms": 60000,
+      "speaker": "sales_director",
+      "audio_generation_params": {
+        "text": "Starting today, we're offering a special launch price with 30% off for the first year. Plus, we're including premium support and custom onboarding for all early adopters.",
+        "speed": 1.0,
+        "stability": 0.85
+      },
+      "audio_task_id": "task_pricing_001",
+      "audio_asset_id": "asset_pricing_001"
+    }
+  ],
+  "visual_track": [
+    {
+      "id": "product_logo",
+      "type": "visual",
+      "start_ms": 0,
+      "end_ms": 4000,
+      "speaker": "demo_host",
+      "image_generation_params": {
+        "type": "text_to_image",
+        "ai_model_id": "dall-e-3",
+        "prompt": "Modern tech company logo with 'InnovateAI' branding, featuring clean typography and subtle AI-inspired design elements on a gradient background",
+        "aspect_ratio": "16:9"
+      },
+      "image_task_id": "task_logo_001",
+      "image_asset_id": "asset_logo_001",
+      "video_generation_params": null,
+      "video_task_id": null,
+      "video_asset_id": null
+    },
+    {
+      "id": "platform_overview",
+      "type": "visual",
+      "start_ms": 5000,
+      "end_ms": 12000,
+      "speaker": "product_manager",
+      "image_generation_params": {
+        "type": "text_to_image",
+        "ai_model_id": "dall-e-3",
+        "prompt": "Dashboard overview showing multiple connected modules: collaboration, automation, analytics, and integrations with status indicators and key metrics",
+        "aspect_ratio": "16:9"
+      },
+      "image_task_id": "task_overview_001",
+      "image_asset_id": "asset_overview_001",
+      "video_generation_params": null,
+      "video_task_id": null,
+      "video_asset_id": null
+    },
+    {
+      "id": "real_time_collaboration",
+      "type": "visual",
+      "start_ms": 13000,
+      "end_ms": 22000,
+      "speaker": "demo_host",
+      "image_generation_params": null,
+      "image_task_id": null,
+      "image_asset_id": null,
+      "video_generation_params": {
+        "type": "video",
+        "ai_model_id": "sora",
+        "description": "Screen recording showing multiple users editing a document simultaneously, with AI suggestions appearing in real-time, cursor movements, and chat bubbles",
+        "aspect_ratio": "16:9"
+      },
+      "video_task_id": "task_collab_video_001",
+      "video_asset_id": "asset_collab_video_001"
+    },
+    {
+      "id": "automation_workflow",
+      "type": "visual",
+      "start_ms": 23000,
+      "end_ms": 32000,
+      "speaker": "tech_lead",
+      "image_generation_params": null,
+      "image_task_id": null,
+      "image_asset_id": null,
+      "video_generation_params": {
+        "type": "video",
+        "ai_model_id": "sora",
+        "description": "Animated workflow diagram showing data flowing through automated processes, with progress indicators, completion percentages, and success notifications",
+        "aspect_ratio": "16:9"
+      },
+      "video_task_id": "task_workflow_001",
+      "video_asset_id": "asset_workflow_001"
+    },
+    {
+      "id": "analytics_dashboard",
+      "type": "visual",
+      "start_ms": 33000,
+      "end_ms": 42000,
+      "speaker": "data_scientist",
+      "image_generation_params": {
+        "type": "text_to_image",
+        "ai_model_id": "dall-e-3",
+        "prompt": "Interactive analytics dashboard with charts, graphs, and KPIs showing team performance metrics, project timelines, and productivity trends",
+        "aspect_ratio": "16:9"
+      },
+      "image_task_id": "task_dashboard_001",
+      "image_asset_id": "asset_dashboard_001",
+      "video_generation_params": null,
+      "video_task_id": null,
+      "video_asset_id": null
+    },
+    {
+      "id": "integration_ecosystem",
+      "type": "visual",
+      "start_ms": 43000,
+      "end_ms": 52000,
+      "speaker": "demo_host",
+      "image_generation_params": {
+        "type": "text_to_image",
+        "ai_model_id": "dall-e-3",
+        "prompt": "Integration hub showing connected platforms like Slack, Teams, Jira, GitHub, and other tools with connection status and data flow indicators",
+        "aspect_ratio": "16:9"
+      },
+      "image_task_id": "task_integration_001",
+      "image_asset_id": "asset_integration_001",
+      "video_generation_params": null,
+      "video_task_id": null,
+      "video_asset_id": null
+    },
+    {
+      "id": "pricing_slide",
+      "type": "visual",
+      "start_ms": 53000,
+      "end_ms": 60000,
+      "speaker": "sales_director",
+      "image_generation_params": {
+        "type": "text_to_image",
+        "ai_model_id": "dall-e-3",
+        "prompt": "Pricing table showing different tiers with features, special launch discount highlighted, and call-to-action buttons for sign-up",
+        "aspect_ratio": "16:9"
+      },
+      "image_task_id": "task_pricing_001",
+      "image_asset_id": "asset_pricing_001",
+      "video_generation_params": null,
+      "video_task_id": null,
+      "video_asset_id": null
+    }
+  ]
+} 

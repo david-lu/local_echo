@@ -40,7 +40,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
         )}
         
         <div className={`text-xs mt-1 ${isUser ? 'text-blue-200' : 'text-zinc-400'}`}>
-          {message.timestamp}
+          {new Date(parseInt(message.timestamp)).toLocaleString()}
         </div>
       </div>
     </div>

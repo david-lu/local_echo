@@ -8,7 +8,7 @@ import ClipDisplayer from './components/ClipDisplayer';
 import { Message, SystemMessageSchema, UserMessage, SystemMessage, AudioClip, VisualClip } from './type';
 import { AGENT_PROMPT, getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
-import timelineJson from './sampleTimeline.json';
+import timelineJson from './data/sampleTimeline.json';
 import { Timeline as TimelineType } from './type';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { applyMutations } from './mutationApplier';
