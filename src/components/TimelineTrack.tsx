@@ -27,11 +27,12 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   onClipClick
 }) => {
   return (
-    <div className="flex items-center gap-3 mb-1">
-      <div className={`w-28 text-right pr-3 text-sm font-medium ${trackColor} select-none`}>
-        {trackLabel}
+    <div className="flex items-center gap-2">
+      <div className={`w-12 text-right pr-2 text-xs font-semibold ${trackColor} select-none flex items-center justify-end gap-1`}>
+        <span>{icon}</span>
+        <span>{trackLabel}</span>
       </div>
-      <div className="relative flex-1 h-8 bg-gray-50 border border-gray-200 overflow-visible" style={{ zIndex }}>
+      <div className="relative flex-1 h-8 bg-white rounded-lg border border-gray-200 shadow-sm overflow-visible" style={{ zIndex }}>
         {clips.map((clip, i) => {
           const startPercent = getLeft(clip.start_ms);
           const widthPercent = getWidth(clip.start_ms, clip.end_ms);

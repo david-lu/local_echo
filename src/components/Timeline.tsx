@@ -28,35 +28,41 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline, onClearChat, onRes
   const secondMarkings = Array.from({ length: totalSeconds + 1 }, (_, i) => i);
 
   return (
-    <div className="h-full bg-white flex flex-col">
-      <div className="flex-shrink-0 p-4 border-b border-gray-200">
+    <div className="h-full bg-gradient-to-br from-gray-50 to-white border-t border-gray-200 flex flex-col">
+      <div className="flex-shrink-0 p-2 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-800">Timeline</h2>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <h2 className="text-sm font-semibold text-gray-800">Timeline</h2>
+            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+              {msToSec(maxEnd)}
+            </span>
+          </div>
+          <div className="flex gap-1">
             <button
               onClick={onClearChat}
-              className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 text-sm"
+              className="px-2 py-1 text-xs border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
             >
               Clear Chat
             </button>
             <button
               onClick={onResetTimeline}
-              className="px-3 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 text-sm"
+              className="px-2 py-1 text-xs border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
             >
-              Reset Timeline
+              Reset
             </button>
           </div>
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto p-4">
-        <div className="flex flex-col gap-1">
-          {/* Timeline markers at top */}
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-20 flex-shrink-0" />
-            <div className="relative flex-1 h-6">
+      <div className="flex-1 p-2">
+        <div className="space-y-2">
+          {/* Timeline markers */}
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-12 flex-shrink-0" />
+            <div className="relative flex-1 h-6 bg-white rounded-lg border border-gray-200 shadow-sm">
               {/* Main timeline line */}
-              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-gray-300 rounded-full" />
+              <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-gradient-to-r from-gray-200 to-gray-300 rounded-full" />
               
               {/* Second markings */}
               {secondMarkings.map((second) => {
@@ -67,25 +73,25 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline, onClearChat, onRes
                     className="absolute top-0 bottom-0 w-px bg-gray-200"
                     style={{ left: `${position}%` }}
                   >
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-2 bg-gray-400 rounded" />
+                    <div className="absolute top-0.5 left-1/2 transform -translate-x-1/2 w-0.5 h-1 bg-gray-400 rounded-full" />
                   </div>
                 );
               })}
               
               {/* Time labels */}
-              <div className="flex justify-between absolute left-0 right-0 top-full mt-1 text-xs text-gray-500">
+              <div className="flex justify-between absolute left-0 right-0 top-full mt-0.5 text-xs text-gray-500 font-medium">
                 <span>0s</span>
                 <span>{msToSec(maxEnd)}</span>
               </div>
               
               {/* Second labels */}
-              <div className="absolute left-0 right-0 top-full mt-3">
+              <div className="absolute left-0 right-0 top-full mt-2">
                 {secondMarkings.slice(1, -1).map((second) => {
                   const position = (second * 1000 / maxEnd) * 100;
                   return (
                     <div
                       key={second}
-                      className="absolute text-xs text-gray-400"
+                      className="absolute text-xs text-gray-400 font-medium"
                       style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
                     >
                       {second}s
