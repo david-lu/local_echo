@@ -7,7 +7,6 @@ interface TimelineTrackProps {
   clips: (AudioClipType | VisualClipType)[];
   trackLabel: string;
   trackColor: string;
-  icon: string;
   maxEnd: number;
   zIndex: number;
   getWidth: (start: number, end: number) => number;
@@ -19,7 +18,6 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   clips,
   trackLabel,
   trackColor,
-  icon,
   maxEnd,
   zIndex,
   getWidth,
@@ -29,7 +27,6 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   return (
     <div className="flex items-center gap-2">
       <div className={`w-12 text-right pr-2 text-xs font-semibold ${trackColor} select-none flex items-center justify-end gap-1`}>
-        <span>{icon}</span>
         <span>{trackLabel}</span>
       </div>
       <div className="relative flex-1 h-8 bg-white rounded-lg border border-gray-200 shadow-sm overflow-visible" style={{ zIndex }}>

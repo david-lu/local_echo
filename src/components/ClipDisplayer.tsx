@@ -33,8 +33,8 @@ export const ClipDisplayer: React.FC<ClipDisplayerProps> = ({ selectedClip }) =>
         </p>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs whitespace-pre-wrap overflow-auto">
-          <pre>{JSON.stringify(selectedClip, null, 2)}</pre>
+        <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-xs whitespace-pre-wrap break-words">
+          <pre className="whitespace-pre-wrap break-words">{JSON.stringify(selectedClip, null, 2)}</pre>
         </div>
       </div>
     </div>
