@@ -91,15 +91,28 @@ const App: React.FC = () => {
       const conversationHistory = buildConversationHistory(currentTimeline, messages, userMessage);
       console.log('CONVERSATION HISTORY', conversationHistory);
 
-      const chatResponse = await client.chat.completions.parse({
+      const stream = client.chat.completions.stream({
         // model: "gpt-4o-mini",
         model: "o3-2025-04-16",
         messages: conversationHistory,
         max_completion_tokens: 10000,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
+      })
+      .on("refusal.done", () => console.log("request refused"))
+      .on("content.delta", ({ snapshot, parsed }) => {
+        console.log("content:", snapshot);
+        console.log("parsed:", parsed);
+        console.log();
+      })
+      .on("content.done", (props) => {
+        console.log(props);
       });
 
-      const response = chatResponse.choices[0]?.message;
+      await stream.done();
+
+      const finalCompletion = await stream.finalChatCompletion();
+
+      const response = finalCompletion.choices[0]?.message;
       if (response && response.content) {
         // The response is parsed according to our schema, so we can access the content
         const systemMessage = response.parsed!;
