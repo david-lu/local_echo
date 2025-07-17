@@ -4,7 +4,7 @@ import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
 import ChatInput from './components/ChatInput';
 import { Message, SystemMessageSchema, UserMessage, SystemMessage } from './type';
-import { getTimelineEditorPrompt } from './prompts';
+import { AGENT_PROMPT, getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './sampleTimeline.json';
 import { Timeline as TimelineType } from './type';
@@ -59,9 +59,13 @@ const App: React.FC = () => {
     return [
       {
         role: "system" as const,
-        content: getTimelineEditorPrompt(timeline)
+        content: AGENT_PROMPT
       },
-      ...messages
+      ...messages,
+      {
+        role: "user" as const,
+        content: userMessage + "\n\n" + getTimelineEditorPrompt(timeline)
+      }
     ];
   };
 
