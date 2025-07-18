@@ -58,7 +58,7 @@ const App: React.FC = () => {
       role: role,
       content,
       timestamp: Date.now().toString(),
-      mutations: mutations || []
+      mutations: mutations
     }]);
   };
 
@@ -101,13 +101,14 @@ const App: React.FC = () => {
       const stream = client.chat.completions.stream({
         // model: "gpt-4o",
         // max_tokens: 10000,
-        model: "o4-mini",
+        model: "o3-mini",
         // temperature: 0.5,
         reasoning_effort: "low",
         max_completion_tokens: 10000,
         messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
         store: true,
+        stop: ["\n\n", "\t\t"],
       })
       .on("refusal.done", () => console.log("request refused"))
       .on("content.delta", ({ snapshot, parsed }) => {
