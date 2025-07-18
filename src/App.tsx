@@ -99,9 +99,12 @@ const App: React.FC = () => {
         // model: "gpt-4o",
         // max_tokens: 10000,
         model: "o4-mini",
+        // temperature: 0.5,
+        reasoning_effort: "high",
         max_completion_tokens: 5000,
         messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
+        store: true,
       })
       .on("refusal.done", () => console.log("request refused"))
       .on("content.delta", ({ snapshot, parsed }) => {
@@ -174,17 +177,15 @@ const App: React.FC = () => {
         <PanelGroup direction="horizontal">
           <Panel defaultSize={50} minSize={30}>
             <div className="h-full flex flex-col bg-zinc-900">
-              <div className="flex-1 overflow-hidden">
-                <div className="h-full max-w-4xl mx-auto">
-                  <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
-                  
-                  {error && (
-                    <div className="mt-4 bg-red-900/50 border border-red-700 rounded-md p-4">
-                      <p className="text-red-300">{error}</p>
-                    </div>
-                  )}
-                </div>
+              <div className="flex-1 min-h-0">
+                <ChatContainer messages={messages} loading={loading} partialMessage={partialMessage} />
               </div>
+              
+              {error && (
+                <div className="mx-4 mb-4 bg-red-900/50 border border-red-700 rounded-md p-4">
+                  <p className="text-red-300">{error}</p>
+                </div>
+              )}
               
               <div className="flex-shrink-0">
                 <ChatInput onSubmit={handleSubmit} loading={loading} onClearChat={clearChat} />
