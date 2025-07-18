@@ -108,7 +108,7 @@ const App: React.FC = () => {
         messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
         store: true,
-        stop: ["\n\n", "\t\t"],
+        stop: ["}\n\n", "}\t\t"],
       })
       .on("refusal.done", () => console.log("request refused"))
       .on("content.delta", ({ snapshot, parsed }) => {
