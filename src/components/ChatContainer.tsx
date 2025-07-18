@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
+import LoadingMessage from './LoadingMessage';
 import { Message, SystemMessage } from '../type';
 
 interface ChatContainerProps {
@@ -34,14 +35,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
           ))
         )}
         
-        {loading && !partialMessage && (
-          <div className="flex justify-start mb-4">
-            <div className="bg-zinc-800 text-zinc-200 border border-zinc-700 rounded-lg px-4 py-2">
-              <div className="text-sm font-medium mb-1">Assistant</div>
-              <div className="text-sm text-zinc-400">Thinking...</div>
-            </div>
-          </div>
-        )}
+        {loading && !partialMessage && <LoadingMessage />}
         
         <div ref={messagesEndRef} />
       </div>
