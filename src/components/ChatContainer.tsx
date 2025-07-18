@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import ChatMessage from './ChatMessage';
+import ChatUserMessage from './ChatUserMessage';
+import ChatSystemMessage from './ChatSystemMessage';
 import LoadingMessage from './LoadingMessage';
-import { Message, SystemMessage } from '../type';
+import { Message, SystemMessage, UserMessage } from '../type';
 
 interface ChatContainerProps {
   messages: Message[];
@@ -22,6 +23,14 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
 
   const displayMessages = partialMessage ? [...messages, partialMessage] : messages;
 
+  const renderMessage = (message: Message) => {
+    if (message.role === 'user') {
+      return <ChatUserMessage key={message.id} message={message as UserMessage} />;
+    } else {
+      return <ChatSystemMessage key={message.id} message={message as SystemMessage} />;
+    }
+  };
+
   return (
     <div className="h-full w-full flex flex-col">
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-6">
@@ -31,9 +40,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
           </div>
         ) : (
           <div className="space-y-6">
-            {displayMessages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
+            {displayMessages.map(renderMessage)}
           </div>
         )}
         

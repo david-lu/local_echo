@@ -125,20 +125,23 @@ export const ModifyAudioMutationSchema = MutationSchema.extend({
 }).describe("Mutation to modify an existing audio clip");
 export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
 
-// Chat message schemas
-export const UserMessageSchema = z.object({
-  id: z.string().describe("Unique identifier for the message"),
-  role: z.literal('user').describe("Message role indicating it's from the user"),
+export const MessageSchema = z.object({
+  id: z.string().nullable().describe("Unique identifier for the message"),
+  role: z.enum(['user', 'system']).describe("Message role indicating it's from the user"),
   content: z.string().describe("Text content of the user's message"),
-  timestamp: z.string().describe("ISO timestamp when the message was created")
+  timestamp: z.string().nullable().describe("ISO timestamp when the message was created")
+}).describe("User message in the chat conversation");
+export type Message = z.infer<typeof MessageSchema>;
+
+// Chat message schemas
+export const UserMessageSchema = MessageSchema.extend({
+  role: z.literal('user').describe("Message role indicating it's from the user"),
 }).describe("User message in the chat conversation");
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 
-export const SystemMessageSchema = z.object({
-  id: z.string().describe("Unique identifier for the message"),
+export const SystemMessageSchema = MessageSchema.extend({
   role: z.literal('system').describe("Message role indicating it's from the AI system"),
   content: z.string().describe("Text content of the AI's response"),
-  timestamp: z.string().describe("ISO timestamp when the message was created"),
   mutations: z.array(z.union([
     AddVisualMutationSchema,
     AddAudioMutationSchema,
@@ -146,13 +149,6 @@ export const SystemMessageSchema = z.object({
     RemoveAudioMutationSchema,
     ModifyVisualMutationSchema,
     ModifyAudioMutationSchema
-  ])).nullable().describe("Array of timeline mutations to apply, null if no changes needed")
+  ])).describe("Array of timeline mutations to apply. Can be empty if no changes needed")
 }).describe("System message from AI with optional timeline mutations");
 export type SystemMessage = z.infer<typeof SystemMessageSchema>;
-
-// Union of all message types
-export const MessageSchema = z.discriminatedUnion("role", [
-  UserMessageSchema,
-  SystemMessageSchema
-]).describe("Union of all message types in the chat conversation");
-export type Message = z.infer<typeof MessageSchema>;

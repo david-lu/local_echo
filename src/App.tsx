@@ -12,6 +12,9 @@ import timelineJson from './data/sampleTimeline.json';
 import { Timeline as TimelineType } from './type';
 import { zodResponseFormat } from 'openai/helpers/zod';
 import { applyMutations } from './mutationApplier';
+import { v4 as uuidv4 } from 'uuid';
+
+console.log('FORMAT', zodResponseFormat(SystemMessageSchema, "message"));
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -51,11 +54,11 @@ const App: React.FC = () => {
 
   const addMessage = (role: 'user' | 'system', content: string, mutations?: any[]) => {
     setMessages(prev => [...prev, {
-      id: Date.now().toString(),
+      id: uuidv4(),
       role: role,
       content,
       timestamp: Date.now().toString(),
-      mutations: mutations || null
+      mutations: mutations || []
     }]);
   };
 
@@ -100,8 +103,8 @@ const App: React.FC = () => {
         // max_tokens: 10000,
         model: "o4-mini",
         // temperature: 0.5,
-        reasoning_effort: "high",
-        max_completion_tokens: 5000,
+        reasoning_effort: "low",
+        max_completion_tokens: 10000,
         messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
         store: true,
@@ -124,6 +127,7 @@ const App: React.FC = () => {
 
       const response = finalCompletion.choices[0]?.message;
       if (response && response.content) {
+        console.log('RESPONSE', response);
         // The response is parsed according to our schema, so we can access the content
         const systemMessage = response.parsed!;
         console.log('SYSTEM MESSAGE', systemMessage);
