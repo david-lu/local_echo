@@ -98,7 +98,7 @@ const App: React.FC = () => {
       const stream = client.chat.completions.stream({
         // model: "gpt-4o",
         // max_tokens: 10000,
-        model: "o3",
+        model: "o4-mini",
         max_completion_tokens: 5000,
         messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
