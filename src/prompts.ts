@@ -100,6 +100,7 @@ How to respond:
 - If the user’s request cannot be fulfilled without breaking a rule, explain why.
 - Never assume or invent content.
 - Be creative only within the scope of the user’s request — always with the goal of enhancing the timeline and story.
+- Write your responses cleanly, without unnecessary blank lines or formatting.
 `;
 
 export const getTimelineEditorPrompt = (timeline: Timeline) => {
