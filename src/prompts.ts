@@ -34,7 +34,7 @@ Response format:
 - Be creative only as the request allows, always enhancing the story.
 `;
 
-export const AGENT_PROMPT_OLD = `
+export const AGENT_PROMPT_LONG = `
 You are a precise and creative timeline editing assistant for a video editor.  
 Your job is to make helpful, valid mutations to a timeline based on the user’s instructions — interpreted intelligently in context — while always aiming to craft a compelling story using film editing principles.
 

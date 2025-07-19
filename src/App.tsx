@@ -6,7 +6,7 @@ import ChatContainer from './components/ChatContainer';
 import ChatInput from './components/ChatInput';
 import ClipDisplayer from './components/ClipDisplayer';
 import { Message, SystemMessageSchema, UserMessage, SystemMessage, AudioClip, VisualClip } from './type';
-import { AGENT_PROMPT, getTimelineEditorPrompt } from './prompts';
+import { AGENT_PROMPT, AGENT_PROMPT_LONG, getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './data/sampleTimeline.json';
 import { Timeline as TimelineType } from './type';
@@ -66,7 +66,7 @@ const App: React.FC = () => {
     return [
       {
         role: "system" as const,
-        content: AGENT_PROMPT
+        content: AGENT_PROMPT_LONG
       },
       ...messages,
       {
@@ -108,7 +108,7 @@ const App: React.FC = () => {
         messages: conversationHistory,
         response_format: zodResponseFormat(SystemMessageSchema, "message"),
         store: true,
-        stop: ["}\n\n", "}\t\t"],
+        stop: ["}\n\n", "}\t\t", "}   "],
       })
       .on("refusal.done", () => console.log("request refused"))
       .on("content.delta", ({ snapshot, parsed }) => {
