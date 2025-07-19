@@ -5,24 +5,23 @@ import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
 import ChatInput from './components/ChatInput';
 import ClipDisplayer from './components/ClipDisplayer';
-import { Message, SystemMessageSchema, UserMessage, SystemMessage, AudioClip, VisualClip } from './type';
+import { Message, UserMessage, AudioClip, VisualClip, AddVisualMutationSchema, AddAudioMutationSchema, ModifyAudioMutationSchema, ModifyVisualMutationSchema, RemoveAudioMutationSchema, RemoveVisualMutationSchema, Mutation, SystemMessage, ToolCall } from './type';
 import { AGENT_PROMPT, getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './data/sampleTimeline.json';
 import { Timeline as TimelineType } from './type';
-import { zodResponseFormat } from 'openai/helpers/zod';
+import { zodFunction, zodResponseFormat } from 'openai/helpers/zod';
 import { applyMutations } from './mutationApplier';
 import { v4 as uuidv4 } from 'uuid';
 
-console.log('FORMAT', zodResponseFormat(SystemMessageSchema, "message"));
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [currentTimeline, setCurrentTimeline] = useState(parseTimeline(timelineJson));
-  const [partialMessage, setPartialMessage] = useState<SystemMessage | null>(null);
   const [selectedClip, setSelectedClip] = useState<AudioClip | VisualClip | null>(null);
+  const [partialMessage, setPartialMessage] = useState<SystemMessage | null>(null);
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
@@ -76,6 +75,16 @@ const App: React.FC = () => {
     ];
   };
 
+  const acceptMutations = (changes: any[]) => {
+    console.log('ACCEPTING CHANGES', changes);
+    const updatedTimeline = applyMutations(currentTimeline, changes);
+    setCurrentTimeline(updatedTimeline);
+  }
+
+  const declineMutations = (changes: any[]) => {
+    console.log('DECLINING CHANGES', changes);
+  }
+
   const handleSubmit = async (message: string): Promise<void> => {
     if (!message.trim()) return;
     if (!apiKey) {
@@ -98,57 +107,51 @@ const App: React.FC = () => {
       const conversationHistory = buildConversationHistory(currentTimeline, messages, userMessage);
       console.log('CONVERSATION HISTORY', conversationHistory);
 
-      const stream = client.chat.completions.stream({
-        // model: "gpt-4o",
-        // max_tokens: 10000,
-        model: "o3-mini",
-        // temperature: 0.5,
-        reasoning_effort: "low",
-        max_completion_tokens: 10000,
+      const stream = client.chat.completions.create({
+        model: "gpt-4o",
+        max_tokens: 10000,
+        // model: "o4-mini",
+        // // temperature: 0.5,
+        // reasoning_effort: "low",
+        // max_completion_tokens: 10000,
         messages: conversationHistory,
-        response_format: zodResponseFormat(SystemMessageSchema, "message"),
+        parallel_tool_calls: true,
+        stream: true,
+        tools: [
+          zodFunction({name:'add_visual', parameters: AddVisualMutationSchema}),
+          zodFunction({name:'remove_visual', parameters: RemoveVisualMutationSchema}),
+          zodFunction({name:'modify_visual', parameters: ModifyVisualMutationSchema}),
+          zodFunction({name:'add_audio', parameters: AddAudioMutationSchema}),
+          zodFunction({name:'remove_audio', parameters: RemoveAudioMutationSchema}),
+          zodFunction({name:'modify_audio', parameters: ModifyAudioMutationSchema}),
+        ],
         store: true,
-        stop: ["}\n\n", "}\t\t"],
       })
-      .on("refusal.done", () => console.log("request refused"))
-      .on("content.delta", ({ snapshot, parsed }) => {
-        // console.log("content:", snapshot);
-        console.log("NEW parsed:", parsed);
-        if (parsed && typeof parsed === 'object' && 'content' in parsed) {
-          setPartialMessage(parsed as SystemMessage);
-        }
-        console.log();
-      })
-      .on("content.done", (props) => {
-        console.log(props);
-      });
 
-      await stream.done();
-      const finalCompletion = await stream.finalChatCompletion();
+      let newPartialMessage: SystemMessage = {
+        id: uuidv4(),
+        role: 'system',
+        content: '',
+        timestamp: Date.now().toString(),
+        tool_calls: {}
+      };
 
-      const response = finalCompletion.choices[0]?.message;
-      if (response && response.content) {
-        console.log('RESPONSE', response);
-        // The response is parsed according to our schema, so we can access the content
-        const systemMessage = response.parsed!;
-        console.log('SYSTEM MESSAGE', systemMessage);
-        addMessage('system', systemMessage.content, systemMessage.mutations || undefined);
-        
-        // Apply mutations to the timeline if any exist
-        if (systemMessage.mutations && systemMessage.mutations.length > 0) {
-          try {
-            const updatedTimeline = applyMutations(currentTimeline, systemMessage.mutations);
-            setCurrentTimeline(updatedTimeline);
-            console.log('Applied mutations:', systemMessage.mutations);
-          } catch (mutationError) {
-            console.error('Error applying mutations:', mutationError);
-            setError(`Failed to apply timeline changes: ${mutationError instanceof Error ? mutationError.message : 'Unknown error'}`);
+      for await (const chunk of await stream) {
+          const toolCalls = chunk.choices[0].delta.tool_calls || [];
+          console.log(chunk.choices[0].delta)
+          newPartialMessage!.content = (newPartialMessage?.content || '') + (chunk.choices[0].delta.content ?? '');
+
+          for (const toolCall of toolCalls) {
+            const { index } = toolCall;
+
+            if (!newPartialMessage!.tool_calls[index]) {
+              newPartialMessage!.tool_calls[index] = toolCall as ToolCall;
+            }
+    
+            newPartialMessage!.tool_calls[index].function.arguments += toolCall.function?.arguments;
           }
-        }
-        
-        console.log('RESPONSE', response);
-      } else {
-        throw new Error('No response received from OpenAI');
+          setPartialMessage(newPartialMessage)
+          console.log(partialMessage)
       }
 
     } catch (error: any) {
@@ -157,7 +160,6 @@ const App: React.FC = () => {
       addMessage('system', `Sorry, I encountered an error: ${error.message}`);
     } finally {
       setLoading(false);
-      setPartialMessage(null); // Clear partial message when stream finishes
     }
   };
 
@@ -169,8 +171,6 @@ const App: React.FC = () => {
   const clearChat = () => {
     setMessages([]);
   };
-
-  const displayTimeline = partialMessage ? applyMutations(currentTimeline, (partialMessage.mutations ?? []).slice(0, -1)) : currentTimeline;
 
   const handleClipClick = (clip: AudioClip | VisualClip) => {
     setSelectedClip(clip);
@@ -210,7 +210,7 @@ const App: React.FC = () => {
               {/* Timeline */}
               <div className="flex-shrink-0 h-44">
                 <Timeline 
-                  timeline={displayTimeline} 
+                  timeline={currentTimeline} 
                   onResetTimeline={resetTimeline}
                   onClipClick={handleClipClick}
                 />

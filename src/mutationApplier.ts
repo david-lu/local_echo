@@ -29,11 +29,13 @@ export function applyMutation(timeline: Timeline, mutation: AnyMutation): Timeli
 
   switch (mutation.type) {
     case 'add_audio':
-      newTimeline.audio_track.push(mutation.clip as AudioClip);
+      const addAudioMutation = mutation as AddAudioMutation;
+      newTimeline.audio_track.push(addAudioMutation.clip as AudioClip);
       break;
 
     case 'add_visual':
-      newTimeline.visual_track.push(mutation.clip as VisualClip);
+      const addVisualMutation = mutation as AddVisualMutation;
+      newTimeline.visual_track.push(addVisualMutation.clip as VisualClip);
       break;
 
     case 'remove_audio': {
@@ -49,14 +51,16 @@ export function applyMutation(timeline: Timeline, mutation: AnyMutation): Timeli
     }
 
     case 'modify_audio': {
-      const index = newTimeline.audio_track.findIndex(clip => clip.id === mutation.clip.id);
-      if (index !== -1) newTimeline.audio_track[index] = mutation.clip as AudioClip;
+      const modifyAudioMutation = mutation as ModifyAudioMutation;
+      const index = newTimeline.audio_track.findIndex(clip => clip.id === modifyAudioMutation.clip.id);
+      if (index !== -1) newTimeline.audio_track[index] = modifyAudioMutation.clip as AudioClip;
       break;
     }
 
     case 'modify_visual': {
-      const index = newTimeline.visual_track.findIndex(clip => clip.id === mutation.clip.id);
-      if (index !== -1) newTimeline.visual_track[index] = mutation.clip as VisualClip;
+      const modifyVisualMutation = mutation as ModifyVisualMutation;
+      const index = newTimeline.visual_track.findIndex(clip => clip.id === modifyVisualMutation.clip.id);
+      if (index !== -1) newTimeline.visual_track[index] = modifyVisualMutation.clip as VisualClip;
       break;
     }
   }

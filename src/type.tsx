@@ -139,16 +139,31 @@ export const UserMessageSchema = MessageSchema.extend({
 }).describe("User message in the chat conversation");
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 
+/**
+ * {
+    "id": "call_12345xyz",
+    "type": "function",
+    "function": {
+        "name": "get_weather",
+        "arguments": "{\"location\":\"Paris, France\"}"
+    }
+}
+ * 
+ */
+
+export const ToolCallSchema = z.object({
+  index: z.number().describe("Index of the tool call"),
+  id: z.string().describe("Unique identifier for the tool call"),
+  function: z.object({
+    name: z.string().describe("Name of the tool to call"),
+    arguments: z.string().describe("Arguments for the tool call")
+  }).describe("Function call to perform")
+}).describe("Tool call to perform");
+export type ToolCall = z.infer<typeof ToolCallSchema>;
+
 export const SystemMessageSchema = MessageSchema.extend({
   role: z.literal('system').describe("Message role indicating it's from the AI system"),
   content: z.string().describe("Text content of the AI's response"),
-  mutations: z.array(z.union([
-    AddVisualMutationSchema,
-    AddAudioMutationSchema,
-    RemoveVisualMutationSchema,
-    RemoveAudioMutationSchema,
-    ModifyVisualMutationSchema,
-    ModifyAudioMutationSchema
-  ])).describe("Array of timeline mutations to apply. Can be empty if no changes needed")
+  tool_calls: z.record(z.number(), ToolCallSchema).describe("Map of tool calls to perform"),
 }).describe("System message from AI with optional timeline mutations");
 export type SystemMessage = z.infer<typeof SystemMessageSchema>;
