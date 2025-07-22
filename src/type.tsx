@@ -163,23 +163,17 @@ export const MutationTypeSchema = z
   );
 export type MutationType = z.infer<typeof MutationTypeSchema>;
 
-export const MutationSchema = z
+export const BaseMutationSchema = z
   .object({
     type: MutationTypeSchema.describe("Type of mutation to perform"),
     description: z
       .string()
       .describe("Description of what the mutation is doing"),
-    clip: z
-      .union([AudioClipSchema, VisualClipSchema])
-      .nullable()
-      .describe(
-        "Clip data for add/modify operations, null for remove operations"
-      ),
   })
-  .describe("Base mutation schema with type and optional clip data");
-export type Mutation = z.infer<typeof MutationSchema>;
+  .describe("Base mutation schema with type and description");
+export type BaseMutation = z.infer<typeof BaseMutationSchema>;
 
-export const AddVisualMutationSchema = MutationSchema.extend({
+export const AddVisualMutationSchema = BaseMutationSchema.extend({
   type: z
     .literal("add_visual")
     .describe("Add a new visual clip to the timeline"),
@@ -187,13 +181,13 @@ export const AddVisualMutationSchema = MutationSchema.extend({
 }).describe("Mutation to add a new visual clip");
 export type AddVisualMutation = z.infer<typeof AddVisualMutationSchema>;
 
-export const AddAudioMutationSchema = MutationSchema.extend({
+export const AddAudioMutationSchema = BaseMutationSchema.extend({
   type: z.literal("add_audio").describe("Add a new audio clip to the timeline"),
   clip: AudioClipSchema.describe("Audio clip to add"),
 }).describe("Mutation to add a new audio clip");
 export type AddAudioMutation = z.infer<typeof AddAudioMutationSchema>;
 
-export const RemoveVisualMutationSchema = MutationSchema.extend({
+export const RemoveVisualMutationSchema = BaseMutationSchema.extend({
   type: z
     .literal("remove_visual")
     .describe("Remove a visual clip from the timeline"),
@@ -201,7 +195,7 @@ export const RemoveVisualMutationSchema = MutationSchema.extend({
 }).describe("Mutation to remove a visual clip by ID");
 export type RemoveVisualMutation = z.infer<typeof RemoveVisualMutationSchema>;
 
-export const RemoveAudioMutationSchema = MutationSchema.extend({
+export const RemoveAudioMutationSchema = BaseMutationSchema.extend({
   type: z
     .literal("remove_audio")
     .describe("Remove an audio clip from the timeline"),
@@ -209,13 +203,13 @@ export const RemoveAudioMutationSchema = MutationSchema.extend({
 }).describe("Mutation to remove an audio clip by ID");
 export type RemoveAudioMutation = z.infer<typeof RemoveAudioMutationSchema>;
 
-export const ModifyVisualMutationSchema = MutationSchema.extend({
+export const ModifyVisualMutationSchema = BaseMutationSchema.extend({
   type: z.literal("modify_visual").describe("Modify an existing visual clip"),
   clip: VisualClipSchema.describe("Updated visual clip data"),
 }).describe("Mutation to modify an existing visual clip");
 export type ModifyVisualMutation = z.infer<typeof ModifyVisualMutationSchema>;
 
-export const ModifyAudioMutationSchema = MutationSchema.extend({
+export const ModifyAudioMutationSchema = BaseMutationSchema.extend({
   type: z.literal("modify_audio").describe("Modify an existing audio clip"),
   clip: AudioClipSchema.describe("Updated audio clip data"),
 }).describe("Mutation to modify an existing audio clip");

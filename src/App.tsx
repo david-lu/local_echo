@@ -5,7 +5,7 @@ import Timeline from './components/Timeline';
 import ChatContainer from './components/ChatContainer';
 import ChatInput from './components/ChatInput';
 import ClipDisplayer from './components/ClipDisplayer';
-import { Message, UserMessage, AudioClip, VisualClip, AddVisualMutationSchema, AddAudioMutationSchema, ModifyAudioMutationSchema, ModifyVisualMutationSchema, RemoveAudioMutationSchema, RemoveVisualMutationSchema, Mutation, SystemMessage, ToolCall, AddAudioMutation, AddVisualMutation, ModifyAudioMutation, ModifyVisualMutation, RemoveAudioMutation, RemoveVisualMutation } from './type';
+import { Message, UserMessage, AudioClip, VisualClip, AddVisualMutationSchema, AddAudioMutationSchema, ModifyAudioMutationSchema, ModifyVisualMutationSchema, RemoveAudioMutationSchema, RemoveVisualMutationSchema, SystemMessage, ToolCall, AnyMutation } from './type';
 import { AGENT_PROMPT, getTimelineEditorPrompt } from './prompts';
 import { parseTimeline } from './timelineConverter';
 import timelineJson from './data/sampleTimeline.json';
@@ -15,29 +15,31 @@ import { applyMutations } from './mutationApplier';
 import { v4 as uuidv4 } from 'uuid';
 import { ChatCompletionMessageToolCall } from 'openai/resources/chat/completions';
 
-type TimelineMutation = AddVisualMutation | RemoveVisualMutation | ModifyVisualMutation | AddAudioMutation | RemoveAudioMutation | ModifyAudioMutation;
-
-const getMutationFromToolCall = (toolCall: ChatCompletionMessageToolCall): TimelineMutation | null => {
-  const mutation = toolCall.function.arguments;
-  if (toolCall.function.name === 'add_visual') {
-    return AddVisualMutationSchema.parse(mutation);
-  } else if (toolCall.function.name === 'remove_visual') {
-    return RemoveVisualMutationSchema.parse(mutation);
-  } else if (toolCall.function.name === 'modify_visual') {
-    return ModifyVisualMutationSchema.parse(mutation);
-  } else if (toolCall.function.name === 'add_audio') {
-    return AddAudioMutationSchema.parse(mutation);
-  } else if (toolCall.function.name === 'remove_audio') {
-    return RemoveAudioMutationSchema.parse(mutation);
-  } else if (toolCall.function.name === 'modify_audio') {
-    return ModifyAudioMutationSchema.parse(mutation);
+const getMutationFromToolCall = (toolCall: ChatCompletionMessageToolCall): AnyMutation | null => {
+  try {
+    const mutation = JSON.parse(toolCall.function.arguments);
+    if (toolCall.function.name === 'add_visual') {
+      return AddVisualMutationSchema.parse(mutation);
+    } else if (toolCall.function.name === 'remove_visual') {
+      return RemoveVisualMutationSchema.parse(mutation);
+    } else if (toolCall.function.name === 'modify_visual') {
+      return ModifyVisualMutationSchema.parse(mutation);
+    } else if (toolCall.function.name === 'add_audio') {
+      return AddAudioMutationSchema.parse(mutation);
+    } else if (toolCall.function.name === 'remove_audio') {
+      return RemoveAudioMutationSchema.parse(mutation);
+    } else if (toolCall.function.name === 'modify_audio') {
+      return ModifyAudioMutationSchema.parse(mutation);
+    }
+  } catch (error) {
+    console.error('Error parsing tool call arguments:', error);
   }
   return null;
 }
 
 
 const App: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<(Message | SystemMessage)[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [currentTimeline, setCurrentTimeline] = useState(parseTimeline(timelineJson));
@@ -72,13 +74,13 @@ const App: React.FC = () => {
     }
   };
 
-  const addMessage = (role: 'user' | 'system', content: string, mutations?: any[]) => {
+  const addMessage = (role: 'user' | 'system', content: string, mutation?: any) => {
     setMessages(prev => [...prev, {
       id: uuidv4(),
       role: role,
       content,
       timestamp: Date.now().toString(),
-      mutations: mutations
+      mutation: mutation
     }]);
   };
 
@@ -116,7 +118,7 @@ const App: React.FC = () => {
       }
 
       while (true) {
-        const mutations = partialMessages.map(m => m.mutation).filter(m => !!m);
+        const mutations = partialMessages.filter(m => !!m).map(m => m.mutation as AnyMutation);
         const newTimeline = applyMutations(currentTimeline, mutations);
         const conversationHistory = buildConversationHistory(newTimeline, messages, userMessage);
         console.log('CONVERSATION HISTORY', conversationHistory);
