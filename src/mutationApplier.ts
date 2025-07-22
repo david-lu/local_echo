@@ -4,19 +4,10 @@ import {
   VisualClip,
   AddVisualMutation,
   AddAudioMutation,
-  RemoveVisualMutation,
-  RemoveAudioMutation,
   ModifyVisualMutation,
-  ModifyAudioMutation
+  ModifyAudioMutation,
+  AnyMutation
 } from './type';
-
-type AnyMutation = 
-  | AddVisualMutation
-  | AddAudioMutation
-  | RemoveVisualMutation
-  | RemoveAudioMutation
-  | ModifyVisualMutation
-  | ModifyAudioMutation;
 
 /**
  * Applies a single mutation to the timeline

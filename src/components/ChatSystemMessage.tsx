@@ -13,15 +13,13 @@ const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {
         <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</div>
         
         {/* Display mutation descriptions if they exist */}
-        {message.tool_calls && (
+        {message.mutation && (
           <div className="mt-3 pt-3 border-t border-zinc-700">
             <div className="text-xs font-medium text-zinc-400 mb-2">Timeline Changes:</div>
             <div className="space-y-2">
-              {Object.keys(message.tool_calls).map((key) => (
-                <div key={key} className="text-xs text-zinc-400 bg-zinc-900 px-3 py-2 rounded break-words">
-                  {message.tool_calls[parseInt(key)].function.arguments}
-                </div>
-              ))}
+              <div className="text-xs text-zinc-400 bg-zinc-900 px-3 py-2 rounded break-words">
+                {message.mutation.description}
+              </div>
             </div>
           </div>
         )}
