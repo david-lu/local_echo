@@ -143,7 +143,8 @@ const App: React.FC = () => {
     systemMessages: AssistantMessage[],
     userMessage: string
   ) => {
-    const mutatedTimeline = currentTimeline;
+    console.log(messages, systemMessages, userMessage);
+    let mutatedTimeline = currentTimeline;
     let history = []
     history.push({
       role: "system" as const,
@@ -159,10 +160,16 @@ const App: React.FC = () => {
       // Add tool response for each tool call in the system message
       if (systemMessage.tool_calls && systemMessage.tool_calls.length > 0) {
         const toolCall = systemMessage.tool_calls[0];
+        const mutation = getMutationFromToolCall(toolCall);
+        if (!mutation) {
+          console.error("Bad mutation", toolCall);
+          continue;
+        }
+        mutatedTimeline = applyMutations(mutatedTimeline, [mutation]);
         history.push({
           role: "tool",
           tool_call_id: toolCall.id,
-          content: mutatedTimeline.toString(),
+          content: JSON.stringify(mutatedTimeline),
         });
       }
     }
@@ -188,17 +195,19 @@ const App: React.FC = () => {
         return;
       }
 
+      const localPartialMessages = [...partialMessages];
+
       while (true) {
         const conversationHistory = buildConversationHistory(
           currentTimeline,
           messages,
-          partialMessages,
+          localPartialMessages,
           userMessage
         );
         console.log("CONVERSATION HISTORY", conversationHistory);
 
         const completion = await client.chat.completions.create({
-          model: "gpt-4.1",
+          model: "gpt-4.1-mini",
           max_tokens: 10000,
           // model: "o4-mini",
           // // temperature: 0.5,
@@ -242,26 +251,12 @@ const App: React.FC = () => {
           break;
         }
 
-        const message: AssistantMessage = {
+        localPartialMessages.push({
           ...response.message,
           id: uuidv4(),
           timestamp: Date.now(),
-        };
-        const toolCall = message?.tool_calls?.[0];
-        console.log("TOOL CALL", toolCall);
-        if (toolCall?.function.name) {
-          const mutation = getMutationFromToolCall(toolCall);
-          setPartialMessages((prev) => {
-            let ret = [...prev]
-            ret.push({
-              ...message,
-              id: uuidv4(),
-              timestamp: Date.now(),
-            });
-            return ret;
-          });
-          console.log("MUTATION", mutation);
-        }
+        });
+        setPartialMessages(localPartialMessages);
       }
     } catch (error: any) {
       console.error("Error:", error);
