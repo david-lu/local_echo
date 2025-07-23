@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+// Agent state management
+export const AgentStateSchema = z.enum(['idle', 'processing', 'waiting']).describe("Current state of the AI agent");
+export type AgentState = z.infer<typeof AgentStateSchema>;
+
 export const SpanSchema = z.object({
     start_ms: z.number().describe("Start time of the span in milliseconds"),
     end_ms: z.number().describe("End time of the span in milliseconds")
@@ -291,7 +295,3 @@ export const AssistantMessageSchema = MessageSchema.extend({
     .describe("Message role indicating it's from the AI system"),
 }).describe("System message from AI with optional timeline mutations");
 export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
-
-// Agent state management
-export const AgentStateSchema = z.enum(['idle', 'processing', 'waiting']).describe("Current state of the AI agent");
-export type AgentState = z.infer<typeof AgentStateSchema>;
