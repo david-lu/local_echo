@@ -16,6 +16,9 @@ import {
   RefinedTimeline,
 } from "./type";
 
+export const stringifyWithoutNull = (obj: unknown): string =>
+    JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
+
 export function sortTimeline(timeline: Timeline): Timeline {
   timeline.audio_track = timeline.audio_track.sort(
     (a, b) => a.start_ms - b.start_ms

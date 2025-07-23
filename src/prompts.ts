@@ -1,8 +1,3 @@
-import { Timeline } from './type';
-
-export const stringifyWithoutNull = (obj: unknown): string =>
-  JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
-
 export const AGENT_PROMPT = `
 You are a precise, creative timeline editing assistant for a video editor.  
 Your job is to make valid, helpful timeline mutations based on the user’s instructions — interpreted intelligently with film editing knowledge — always enhancing storytelling within the scope of the user’s explicit or implied request.
@@ -156,7 +151,3 @@ How to respond:
 - Be creative only within the scope of the user’s request — always with the goal of enhancing the timeline and story.
 - Write your responses cleanly, without unnecessary blank lines or formatting.
 `;
-
-export const getTimelineEditorPrompt = (timeline: Timeline) => {
-  return `Current timeline: ${stringifyWithoutNull(timeline)}`;
-}; 

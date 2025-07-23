@@ -21,9 +21,9 @@ import {
   AnyMutation,
   BaseMutation,
 } from "./type";
-import { convertToOpenAIMessage, getMutationsFromMessages, refineTimeline } from "./utils";
+import { convertToOpenAIMessage, getMutationsFromMessages, refineTimeline, stringifyWithoutNull } from "./utils";
 import { getMutationFromToolCall } from "./utils";
-import { AGENT_PROMPT, getTimelineEditorPrompt } from "./prompts";
+import { AGENT_PROMPT } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
 import timelineJson from "./data/sampleTimeline.json";
 import { Timeline as TimelineType } from "./type";
@@ -102,6 +102,8 @@ const App: React.FC = () => {
     * 
     */
 
+  console.log('rendering', currentTimeline)
+
   const buildConversationHistory = (
     timeline: TimelineType,
     messages: Message[],
@@ -118,7 +120,7 @@ const App: React.FC = () => {
     history.push(...messages.map(convertToOpenAIMessage));
     history.push({
       role: "user" as const,
-      content: userMessage + "\n\n" + getTimelineEditorPrompt(timeline),
+      content: userMessage + `\n\nCurrent timeline: ${stringifyWithoutNull(timeline)}`,
     });
     for (const systemMessage of systemMessages) {
       history.push(convertToOpenAIMessage(systemMessage));
@@ -174,7 +176,7 @@ const App: React.FC = () => {
         const completion = await client.chat.completions.create({
           model: "gpt-4.1-mini",
           max_tokens: 10000,
-          temperature: 0.5,
+          // temperature: 0.5,
           // model: "o4-mini",
           // reasoning_effort: "low",
           // max_completion_tokens: 10000,
