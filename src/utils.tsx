@@ -13,6 +13,7 @@ import {
   BaseClip,
   Overlap,
   Span,
+  RefinedTimeline,
 } from "./type";
 
 export function sortTimeline(timeline: Timeline): Timeline {
@@ -188,3 +189,16 @@ export const getMutationsFromMessages = (
   }
   return mutations;
 };
+
+
+export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
+    const totalDuration = getTotalDuration([...timeline.audio_track, ...timeline.visual_track]);
+    const refinedTimeline: RefinedTimeline = {
+      ...timeline,
+      audio_gaps: getGaps(timeline.audio_track, totalDuration),
+      audio_overlaps: getOverlaps(timeline.audio_track),
+      visual_gaps: getGaps(timeline.visual_track, totalDuration),
+      visual_overlaps: getOverlaps(timeline.visual_track)
+    };
+    return refinedTimeline;
+  }

@@ -21,7 +21,7 @@ import {
   AnyMutation,
   BaseMutation,
 } from "./type";
-import { convertToOpenAIMessage, getMutationsFromMessages } from "./utils";
+import { convertToOpenAIMessage, getMutationsFromMessages, refineTimeline } from "./utils";
 import { getMutationFromToolCall } from "./utils";
 import { AGENT_PROMPT, getTimelineEditorPrompt } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
@@ -134,7 +134,7 @@ const App: React.FC = () => {
         history.push({
           role: "tool",
           tool_call_id: toolCall.id,
-          content: JSON.stringify(mutatedTimeline),
+          content: JSON.stringify(refineTimeline(mutatedTimeline)),
         });
       }
     }
@@ -174,8 +174,8 @@ const App: React.FC = () => {
         const completion = await client.chat.completions.create({
           model: "gpt-4.1-mini",
           max_tokens: 10000,
+          temperature: 0.5,
           // model: "o4-mini",
-          // // temperature: 0.5,
           // reasoning_effort: "low",
           // max_completion_tokens: 10000,
           messages: conversationHistory,
@@ -212,16 +212,16 @@ const App: React.FC = () => {
         const response = completion?.choices[0];
         console.log("COMPLETION", completion);
 
-        if (!response || response.finish_reason === "stop") {
-          break;
-        }
-
         localPartialMessages.push({
           ...response.message,
           id: uuidv4(),
           timestamp: Date.now(),
         });
         setPartialMessages([...localPartialMessages]);
+
+        if (!response || response.finish_reason === "stop") {
+          break;
+        }
       }
     } catch (error: any) {
       console.error("Error:", error);
