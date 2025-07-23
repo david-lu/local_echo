@@ -37,10 +37,15 @@ export function parseTimeline(jsonData: unknown): Timeline {
 function isOverlapping(a: Span, b: Span): boolean {
   return Math.max(a.start_ms, b.start_ms) < Math.min(a.end_ms, b.end_ms);
 }
+
 export function getOverlaps(clips: BaseClip[]): Overlap[] {
-  const overlaps: Overlap[] = [];
+  let overlaps: Overlap[] = [];
+  const others = [...clips]
+
+  console.log('getOverlaps clips', clips)
 
   for (const clip of clips) {
+    const newOverlaps: Overlap[] = [...overlaps]
     // First, check against existing overlaps
     for (const overlap of overlaps) {
       if (
@@ -53,7 +58,7 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
         }
       } else if (isOverlapping(clip, overlap)) {
         // Partial overlap, create a new overlap with intersection
-        overlaps.push({
+        newOverlaps.push({
           start_ms: Math.max(clip.start_ms, overlap.start_ms),
           end_ms: Math.min(clip.end_ms, overlap.end_ms),
           clip_ids: Array.from(new Set(overlap.clip_ids.concat(clip.id))),
@@ -62,7 +67,7 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
     }
 
     // Then check against other spans to find pairwise overlaps
-    for (const other of clips) {
+    for (const other of others) {
       if (clip.id === other.id) continue;
       if (isOverlapping(clip, other)) {
         const overlapStart = Math.max(clip.start_ms, other.start_ms);
@@ -79,7 +84,7 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
           if (!existing.clip_ids.includes(other.id))
             existing.clip_ids.push(other.id);
         } else {
-          overlaps.push({
+          newOverlaps.push({
             start_ms: overlapStart,
             end_ms: overlapEnd,
             clip_ids: [clip.id, other.id],
@@ -87,6 +92,7 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
         }
       }
     }
+    overlaps = newOverlaps
   }
 
   return overlaps;
@@ -100,6 +106,7 @@ export const getGaps = (
   clips: BaseClip[],
   timeline_duration_ms?: number
 ): Span[] => {
+  console.log('getGaps clips', clips)
   const timelineEnd = Math.max(
     getTotalDuration(clips),
     timeline_duration_ms || 0
@@ -199,8 +206,10 @@ export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
     const refinedTimeline: RefinedTimeline = {
       ...timeline,
       audio_gaps: getGaps(timeline.audio_track, totalDuration),
+      // audio_overlaps: [],
       audio_overlaps: getOverlaps(timeline.audio_track),
       visual_gaps: getGaps(timeline.visual_track, totalDuration),
+      // visual_overlaps: [],
       visual_overlaps: getOverlaps(timeline.visual_track)
     };
     return refinedTimeline;

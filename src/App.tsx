@@ -133,10 +133,13 @@ const App: React.FC = () => {
           continue;
         }
         mutatedTimeline = applyMutations(mutatedTimeline, [mutation]);
+        console.log('mutatedTimeline', mutatedTimeline)
+        const refinedTimeline = refineTimeline(mutatedTimeline)
+        console.log('refineTimeline', refinedTimeline)
         history.push({
           role: "tool",
           tool_call_id: toolCall.id,
-          content: JSON.stringify(refineTimeline(mutatedTimeline)),
+          content: `Updated timeline: ${JSON.stringify(refinedTimeline)}`,
         });
       }
     }
@@ -165,6 +168,7 @@ const App: React.FC = () => {
       const localPartialMessages = [...partialMessages];
 
       while (true) {
+        console.log('while true')
         const conversationHistory = buildConversationHistory(
           currentTimeline,
           messages,
