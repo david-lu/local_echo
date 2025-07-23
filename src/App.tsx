@@ -19,10 +19,10 @@ import {
   AssistantMessage,
   ToolCall,
   AnyMutation,
-  getMutationFromToolCall,
   BaseMutation,
-  getMutationsFromMessages,
 } from "./type";
+import { getMutationsFromMessages } from "./utils";
+import { getMutationFromToolCall } from "./utils";
 import { AGENT_PROMPT, getTimelineEditorPrompt } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
 import timelineJson from "./data/sampleTimeline.json";

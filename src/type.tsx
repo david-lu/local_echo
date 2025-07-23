@@ -1,4 +1,3 @@
-import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
 import { z } from "zod";
 
 // Core timeline schemas
@@ -264,17 +263,6 @@ export const UserMessageSchema = MessageSchema.extend({
 }).describe("User message in the chat conversation");
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 
-/**
- * {
-    "id": "call_12345xyz",
-    "type": "function",
-    "function": {
-        "name": "get_weather",
-        "arguments": "{\"location\":\"Paris, France\"}"
-    }
-}
- * 
- */
 
 export const AnyMutationSchema = z.union([
   AddVisualMutationSchema,
@@ -293,44 +281,3 @@ export const AssistantMessageSchema = MessageSchema.extend({
 }).describe("System message from AI with optional timeline mutations");
 export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
 
-
-
-export const getMutationFromToolCall = (
-    toolCall: ChatCompletionMessageToolCall
-  ): BaseMutation | null => {
-    try {
-      const mutation = JSON.parse(toolCall.function.arguments);
-      if (toolCall.function.name === "add_visual") {
-        return AddVisualMutationSchema.parse(mutation);
-      } else if (toolCall.function.name === "remove_visual") {
-        return RemoveVisualMutationSchema.parse(mutation);
-      } else if (toolCall.function.name === "modify_visual") {
-        return ModifyVisualMutationSchema.parse(mutation);
-      } else if (toolCall.function.name === "add_audio") {
-        return AddAudioMutationSchema.parse(mutation);
-      } else if (toolCall.function.name === "remove_audio") {
-        return RemoveAudioMutationSchema.parse(mutation);
-      } else if (toolCall.function.name === "modify_audio") {
-        return ModifyAudioMutationSchema.parse(mutation);
-      }
-    } catch (error) {
-      console.error("Error parsing tool call arguments:", error);
-    }
-    return null;
-  };
-
-export const getMutationsFromMessages = (messages: Message[]): BaseMutation[] => {
-    const mutations: BaseMutation[] = [];
-    for (const message of messages) {
-        const toolCalls = message.tool_calls;
-        if (toolCalls) {
-            for (const toolCall of toolCalls) {
-                const mutation = getMutationFromToolCall(toolCall);
-                if (mutation) {
-                    mutations.push(mutation);
-                }
-            }
-        }
-    }
-    return mutations;
-}

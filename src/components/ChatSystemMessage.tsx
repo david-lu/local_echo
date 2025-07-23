@@ -1,5 +1,6 @@
 import React from 'react';
-import { AssistantMessage, getMutationFromToolCall } from '../type';
+import { AssistantMessage } from '../type';
+import { getMutationFromToolCall } from "../utils";
 
 interface ChatSystemMessageProps {
   message: AssistantMessage;
@@ -7,7 +8,7 @@ interface ChatSystemMessageProps {
 
 const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {
     const toolCall = message.tool_calls?.[0];
-    const mutation = toolCall ? getMutationFromToolCall(toolCall) : null;
+    const mutation = getMutationFromToolCall(toolCall);
 
   return (
     <div className="flex justify-start">

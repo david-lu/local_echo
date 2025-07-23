@@ -9,8 +9,6 @@ interface VisualClipProps {
   onClick?: () => void;
 }
 
-const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
-
 export const VisualClip: React.FC<VisualClipProps> = ({
   clip,
   startPercent,
