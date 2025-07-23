@@ -122,6 +122,21 @@ const App: React.FC = () => {
   });
     * 
     */
+
+  // UGHHHHH
+  const convertToOpenAIMessage = (message: Message) => {
+    // Extract only the properties that OpenAI API expects
+    const { role, content, tool_calls, function_call, refusal, annotations } = message;
+    const openAIMessage: any = { role, content };
+    
+    if (tool_calls) openAIMessage.tool_calls = tool_calls;
+    if (function_call) openAIMessage.function_call = function_call;
+    if (refusal) openAIMessage.refusal = refusal;
+    if (annotations) openAIMessage.annotations = annotations;
+    
+    return openAIMessage;
+  };
+
   const buildConversationHistory = (
     timeline: TimelineType,
     messages: Message[],
@@ -134,19 +149,22 @@ const App: React.FC = () => {
       role: "system" as const,
       content: AGENT_PROMPT,
     });
-    history.push(...messages);
+    history.push(...messages.map(convertToOpenAIMessage));
     history.push({
       role: "user" as const,
       content: userMessage + "\n\n" + getTimelineEditorPrompt(timeline),
-      refusal: null,
     });
     for (const systemMessage of systemMessages) {
-      history.push(systemMessage);
-      history.push({
-        role: "tool",
-        tool_call_id: 'sdf',
-        content: mutatedTimeline.toString(),
-      });
+      history.push(convertToOpenAIMessage(systemMessage));
+      // Add tool response for each tool call in the system message
+      if (systemMessage.tool_calls && systemMessage.tool_calls.length > 0) {
+        const toolCall = systemMessage.tool_calls[0];
+        history.push({
+          role: "tool",
+          tool_call_id: toolCall.id,
+          content: mutatedTimeline.toString(),
+        });
+      }
     }
     return history;
   };
