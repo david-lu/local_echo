@@ -1,20 +1,18 @@
 import { z } from "zod";
 
+export const SpanSchema = z.object({
+    start_ms: z.number().describe("Start time of the span in milliseconds"),
+    end_ms: z.number().describe("End time of the span in milliseconds")
+}).describe("A span of time in a Timeline track.");
+export type Span = z.infer<typeof SpanSchema>;
+
 // Core timeline schemas
-export const BaseClipSchema = z
-  .object({
+export const BaseClipSchema = SpanSchema.extend({
     id: z.string().describe("Unique identifier for the clip"),
-    start_ms: z.number().describe("Start time of the clip in milliseconds"),
-    end_ms: z.number().describe("End time of the clip in milliseconds"),
-    speaker: z
-      .string()
-      .nullable()
-      .describe(
-        "Name of the speaker for the clips. The speaker of an audio and a visual clip should match if they're the same person."
-      ),
-  })
-  .describe("Base properties shared by all clip types");
+    speaker: z.string().nullable().describe("Name of the speaker for the clips. The speaker of an audio and a visual clip should match if they're the same person.")
+}).describe("A clip is a span of time in a Timeline track.");
 export type BaseClip = z.infer<typeof BaseClipSchema>;
+
 
 export const AudioGenerationParamsSchema = z
   .object({
@@ -147,6 +145,19 @@ export const TimelineSchema = z
   })
   .describe("Complete timeline with separate audio and visual tracks");
 export type Timeline = z.infer<typeof TimelineSchema>;
+
+export const OverlapSchema = SpanSchema.extend({
+    clip_ids: z.array(z.string()).describe("IDs of the clips that overlap")
+}).describe("An overlap between at least two clips in a timeline");
+export type Overlap = z.infer<typeof OverlapSchema>;
+
+export const RefinedTimelineSchema = TimelineSchema.extend({
+    audio_gaps: z.array(SpanSchema).describe("All the gaps between audio clips in milliseconds"),
+    audio_overlaps: z.array(SpanSchema).describe("All the overlaps between audio clips in milliseconds"),
+    visual_gaps: z.array(SpanSchema).describe("All the gaps between visual clips in milliseconds"),
+    visual_overlaps: z.array(SpanSchema).describe("All the overlaps between visual clips in milliseconds")
+}).describe("Complete timeline with separate audio and visual tracks but also with the gaps and overlaps of the clips.");
+export type RefinedTimeline = z.infer<typeof RefinedTimelineSchema>;
 
 // Mutation schemas using extension pattern
 export const MutationTypeSchema = z
@@ -281,3 +292,6 @@ export const AssistantMessageSchema = MessageSchema.extend({
 }).describe("System message from AI with optional timeline mutations");
 export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
 
+// Agent state management
+export const AgentStateSchema = z.enum(['idle', 'processing', 'waiting']).describe("Current state of the AI agent");
+export type AgentState = z.infer<typeof AgentStateSchema>;
