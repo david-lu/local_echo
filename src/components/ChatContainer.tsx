@@ -7,10 +7,10 @@ import { Message, AssistantMessage, UserMessage } from '../type';
 interface ChatContainerProps {
   messages: Message[];
   loading: boolean;
-  partialMessage?: AssistantMessage | null;
+  partialMessages: AssistantMessage[];
 }
 
-const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partialMessage }) => {
+const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partialMessages }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -19,9 +19,10 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, partialMessage]);
+  }, [messages, partialMessages]);
 
-  const displayMessages = partialMessage ? [...messages, partialMessage] : messages;
+  const displayMessages = [...messages, ...partialMessages];
+  console.log('displayMessages', displayMessages);
 
   const renderMessage = (message: Message) => {
     if (message.role === 'user') {
@@ -44,7 +45,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
           </div>
         )}
         
-        {loading && !partialMessage && <LoadingMessage />}
+        {loading && !(partialMessages && partialMessages.length > 0) && <LoadingMessage />}
         
         <div ref={messagesEndRef} />
       </div>

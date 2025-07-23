@@ -256,7 +256,7 @@ const App: React.FC = () => {
           id: uuidv4(),
           timestamp: Date.now(),
         });
-        setPartialMessages(localPartialMessages);
+        setPartialMessages([...localPartialMessages]);
       }
     } catch (error: any) {
       console.error("Error:", error);
@@ -296,7 +296,7 @@ const App: React.FC = () => {
                 <ChatContainer
                   messages={messages}
                   loading={loading}
-                  partialMessage={null}
+                  partialMessages={partialMessages || []}
                 />
               </div>
 
