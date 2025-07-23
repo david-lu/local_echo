@@ -239,7 +239,7 @@ export const MessageSchema = z
       .enum(["user", "system", "assistant"])
       .describe("Message role indicating it's from the user"),
     content: z.string().nullable().describe("Text content of the user's message"),
-    refusal: z.string().nullable().optional().describe("Reason for refusal of the message"),
+    refusal: z.string().nullable().describe("Reason for refusal of the message"),
     annotations: z.array(z.any()).optional().describe("Annotations for the message"),
     audio: z.any().optional().nullable().describe("Audio content of the message"),
     tool_calls: z.array(ToolCallSchema).optional().describe("Tool calls to perform"),

@@ -109,7 +109,8 @@ const App: React.FC = () => {
       id: uuidv4(),
       role: "user",
       content,
-      timestamp: Date.now()    
+      timestamp: Date.now(),
+      refusal: null,
     });
   };
 
@@ -137,6 +138,7 @@ const App: React.FC = () => {
     history.push({
       role: "user" as const,
       content: userMessage + "\n\n" + getTimelineEditorPrompt(timeline),
+      refusal: null,
     });
     for (const systemMessage of systemMessages) {
       history.push(systemMessage);
@@ -251,6 +253,7 @@ const App: React.FC = () => {
         content: `Sorry, I encountered an error: ${error.message}`,
         id: uuidv4(),
         timestamp: Date.now(),
+        refusal: null,
       });
     } finally {
       setLoading(false);
