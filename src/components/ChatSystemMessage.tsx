@@ -1,11 +1,13 @@
 import React from 'react';
-import { AssistantMessage } from '../type';
+import { AssistantMessage, getMutationFromToolCall } from '../type';
 
 interface ChatSystemMessageProps {
   message: AssistantMessage;
 }
 
 const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {
+    const toolCall = message.tool_calls?.[0];
+    const mutation = toolCall ? getMutationFromToolCall(toolCall) : null;
 
   return (
     <div className="flex justify-start">
@@ -13,17 +15,17 @@ const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {
         <div className="text-sm font-medium mb-2">Assistant</div>
         <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</div>
         
-        {/* Display mutation descriptions if they exist
-        {message.mutation && (
+        {/* Display mutation descriptions if they exist */}
+        {mutation && (
           <div className="mt-3 pt-3 border-t border-zinc-700">
             <div className="text-xs font-medium text-zinc-400 mb-2">Timeline Changes:</div>
             <div className="space-y-2">
               <div className="text-xs text-zinc-400 bg-zinc-900 px-3 py-2 rounded break-words">
-                {message.mutation.description}
+                {mutation.description}
               </div>
             </div>
           </div>
-        )} */}
+        )}
         
         <div className="text-xs mt-2 text-zinc-400">
           {message.timestamp ? new Date(message.timestamp).toLocaleString() : ''}

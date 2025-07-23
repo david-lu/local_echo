@@ -19,6 +19,7 @@ import {
   AssistantMessage,
   ToolCall,
   AnyMutation,
+  getMutationFromToolCall,
 } from "./type";
 import { AGENT_PROMPT, getTimelineEditorPrompt } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
@@ -28,30 +29,6 @@ import { zodFunction, zodResponseFormat } from "openai/helpers/zod";
 import { applyMutations } from "./mutationApplier";
 import { v4 as uuidv4 } from "uuid";
 import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
-
-const getMutationFromToolCall = (
-  toolCall: ChatCompletionMessageToolCall
-): AnyMutation | null => {
-  try {
-    const mutation = JSON.parse(toolCall.function.arguments);
-    if (toolCall.function.name === "add_visual") {
-      return AddVisualMutationSchema.parse(mutation);
-    } else if (toolCall.function.name === "remove_visual") {
-      return RemoveVisualMutationSchema.parse(mutation);
-    } else if (toolCall.function.name === "modify_visual") {
-      return ModifyVisualMutationSchema.parse(mutation);
-    } else if (toolCall.function.name === "add_audio") {
-      return AddAudioMutationSchema.parse(mutation);
-    } else if (toolCall.function.name === "remove_audio") {
-      return RemoveAudioMutationSchema.parse(mutation);
-    } else if (toolCall.function.name === "modify_audio") {
-      return ModifyAudioMutationSchema.parse(mutation);
-    }
-  } catch (error) {
-    console.error("Error parsing tool call arguments:", error);
-  }
-  return null;
-};
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<(Message | AssistantMessage)[]>([]);
