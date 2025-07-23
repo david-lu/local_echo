@@ -130,6 +130,21 @@ export const getGaps = (
   return gaps;
 };
 
+// UGHHHHH
+export const convertToOpenAIMessage = (message: Message) => {
+  // Extract only the properties that OpenAI API expects
+  const { role, content, tool_calls, function_call, refusal, annotations } =
+    message;
+  const openAIMessage: any = { role, content };
+
+  if (tool_calls) openAIMessage.tool_calls = tool_calls;
+  if (function_call) openAIMessage.function_call = function_call;
+  if (refusal) openAIMessage.refusal = refusal;
+  if (annotations) openAIMessage.annotations = annotations;
+
+  return openAIMessage;
+};
+
 export const getMutationFromToolCall = (
   toolCall?: ChatCompletionMessageToolCall
 ): BaseMutation | null => {

@@ -21,7 +21,7 @@ import {
   AnyMutation,
   BaseMutation,
 } from "./type";
-import { getMutationsFromMessages } from "./utils";
+import { convertToOpenAIMessage, getMutationsFromMessages } from "./utils";
 import { getMutationFromToolCall } from "./utils";
 import { AGENT_PROMPT, getTimelineEditorPrompt } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
@@ -101,20 +101,6 @@ const App: React.FC = () => {
   });
     * 
     */
-
-  // UGHHHHH
-  const convertToOpenAIMessage = (message: Message) => {
-    // Extract only the properties that OpenAI API expects
-    const { role, content, tool_calls, function_call, refusal, annotations } = message;
-    const openAIMessage: any = { role, content };
-    
-    if (tool_calls) openAIMessage.tool_calls = tool_calls;
-    if (function_call) openAIMessage.function_call = function_call;
-    if (refusal) openAIMessage.refusal = refusal;
-    if (annotations) openAIMessage.annotations = annotations;
-    
-    return openAIMessage;
-  };
 
   const buildConversationHistory = (
     timeline: TimelineType,
