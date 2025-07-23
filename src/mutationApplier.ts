@@ -6,13 +6,15 @@ import {
   AddAudioMutation,
   ModifyVisualMutation,
   ModifyAudioMutation,
-  AnyMutation
+  BaseMutation,
+  RemoveAudioMutation,
+  RemoveVisualMutation
 } from './type';
 
 /**
  * Applies a single mutation to the timeline
  */
-export function applyMutation(timeline: Timeline, mutation: AnyMutation): Timeline {
+export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timeline {
   const newTimeline = {
     audio_track: [...timeline.audio_track],
     visual_track: [...timeline.visual_track]
@@ -30,13 +32,15 @@ export function applyMutation(timeline: Timeline, mutation: AnyMutation): Timeli
       break;
 
     case 'remove_audio': {
-      const index = newTimeline.audio_track.findIndex(clip => clip.id === mutation.clip_id);
+      const removeAudioMutation = mutation as RemoveAudioMutation;
+      const index = newTimeline.audio_track.findIndex(clip => clip.id === removeAudioMutation.clip_id);
       if (index !== -1) newTimeline.audio_track.splice(index, 1);
       break;
     }
 
     case 'remove_visual': {
-      const index = newTimeline.visual_track.findIndex(clip => clip.id === mutation.clip_id);
+      const removeVisualMutation = mutation as RemoveVisualMutation;
+      const index = newTimeline.visual_track.findIndex(clip => clip.id === removeVisualMutation.clip_id);
       if (index !== -1) newTimeline.visual_track.splice(index, 1);
       break;
     }
@@ -62,7 +66,7 @@ export function applyMutation(timeline: Timeline, mutation: AnyMutation): Timeli
 /**
  * Applies multiple mutations to the timeline in sequence
  */
-export function applyMutations(timeline: Timeline, mutations: AnyMutation[]): Timeline {
+export function applyMutations(timeline: Timeline, mutations: BaseMutation[]): Timeline {
   return mutations.reduce(applyMutation, timeline);
 }
 

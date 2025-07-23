@@ -297,7 +297,7 @@ export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
 
 export const getMutationFromToolCall = (
     toolCall: ChatCompletionMessageToolCall
-  ): AnyMutation | null => {
+  ): BaseMutation | null => {
     try {
       const mutation = JSON.parse(toolCall.function.arguments);
       if (toolCall.function.name === "add_visual") {
@@ -318,3 +318,19 @@ export const getMutationFromToolCall = (
     }
     return null;
   };
+
+export const getMutationsFromMessages = (messages: Message[]): BaseMutation[] => {
+    const mutations: BaseMutation[] = [];
+    for (const message of messages) {
+        const toolCalls = message.tool_calls;
+        if (toolCalls) {
+            for (const toolCall of toolCalls) {
+                const mutation = getMutationFromToolCall(toolCall);
+                if (mutation) {
+                    mutations.push(mutation);
+                }
+            }
+        }
+    }
+    return mutations;
+}

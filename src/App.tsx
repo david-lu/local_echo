@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { OpenAI } from "openai";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Timeline from "./components/Timeline";
@@ -20,6 +20,8 @@ import {
   ToolCall,
   AnyMutation,
   getMutationFromToolCall,
+  BaseMutation,
+  getMutationsFromMessages,
 } from "./type";
 import { AGENT_PROMPT, getTimelineEditorPrompt } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
@@ -263,6 +265,11 @@ const App: React.FC = () => {
     setSelectedClip(clip);
   };
 
+  const displayTimeline = useMemo(() => {
+    const mutations = getMutationsFromMessages(partialMessages);
+    return applyMutations(currentTimeline, mutations);
+  }, [currentTimeline, partialMessages]);
+
   return (
     <div className="h-screen flex flex-col bg-zinc-950">
       <div className="flex-1 flex flex-col min-h-0">
@@ -305,7 +312,7 @@ const App: React.FC = () => {
               {/* Timeline */}
               <div className="flex-shrink-0 h-44">
                 <Timeline
-                  timeline={currentTimeline}
+                  timeline={displayTimeline}
                   onResetTimeline={resetTimeline}
                   onClipClick={handleClipClick}
                 />
