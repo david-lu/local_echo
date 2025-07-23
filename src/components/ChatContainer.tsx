@@ -2,12 +2,12 @@ import React, { useRef, useEffect } from 'react';
 import ChatUserMessage from './ChatUserMessage';
 import ChatSystemMessage from './ChatSystemMessage';
 import LoadingMessage from './LoadingMessage';
-import { Message, SystemMessage, UserMessage } from '../type';
+import { Message, AssistantMessage, UserMessage } from '../type';
 
 interface ChatContainerProps {
   messages: Message[];
   loading: boolean;
-  partialMessage?: SystemMessage | null;
+  partialMessage?: AssistantMessage | null;
 }
 
 const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partialMessage }) => {
@@ -27,7 +27,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
     if (message.role === 'user') {
       return <ChatUserMessage key={message.id} message={message as UserMessage} />;
     } else {
-      return <ChatSystemMessage key={message.id} message={message as SystemMessage} />;
+      return <ChatSystemMessage key={message.id} message={message as AssistantMessage} />;
     }
   };
 

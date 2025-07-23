@@ -1,18 +1,19 @@
 import React from 'react';
-import { SystemMessage } from '../type';
+import { AssistantMessage } from '../type';
 
 interface ChatSystemMessageProps {
-  message: SystemMessage;
+  message: AssistantMessage;
 }
 
 const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {
+
   return (
     <div className="flex justify-start">
       <div className="max-w-2xl px-6 py-4 rounded-lg bg-zinc-800 text-zinc-100 border border-zinc-700">
         <div className="text-sm font-medium mb-2">Assistant</div>
         <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</div>
         
-        {/* Display mutation descriptions if they exist */}
+        {/* Display mutation descriptions if they exist
         {message.mutation && (
           <div className="mt-3 pt-3 border-t border-zinc-700">
             <div className="text-xs font-medium text-zinc-400 mb-2">Timeline Changes:</div>
@@ -22,10 +23,10 @@ const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
         
         <div className="text-xs mt-2 text-zinc-400">
-          {message.timestamp ? new Date(parseInt(message.timestamp)).toLocaleString() : ''}
+          {message.timestamp ? new Date(message.timestamp).toLocaleString() : ''}
         </div>
       </div>
     </div>

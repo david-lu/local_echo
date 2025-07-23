@@ -12,7 +12,7 @@ const ChatUserMessage: React.FC<ChatUserMessageProps> = ({ message }) => {
         <div className="text-sm font-medium mb-2">You</div>
         <div className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</div>
         <div className="text-xs mt-2 text-blue-200">
-          {message.timestamp ? new Date(parseInt(message.timestamp)).toLocaleString() : ''}
+          {message.timestamp ? new Date(message.timestamp).toLocaleString() : ''}
         </div>
       </div>
     </div>

@@ -215,15 +215,40 @@ export const ModifyAudioMutationSchema = BaseMutationSchema.extend({
 }).describe("Mutation to modify an existing audio clip");
 export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
 
+// COPY of ChatCompletionMessageToolCall
+export const ToolCallSchema = z
+  .object({
+    id: z.string().describe("Unique identifier for the tool call"),
+    type: z.literal("function").describe("Type of tool call"),
+    // index: z.number().describe("Index of the tool call"),
+    function: z
+      .object({
+        name: z.string().describe("Name of the tool to call"),
+        arguments: z.string().describe("Arguments for the tool call"),
+      })
+      .describe("Function call to perform"),
+  })
+  .describe("Tool call to perform");
+export type ToolCall = z.infer<typeof ToolCallSchema>;
+
+// Copy of ChatCompletionMessageToolCall
 export const MessageSchema = z
   .object({
-    id: z.string().nullable().describe("Unique identifier for the message"),
+    // REQUIRED
     role: z
-      .enum(["user", "system"])
+      .enum(["user", "system", "assistant"])
       .describe("Message role indicating it's from the user"),
-    content: z.string().describe("Text content of the user's message"),
+    content: z.string().nullable().describe("Text content of the user's message"),
+    refusal: z.string().nullable().optional().describe("Reason for refusal of the message"),
+    annotations: z.array(z.any()).optional().describe("Annotations for the message"),
+    audio: z.any().optional().nullable().describe("Audio content of the message"),
+    tool_calls: z.array(ToolCallSchema).optional().describe("Tool calls to perform"),
+    function_call: z.any().nullable().describe("Function call to perform"),
+
+    // ADDONS
+    id: z.string().nullable().describe("Unique identifier for the message"),
     timestamp: z
-      .string()
+      .number()
       .nullable()
       .describe("ISO timestamp when the message was created"),
   })
@@ -250,21 +275,6 @@ export type UserMessage = z.infer<typeof UserMessageSchema>;
  * 
  */
 
-// COPY of ChatCompletionMessageToolCall
-export const ToolCallSchema = z
-  .object({
-    index: z.number().describe("Index of the tool call"),
-    id: z.string().describe("Unique identifier for the tool call"),
-    function: z
-      .object({
-        name: z.string().describe("Name of the tool to call"),
-        arguments: z.string().describe("Arguments for the tool call"),
-      })
-      .describe("Function call to perform"),
-  })
-  .describe("Tool call to perform");
-export type ToolCall = z.infer<typeof ToolCallSchema>;
-
 export const AnyMutationSchema = z.union([
   AddVisualMutationSchema,
   AddAudioMutationSchema,
@@ -275,13 +285,9 @@ export const AnyMutationSchema = z.union([
 ]);
 export type AnyMutation = z.infer<typeof AnyMutationSchema>;
 
-export const SystemMessageSchema = MessageSchema.extend({
+export const AssistantMessageSchema = MessageSchema.extend({
   role: z
-    .literal("system")
+    .literal("assistant")
     .describe("Message role indicating it's from the AI system"),
-  content: z.string().describe("Text content of the AI's response"),
-  mutation: AnyMutationSchema
-    .nullable()
-    .describe("Timeline mutation to perform, null if no mutation is needed"),
 }).describe("System message from AI with optional timeline mutations");
-export type SystemMessage = z.infer<typeof SystemMessageSchema>;
+export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
