@@ -176,7 +176,7 @@ export const getMutationFromToolCall = (
       return RemoveAudioMutationSchema.parse(mutation);
     } else if (toolCall.function.name === "modify_audio") {
       return ModifyAudioMutationSchema.parse(mutation);
-    } else if (toolCall.function.name === "shift_clip") {
+    } else if (toolCall.function.name === "retime_clips") {
       return RetimeClipsMutationSchema.parse(mutation);
     }
   } catch (error) {

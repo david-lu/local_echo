@@ -166,7 +166,7 @@ const App: React.FC = () => {
         const completion = await client.chat.completions.create({
           model: "gpt-4.1-mini",
           max_tokens: 10000,
-          temperature: 0.2,
+          temperature: 1,
           // model: "o4-mini",
           // reasoning_effort: "low",
           // max_completion_tokens: 10000,
@@ -198,7 +198,7 @@ const App: React.FC = () => {
               parameters: ModifyAudioMutationSchema,
             }),
             zodFunction({
-              name: "shift_clip",
+              name: "retime_clips",
               parameters: RetimeClipsMutationSchema,
             }),
           ],
@@ -282,7 +282,7 @@ const App: React.FC = () => {
               <div className="flex-1 min-h-0">
                 <ChatContainer
                   messages={messages}
-                  loading={agentState === "processing"}
+                  loading={agentState !== "idle"}
                   partialMessages={partialMessages}
                 />
               </div>
