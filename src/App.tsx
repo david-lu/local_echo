@@ -121,7 +121,7 @@ const App: React.FC = () => {
         history.push({
           role: "tool",
           tool_call_id: toolCall.id,
-          content: `Updated timeline: ${JSON.stringify(refinedTimeline)}`,
+          content: `Updated timeline: ${stringifyWithoutNull(refinedTimeline)}`,
         });
       }
     }
@@ -150,7 +150,7 @@ const App: React.FC = () => {
       const localMessages: UserMessage = {
         id: uuidv4(),
         role: "user",
-        content: userMessage + `\n\nCurrent timeline: ${stringifyWithoutNull(currentTimeline)}`,
+        content: userMessage + `\n\nCurrent timeline: ${stringifyWithoutNull(refineTimeline(currentTimeline))}`,
         timestamp: Date.now(),
         refusal: null,
       };

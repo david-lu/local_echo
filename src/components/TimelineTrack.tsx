@@ -37,7 +37,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
           if (clip.type === 'audio') {
             return (
               <AudioClip
-                key={i}
+                key={clip.id}
                 clip={clip}
                 startPercent={startPercent}
                 widthPercent={widthPercent}
@@ -47,7 +47,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
           } else {
             return (
               <VisualClip
-                key={i}
+                key={clip.id}
                 clip={clip}
                 startPercent={startPercent}
                 widthPercent={widthPercent}
