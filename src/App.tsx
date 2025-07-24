@@ -29,7 +29,7 @@ import {
   stringifyWithoutNull,
 } from "./utils";
 import { getMutationFromToolCall } from "./utils";
-import { AGENT_PROMPT } from "./prompts";
+import { AGENT_PROMPT, AGENT_PROMPT_LONG } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
 import timelineJson from "./data/sampleTimeline.json";
 import { Timeline as TimelineType } from "./type";
@@ -100,7 +100,7 @@ const App: React.FC = () => {
     let history = [];
     history.push({
       role: "system" as const,
-      content: AGENT_PROMPT,
+      content: AGENT_PROMPT_LONG,
     });
     for (const message of messages) {
       if (message.role === "user") {
@@ -178,7 +178,7 @@ const App: React.FC = () => {
         const completion = await client.chat.completions.create({
           model: "gpt-4.1-mini",
           max_tokens: 10000,
-          // temperature: 0.5,
+          temperature: 0.2,
           // model: "o4-mini",
           // reasoning_effort: "low",
           // max_completion_tokens: 10000,

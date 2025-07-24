@@ -11,7 +11,7 @@ const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {
     const mutation = getMutationFromToolCall(toolCall);
 
   return (
-    <div className="flex justify-start w-full">
+    <div className="flex justify-start w-full flex-col gap-2">
         <div className="text-sm text-zinc-200 px-3 whitespace-pre-wrap break-words">{message.content}</div>
         
         {/* Display mutation descriptions if they exist */}
