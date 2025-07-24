@@ -190,7 +190,7 @@ export const MutationTypeSchema = z
     "remove_audio",
     "modify_visual",
     "modify_audio",
-    "shift_clip",
+    "retime_clips",
   ])
   .describe(
     "Types of timeline mutations: add, remove, or modify audio/visual clips"
@@ -249,14 +249,19 @@ export const ModifyAudioMutationSchema = BaseMutationSchema.extend({
 }).describe("Mutation to modify an existing audio clip");
 export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
 
-export const ShiftClipMutationSchema = BaseMutationSchema.extend({
-  type: z.literal("shift_clip"),
-  clip_id: z.string().describe("ID of the clip to shift"),
-  shift_amount_ms: z
-    .number()
-    .describe("Amount to shift the clip in milliseconds. Can be negative."),
-}).describe("Shift the noted clip by the given amount");
-export type ShiftClipMutation = z.infer<typeof ShiftClipMutationSchema>;
+export const RetimeClipsMutationSchema = BaseMutationSchema.extend({
+  type: z.literal("retime_clips"),
+  retimes: z.array(z.object({
+    clip_id: z.string().describe("ID of the clip to shift"),
+    start_time_ms: z
+      .number()
+      .describe("New start time of the clip in milliseconds"),
+    end_time_ms: z
+      .number()
+      .describe("New end time of the clip in milliseconds"),
+  })).describe("Array of retimes to apply to the clips"),
+}).describe("Retime the noted clips by the given amount");
+export type RetimeClipsMutation = z.infer<typeof RetimeClipsMutationSchema>;
 
 // COPY of ChatCompletionMessageToolCall
 export const ToolCallSchema = z

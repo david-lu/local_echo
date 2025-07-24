@@ -9,7 +9,7 @@ import {
   BaseMutation,
   RemoveAudioMutation,
   RemoveVisualMutation,
-  ShiftClipMutation,
+  RetimeClipsMutation,
 } from "./type";
 
 /**
@@ -74,19 +74,20 @@ export function applyMutation(
       break;
     }
 
-    case "shift_clip": {
-      const shiftMutation = mutation as ShiftClipMutation;
-      const clip =
-        newTimeline.audio_track.find(
-          (clip) => clip.id === shiftMutation.clip_id
-        ) ||
-        newTimeline.visual_track.find(
-          (clip) => clip.id === shiftMutation.clip_id
-        );
-      const shiftAmountMs = shiftMutation.shift_amount_ms;
-      if (clip) {
-        clip.start_ms += shiftAmountMs;
-        clip.end_ms += shiftAmountMs;
+    case "retime_clips": {
+      const retimeClipsMutation = mutation as RetimeClipsMutation;
+      for (const retime of retimeClipsMutation.retimes) {
+        const clip =
+          newTimeline.audio_track.find(
+            (clip) => clip.id === retime.clip_id
+          ) ||
+          newTimeline.visual_track.find(
+            (clip) => clip.id === retime.clip_id
+          );
+        if (clip) {
+          clip.start_ms = retime.start_time_ms;
+          clip.end_ms = retime.end_time_ms;
+        }
       }
       break;
     }

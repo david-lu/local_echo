@@ -14,6 +14,7 @@ import {
   Overlap,
   Span,
   RefinedTimeline,
+  RetimeClipsMutationSchema,
 } from "./type";
 
 export const stringifyWithoutNull = (obj: unknown): string =>
@@ -175,6 +176,8 @@ export const getMutationFromToolCall = (
       return RemoveAudioMutationSchema.parse(mutation);
     } else if (toolCall.function.name === "modify_audio") {
       return ModifyAudioMutationSchema.parse(mutation);
+    } else if (toolCall.function.name === "shift_clip") {
+      return RetimeClipsMutationSchema.parse(mutation);
     }
   } catch (error) {
     console.error("Error parsing tool call arguments:", error);

@@ -11,7 +11,7 @@ Your core rules:
 - Shifts happen once per request; shifts don't stack.
 
 Timeline logic:
-- No overlapping clips on the same track. Don't ask for permission to shift, just do it.
+- No overlapping clips on the same track. Don't ask for permission to fix overlaps by retiming the clips, just do it.
 - No unintended gaps unless requested or required by pacing.
 - Always preserve scene coherence.
 - Clip duration = end_ms - start_ms.

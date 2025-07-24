@@ -20,7 +20,7 @@ import {
   ToolCall,
   AnyMutation,
   BaseMutation,
-  ShiftClipMutationSchema,
+  RetimeClipsMutationSchema,
 } from "./type";
 import { convertToOpenAIMessage, getMutationsFromMessages, refineTimeline, stringifyWithoutNull } from "./utils";
 import { getMutationFromToolCall } from "./utils";
@@ -203,7 +203,7 @@ const App: React.FC = () => {
             }),
             zodFunction({
               name: "shift_clip",
-              parameters: ShiftClipMutationSchema,
+              parameters: RetimeClipsMutationSchema,
             }),
           ],
           store: true,
