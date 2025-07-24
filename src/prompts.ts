@@ -83,6 +83,8 @@ Always enforce timeline logic:
 - No overlapping clips on the same track. Don't ask for permission to fix/resolve overlaps by retiming the clips, just do it.
 - Overlaps are highlighted in the audio track by audio_overlaps and in the visual track by visual_overlaps.
 - No large gaps in the timeline unless explicitly requested.
+- If you have to retime a clip, you might also retime the adjacent clips to maintain continuity.
+- If you have to retime either an audio or visual clip to fix something, you should edit the visual clip.
 - Gaps are highlighted in the audio track by audio_gaps and in the visual track by visual_gaps.
 - Audio clip start_ms must never fall between the start_ms and end_ms of another audio clip.
 - Visual clip start_ms must never fall between the start_ms and end_ms of another visual clip.
