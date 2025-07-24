@@ -1,9 +1,9 @@
 import React from 'react';
-import { AssistantMessage } from '../type';
+import { AssistantMessage, Message } from '../type';
 import { getMutationFromToolCall } from "../utils";
 
 interface ChatSystemMessageProps {
-  message: AssistantMessage;
+  message: Message;
 }
 
 const ChatSystemMessage: React.FC<ChatSystemMessageProps> = ({ message }) => {

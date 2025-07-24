@@ -28,14 +28,14 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
     if (message.role === 'user') {
       return <ChatUserMessage key={message.id} message={message as UserMessage} />;
     } else {
-      return <ChatSystemMessage key={message.id} message={message as AssistantMessage} />;
+      return <ChatSystemMessage key={message.id} message={message} />;
     }
   };
 
   return (
     <div className="h-full w-full flex flex-col">
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-6">
-        {messages.length === 0 ? (
+        {displayMessages.length === 0 ? (
           <div className="text-center text-zinc-400 py-12">
             <p className="text-lg">Start a conversation about your timeline...</p>
           </div>
