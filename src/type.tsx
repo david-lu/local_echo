@@ -1,22 +1,30 @@
 import { z } from "zod";
 
 // Agent state management
-export const AgentStateSchema = z.enum(['idle', 'processing', 'waiting']).describe("Current state of the AI agent");
+export const AgentStateSchema = z
+  .enum(["idle", "processing", "waiting"])
+  .describe("Current state of the AI agent");
 export type AgentState = z.infer<typeof AgentStateSchema>;
 
-export const SpanSchema = z.object({
+export const SpanSchema = z
+  .object({
     start_ms: z.number().describe("Start time of the span in milliseconds"),
-    end_ms: z.number().describe("End time of the span in milliseconds")
-}).describe("A span of time in a Timeline track.");
+    end_ms: z.number().describe("End time of the span in milliseconds"),
+  })
+  .describe("A span of time in a Timeline track.");
 export type Span = z.infer<typeof SpanSchema>;
 
 // Core timeline schemas
 export const BaseClipSchema = SpanSchema.extend({
-    id: z.string().describe("Unique identifier for the clip"),
-    speaker: z.string().nullable().describe("Name of the speaker for the clips. The speaker of an audio and a visual clip should match if they're the same person.")
+  id: z.string().describe("Unique identifier for the clip"),
+  speaker: z
+    .string()
+    .nullable()
+    .describe(
+      "Name of the speaker for the clips. The speaker of an audio and a visual clip should match if they're the same person."
+    ),
 }).describe("A clip is a span of time in a Timeline track.");
 export type BaseClip = z.infer<typeof BaseClipSchema>;
-
 
 export const AudioGenerationParamsSchema = z
   .object({
@@ -151,16 +159,26 @@ export const TimelineSchema = z
 export type Timeline = z.infer<typeof TimelineSchema>;
 
 export const OverlapSchema = SpanSchema.extend({
-    clip_ids: z.array(z.string()).describe("IDs of the clips that overlap")
+  clip_ids: z.array(z.string()).describe("IDs of the clips that overlap"),
 }).describe("An overlap between at least two clips in a timeline");
 export type Overlap = z.infer<typeof OverlapSchema>;
 
 export const RefinedTimelineSchema = TimelineSchema.extend({
-    audio_gaps: z.array(SpanSchema).describe("All the gaps between audio clips in milliseconds"),
-    audio_overlaps: z.array(SpanSchema).describe("All the overlaps between audio clips in milliseconds"),
-    visual_gaps: z.array(SpanSchema).describe("All the gaps between visual clips in milliseconds"),
-    visual_overlaps: z.array(SpanSchema).describe("All the overlaps between visual clips in milliseconds")
-}).describe("Complete timeline with separate audio and visual tracks but also with the gaps and overlaps of the clips.");
+  audio_gaps: z
+    .array(SpanSchema)
+    .describe("All the gaps between audio clips in milliseconds"),
+  audio_overlaps: z
+    .array(SpanSchema)
+    .describe("All the overlaps between audio clips in milliseconds"),
+  visual_gaps: z
+    .array(SpanSchema)
+    .describe("All the gaps between visual clips in milliseconds"),
+  visual_overlaps: z
+    .array(SpanSchema)
+    .describe("All the overlaps between visual clips in milliseconds"),
+}).describe(
+  "Complete timeline with separate audio and visual tracks but also with the gaps and overlaps of the clips."
+);
 export type RefinedTimeline = z.infer<typeof RefinedTimelineSchema>;
 
 // Mutation schemas using extension pattern
@@ -172,6 +190,7 @@ export const MutationTypeSchema = z
     "remove_audio",
     "modify_visual",
     "modify_audio",
+    "shift_clip",
   ])
   .describe(
     "Types of timeline mutations: add, remove, or modify audio/visual clips"
@@ -230,6 +249,15 @@ export const ModifyAudioMutationSchema = BaseMutationSchema.extend({
 }).describe("Mutation to modify an existing audio clip");
 export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
 
+export const ShiftClipMutationSchema = BaseMutationSchema.extend({
+  type: z.literal("shift_clip"),
+  clip_id: z.string().describe("ID of the clip to shift"),
+  shift_amount_ms: z
+    .number()
+    .describe("Amount to shift the clip in milliseconds. Can be negative."),
+}).describe("Shift the noted clip by the given amount");
+export type ShiftClipMutation = z.infer<typeof ShiftClipMutationSchema>;
+
 // COPY of ChatCompletionMessageToolCall
 export const ToolCallSchema = z
   .object({
@@ -253,11 +281,27 @@ export const MessageSchema = z
     role: z
       .enum(["user", "system", "assistant"])
       .describe("Message role indicating it's from the user"),
-    content: z.string().nullable().describe("Text content of the user's message"),
-    refusal: z.string().nullable().describe("Reason for refusal of the message"),
-    annotations: z.array(z.any()).optional().describe("Annotations for the message"),
-    audio: z.any().optional().nullable().describe("Audio content of the message"),
-    tool_calls: z.array(ToolCallSchema).optional().describe("Tool calls to perform"),
+    content: z
+      .string()
+      .nullable()
+      .describe("Text content of the user's message"),
+    refusal: z
+      .string()
+      .nullable()
+      .describe("Reason for refusal of the message"),
+    annotations: z
+      .array(z.any())
+      .optional()
+      .describe("Annotations for the message"),
+    audio: z
+      .any()
+      .optional()
+      .nullable()
+      .describe("Audio content of the message"),
+    tool_calls: z
+      .array(ToolCallSchema)
+      .optional()
+      .describe("Tool calls to perform"),
     function_call: z.any().nullable().describe("Function call to perform"),
 
     // ADDONS
@@ -279,12 +323,11 @@ export const UserMessageSchema = MessageSchema.extend({
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 
 export const AssistantMessageSchema = MessageSchema.extend({
-    role: z
-      .literal("assistant")
-      .describe("Message role indicating it's from the AI system"),
-  }).describe("System message from AI with optional timeline mutations");
-  export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
-  
+  role: z
+    .literal("assistant")
+    .describe("Message role indicating it's from the AI system"),
+}).describe("System message from AI with optional timeline mutations");
+export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
 
 export const AnyMutationSchema = z.union([
   AddVisualMutationSchema,
@@ -295,4 +338,3 @@ export const AnyMutationSchema = z.union([
   ModifyAudioMutationSchema,
 ]);
 export type AnyMutation = z.infer<typeof AnyMutationSchema>;
-

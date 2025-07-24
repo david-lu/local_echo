@@ -20,6 +20,7 @@ import {
   ToolCall,
   AnyMutation,
   BaseMutation,
+  ShiftClipMutationSchema,
 } from "./type";
 import { convertToOpenAIMessage, getMutationsFromMessages, refineTimeline, stringifyWithoutNull } from "./utils";
 import { getMutationFromToolCall } from "./utils";
@@ -199,6 +200,10 @@ const App: React.FC = () => {
             zodFunction({
               name: "modify_audio",
               parameters: ModifyAudioMutationSchema,
+            }),
+            zodFunction({
+              name: "shift_clip",
+              parameters: ShiftClipMutationSchema,
             }),
           ],
           store: true,
