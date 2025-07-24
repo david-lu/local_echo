@@ -42,7 +42,7 @@ const App: React.FC = () => {
   const [selectedClip, setSelectedClip] = useState<
     AudioClip | VisualClip | null
   >(null);
-  const [partialMessages, setPartialMessages] = useState<AssistantMessage[]>([]);
+  const [partialMessages, setPartialMessages] = useState<Message[]>([]);
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
@@ -72,25 +72,13 @@ const App: React.FC = () => {
     }
   };
 
-  const addMessage = (
+  const addPartialMessage = (
     message: Message
   ) => {
-    setMessages((prev) => [
+    setPartialMessages((prev) => [
       ...prev,
       message,
     ]);
-  };
-
-  const addUserMessage = (
-    content: string,
-  ) => {
-    addMessage({
-      id: uuidv4(),
-      role: "user",
-      content,
-      timestamp: Date.now(),
-      refusal: null,
-    });
   };
 
   /**
@@ -102,15 +90,13 @@ const App: React.FC = () => {
     * 
     */
 
-  console.log('rendering', currentTimeline)
 
   const buildConversationHistory = (
     timeline: TimelineType,
     messages: Message[],
-    systemMessages: AssistantMessage[],
-    userMessage: string
+    systemMessages: Message[],
   ) => {
-    console.log(messages, systemMessages, userMessage);
+    console.log(messages, systemMessages);
     let mutatedTimeline = currentTimeline;
     let history = []
     history.push({
@@ -118,10 +104,6 @@ const App: React.FC = () => {
       content: AGENT_PROMPT,
     });
     history.push(...messages.map(convertToOpenAIMessage));
-    history.push({
-      role: "user" as const,
-      content: userMessage + `\n\nCurrent timeline: ${stringifyWithoutNull(timeline)}`,
-    });
     for (const systemMessage of systemMessages) {
       history.push(convertToOpenAIMessage(systemMessage));
       // Add tool response for each tool call in the system message
@@ -154,7 +136,7 @@ const App: React.FC = () => {
     }
 
     const userMessage = content.trim();
-    addUserMessage(userMessage);
+    
     setLoading(true);
     setError(null);
 
@@ -165,7 +147,15 @@ const App: React.FC = () => {
         return;
       }
 
-      const localPartialMessages = [...partialMessages];
+      const localMessages: UserMessage = {
+        id: uuidv4(),
+        role: "user",
+        content: userMessage + `\n\nCurrent timeline: ${stringifyWithoutNull(currentTimeline)}`,
+        timestamp: Date.now(),
+        refusal: null,
+      };
+      const localPartialMessages = [...partialMessages, localMessages];
+      setPartialMessages([...localPartialMessages])
 
       while (true) {
         console.log('while true')
@@ -173,7 +163,6 @@ const App: React.FC = () => {
           currentTimeline,
           messages,
           localPartialMessages,
-          userMessage
         );
         console.log("CONVERSATION HISTORY", conversationHistory);
 
@@ -232,7 +221,7 @@ const App: React.FC = () => {
     } catch (error: any) {
       console.error("Error:", error);
       setError(`Error: ${error.message}`);
-      addMessage({
+      addPartialMessage({
         role: "system", 
         content: `Sorry, I encountered an error: ${error.message}`,
         id: uuidv4(),
@@ -261,6 +250,8 @@ const App: React.FC = () => {
     const mutations = getMutationsFromMessages(partialMessages);
     return applyMutations(currentTimeline, mutations);
   }, [currentTimeline, partialMessages]);
+
+  console.log('rendering', displayTimeline)
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950">

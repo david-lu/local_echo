@@ -45,9 +45,9 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
   console.log('getOverlaps clips', clips)
 
   for (const clip of clips) {
-    const newOverlaps: Overlap[] = [...overlaps]
+    const oldOverlaps: Overlap[] = [...overlaps]
     // First, check against existing overlaps
-    for (const overlap of overlaps) {
+    for (const overlap of oldOverlaps) {
       if (
         clip.start_ms === overlap.start_ms &&
         clip.end_ms === overlap.end_ms
@@ -58,7 +58,7 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
         }
       } else if (isOverlapping(clip, overlap)) {
         // Partial overlap, create a new overlap with intersection
-        newOverlaps.push({
+        overlaps.push({
           start_ms: Math.max(clip.start_ms, overlap.start_ms),
           end_ms: Math.min(clip.end_ms, overlap.end_ms),
           clip_ids: Array.from(new Set(overlap.clip_ids.concat(clip.id))),
@@ -84,7 +84,7 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
           if (!existing.clip_ids.includes(other.id))
             existing.clip_ids.push(other.id);
         } else {
-          newOverlaps.push({
+          overlaps.push({
             start_ms: overlapStart,
             end_ms: overlapEnd,
             clip_ids: [clip.id, other.id],
@@ -92,7 +92,6 @@ export function getOverlaps(clips: BaseClip[]): Overlap[] {
         }
       }
     }
-    overlaps = newOverlaps
   }
 
   return overlaps;

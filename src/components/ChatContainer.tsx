@@ -7,7 +7,7 @@ import { Message, AssistantMessage, UserMessage } from '../type';
 interface ChatContainerProps {
   messages: Message[];
   loading: boolean;
-  partialMessages: AssistantMessage[];
+  partialMessages: Message[];
 }
 
 const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partialMessages }) => {

@@ -278,6 +278,13 @@ export const UserMessageSchema = MessageSchema.extend({
 }).describe("User message in the chat conversation");
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 
+export const AssistantMessageSchema = MessageSchema.extend({
+    role: z
+      .literal("assistant")
+      .describe("Message role indicating it's from the AI system"),
+  }).describe("System message from AI with optional timeline mutations");
+  export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
+  
 
 export const AnyMutationSchema = z.union([
   AddVisualMutationSchema,
@@ -289,9 +296,3 @@ export const AnyMutationSchema = z.union([
 ]);
 export type AnyMutation = z.infer<typeof AnyMutationSchema>;
 
-export const AssistantMessageSchema = MessageSchema.extend({
-  role: z
-    .literal("assistant")
-    .describe("Message role indicating it's from the AI system"),
-}).describe("System message from AI with optional timeline mutations");
-export type AssistantMessage = z.infer<typeof AssistantMessageSchema>;
