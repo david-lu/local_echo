@@ -324,6 +324,7 @@ export const UserMessageSchema = MessageSchema.extend({
   role: z
     .literal("user")
     .describe("Message role indicating it's from the user"),
+    timeline: TimelineSchema.describe("Timeline to edit"),
 }).describe("User message in the chat conversation");
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 

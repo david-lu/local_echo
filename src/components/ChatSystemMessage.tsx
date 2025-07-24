@@ -1,5 +1,5 @@
 import React from 'react';
-import { AssistantMessage, Message } from '../type';
+import { Message } from '../type';
 import { getMutationFromToolCall } from "../utils";
 
 interface ChatSystemMessageProps {

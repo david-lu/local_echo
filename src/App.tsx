@@ -22,7 +22,12 @@ import {
   BaseMutation,
   RetimeClipsMutationSchema,
 } from "./type";
-import { convertToOpenAIMessage, getMutationsFromMessages, refineTimeline, stringifyWithoutNull } from "./utils";
+import {
+  convertToOpenAIMessage,
+  getMutationsFromMessages,
+  refineTimeline,
+  stringifyWithoutNull,
+} from "./utils";
 import { getMutationFromToolCall } from "./utils";
 import { AGENT_PROMPT } from "./prompts";
 import { parseTimeline } from "./timelineConverter";
@@ -73,13 +78,8 @@ const App: React.FC = () => {
     }
   };
 
-  const addPartialMessage = (
-    message: Message
-  ) => {
-    setPartialMessages((prev) => [
-      ...prev,
-      message,
-    ]);
+  const addPartialMessage = (message: Message) => {
+    setPartialMessages((prev) => [...prev, message]);
   };
 
   /**
@@ -91,20 +91,28 @@ const App: React.FC = () => {
     * 
     */
 
-
   const buildConversationHistory = (
-    timeline: TimelineType,
     messages: Message[],
-    systemMessages: Message[],
+    systemMessages: Message[]
   ) => {
     console.log(messages, systemMessages);
     let mutatedTimeline = currentTimeline;
-    let history = []
+    let history = [];
     history.push({
       role: "system" as const,
       content: AGENT_PROMPT,
     });
-    history.push(...messages.map(convertToOpenAIMessage));
+    for (const message of messages) {
+      if (message.role === "user") {
+        const userMessage = message as UserMessage;
+        message.content =
+          userMessage.content +
+          `\n\nCurrent timeline: ${stringifyWithoutNull(
+            refineTimeline(userMessage.timeline)
+          )}`;
+      }
+      history.push(convertToOpenAIMessage(message));
+    }
     for (const systemMessage of systemMessages) {
       history.push(convertToOpenAIMessage(systemMessage));
       // Add tool response for each tool call in the system message
@@ -116,9 +124,9 @@ const App: React.FC = () => {
           continue;
         }
         mutatedTimeline = applyMutations(mutatedTimeline, [mutation]);
-        console.log('mutatedTimeline', mutatedTimeline)
-        const refinedTimeline = refineTimeline(mutatedTimeline)
-        console.log('refineTimeline', refinedTimeline)
+        console.log("mutatedTimeline", mutatedTimeline);
+        const refinedTimeline = refineTimeline(mutatedTimeline);
+        console.log("refineTimeline", refinedTimeline);
         history.push({
           role: "tool",
           tool_call_id: toolCall.id,
@@ -137,7 +145,7 @@ const App: React.FC = () => {
     }
 
     const userMessage = content.trim();
-    
+
     setLoading(true);
     setError(null);
 
@@ -151,19 +159,19 @@ const App: React.FC = () => {
       const localMessages: UserMessage = {
         id: uuidv4(),
         role: "user",
-        content: userMessage + `\n\nCurrent timeline: ${stringifyWithoutNull(refineTimeline(currentTimeline))}`,
+        content: userMessage,
         timestamp: Date.now(),
         refusal: null,
+        timeline: currentTimeline,
       };
       const localPartialMessages = [...partialMessages, localMessages];
-      setPartialMessages([...localPartialMessages])
+      setPartialMessages([...localPartialMessages]);
 
       while (true) {
-        console.log('while true')
+        console.log("while true");
         const conversationHistory = buildConversationHistory(
-          currentTimeline,
           messages,
-          localPartialMessages,
+          localPartialMessages
         );
         console.log("CONVERSATION HISTORY", conversationHistory);
 
@@ -227,7 +235,7 @@ const App: React.FC = () => {
       console.error("Error:", error);
       setError(`Error: ${error.message}`);
       addPartialMessage({
-        role: "system", 
+        role: "system",
         content: `Sorry, I encountered an error: ${error.message}`,
         id: uuidv4(),
         timestamp: Date.now(),
@@ -256,7 +264,7 @@ const App: React.FC = () => {
     return applyMutations(currentTimeline, mutations);
   }, [currentTimeline, partialMessages]);
 
-  console.log('rendering', displayTimeline)
+  console.log("rendering", displayTimeline);
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950">
