@@ -1,3 +1,4 @@
+import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
 import {
   Timeline,
   AudioClip,
@@ -11,6 +12,7 @@ import {
   RemoveVisualMutation,
   RetimeClipsMutation,
 } from "./type";
+import { getMutationFromToolCall } from "./utils";
 
 /**
  * Applies a single mutation to the timeline
@@ -104,52 +106,4 @@ export function applyMutations(
   mutations: BaseMutation[]
 ): Timeline {
   return mutations.reduce(applyMutation, timeline);
-}
-
-/**
- * Validates that a timeline has no overlapping clips
- */
-export function validateTimeline(timeline: Timeline): {
-  isValid: boolean;
-  errors: string[];
-} {
-  const errors: string[] = [];
-
-  // Check audio track for overlaps
-  for (let i = 0; i < timeline.audio_track.length; i++) {
-    for (let j = i + 1; j < timeline.audio_track.length; j++) {
-      const clip1 = timeline.audio_track[i];
-      const clip2 = timeline.audio_track[j];
-
-      if (clip1.start_ms < clip2.end_ms && clip1.end_ms > clip2.start_ms) {
-        errors.push(`Audio clips ${clip1.id} and ${clip2.id} overlap`);
-      }
-    }
-  }
-
-  // Check visual track for overlaps
-  for (let i = 0; i < timeline.visual_track.length; i++) {
-    for (let j = i + 1; j < timeline.visual_track.length; j++) {
-      const clip1 = timeline.visual_track[i];
-      const clip2 = timeline.visual_track[j];
-
-      if (clip1.start_ms < clip2.end_ms && clip1.end_ms > clip2.start_ms) {
-        errors.push(`Visual clips ${clip1.id} and ${clip2.id} overlap`);
-      }
-    }
-  }
-
-  // Check for invalid timing
-  [...timeline.audio_track, ...timeline.visual_track].forEach((clip) => {
-    if (clip.start_ms >= clip.end_ms) {
-      errors.push(
-        `Clip ${clip.id} has invalid timing: start_ms (${clip.start_ms}) >= end_ms (${clip.end_ms})`
-      );
-    }
-  });
-
-  return {
-    isValid: errors.length === 0,
-    errors,
-  };
 }

@@ -21,6 +21,7 @@ import {
   AnyMutation,
   BaseMutation,
   RetimeClipsMutationSchema,
+  AgentState,
 } from "./type";
 import {
   convertToOpenAIMessage,
@@ -40,7 +41,7 @@ import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<(Message | AssistantMessage)[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [agentState, setAgentState] = useState<AgentState>("idle");
   const [error, setError] = useState<string | null>(null);
   const [currentTimeline, setCurrentTimeline] = useState(
     parseTimeline(timelineJson)
@@ -92,7 +93,6 @@ const App: React.FC = () => {
     */
 
   const buildConversationHistory = (
-    messages: Message[],
     systemMessages: Message[]
   ) => {
     console.log(messages, systemMessages);
@@ -102,17 +102,6 @@ const App: React.FC = () => {
       role: "system" as const,
       content: AGENT_PROMPT_LONG,
     });
-    for (const message of messages) {
-      if (message.role === "user") {
-        const userMessage = message as UserMessage;
-        message.content =
-          userMessage.content +
-          `\n\nCurrent timeline: ${stringifyWithoutNull(
-            refineTimeline(userMessage.timeline)
-          )}`;
-      }
-      history.push(convertToOpenAIMessage(message));
-    }
     for (const systemMessage of systemMessages) {
       history.push(convertToOpenAIMessage(systemMessage));
       // Add tool response for each tool call in the system message
@@ -146,15 +135,15 @@ const App: React.FC = () => {
 
     const userMessage = content.trim();
 
-    setLoading(true);
     setError(null);
 
     try {
       const client = initializeOpenAI();
       if (!client) {
-        setLoading(false);
         return;
       }
+
+      setAgentState("processing");
 
       const localMessages: UserMessage = {
         id: uuidv4(),
@@ -170,7 +159,6 @@ const App: React.FC = () => {
       while (true) {
         console.log("while true");
         const conversationHistory = buildConversationHistory(
-          messages,
           localPartialMessages
         );
         console.log("CONVERSATION HISTORY", conversationHistory);
@@ -231,6 +219,13 @@ const App: React.FC = () => {
           break;
         }
       }
+
+      if (localPartialMessages.length > 1) {
+        setAgentState("waiting");
+      } else {
+        acceptChanges(localPartialMessages);
+        setAgentState("idle");
+      }
     } catch (error: any) {
       console.error("Error:", error);
       setError(`Error: ${error.message}`);
@@ -241,14 +236,26 @@ const App: React.FC = () => {
         timestamp: Date.now(),
         refusal: null,
       });
-    } finally {
-      setLoading(false);
+      setAgentState("idle");
     }
   };
 
   const resetTimeline = () => {
     setCurrentTimeline({ audio_track: [], visual_track: [] });
     setMessages([]);
+  };
+
+  const acceptChanges = (partialMessages: Message[]) => {
+    setAgentState("idle");
+    const mutations = getMutationsFromMessages(partialMessages);
+    setCurrentTimeline(applyMutations(currentTimeline, mutations));
+    setMessages([...messages, ...partialMessages]);
+    setPartialMessages([]);
+  };
+
+  const rejectChanges = () => {
+    setAgentState("idle");
+    setPartialMessages([]);
   };
 
   const clearChat = () => {
@@ -275,8 +282,8 @@ const App: React.FC = () => {
               <div className="flex-1 min-h-0">
                 <ChatContainer
                   messages={messages}
-                  loading={loading}
-                  partialMessages={partialMessages || []}
+                  loading={agentState === "processing"}
+                  partialMessages={partialMessages}
                 />
               </div>
 
@@ -286,10 +293,27 @@ const App: React.FC = () => {
                 </div>
               )}
 
+              {agentState === "waiting" && (
+                <div className="flex flex-row flex-shrink-0 mx-3 mb-2 justify-end">
+                  <button
+                    className="bg-green-900 hover:bg-green-800 border border-green-700 text-white text-xs px-3 py-1.5 rounded-md mr-2"
+                    onClick={() => acceptChanges(partialMessages)}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="bg-red-900 hover:bg-red-800 border border-red-700   text-white text-xs px-3 py-1.5 rounded-md"
+                    onClick={rejectChanges}
+                  >
+                    Reject
+                  </button>
+                </div>
+              )}
+
               <div className="flex-shrink-0">
                 <ChatInput
                   onSubmit={handleSubmit}
-                  loading={loading}
+                  loading={agentState === "processing"}
                   onClearChat={clearChat}
                 />
               </div>

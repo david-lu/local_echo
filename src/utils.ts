@@ -216,3 +216,4 @@ export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
     };
     return refinedTimeline;
   }
+  
