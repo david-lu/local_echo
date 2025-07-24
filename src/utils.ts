@@ -18,7 +18,7 @@ import {
 } from "./type";
 
 export const stringifyWithoutNull = (obj: unknown): string =>
-    JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
+  JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
 
 export function sortTimeline(timeline: Timeline): Timeline {
   timeline.audio_track = timeline.audio_track.sort(
@@ -41,12 +41,12 @@ function isOverlapping(a: Span, b: Span): boolean {
 
 export function getOverlaps(clips: BaseClip[]): Overlap[] {
   let overlaps: Overlap[] = [];
-  const others = [...clips]
+  const others = [...clips];
 
-  console.log('getOverlaps clips', clips)
+  console.log("getOverlaps clips", clips);
 
   for (const clip of clips) {
-    const oldOverlaps: Overlap[] = [...overlaps]
+    const oldOverlaps: Overlap[] = [...overlaps];
     // First, check against existing overlaps
     for (const overlap of oldOverlaps) {
       if (
@@ -106,7 +106,7 @@ export const getGaps = (
   clips: BaseClip[],
   timeline_duration_ms?: number
 ): Span[] => {
-  console.log('getGaps clips', clips)
+  console.log("getGaps clips", clips);
   const timelineEnd = Math.max(
     getTotalDuration(clips),
     timeline_duration_ms || 0
@@ -202,18 +202,19 @@ export const getMutationsFromMessages = (
   return mutations;
 };
 
-
 export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
-    const totalDuration = getTotalDuration([...timeline.audio_track, ...timeline.visual_track]);
-    const refinedTimeline: RefinedTimeline = {
-      ...timeline,
-      audio_gaps: getGaps(timeline.audio_track, totalDuration),
-      // audio_overlaps: [],
-      audio_overlaps: getOverlaps(timeline.audio_track),
-      visual_gaps: getGaps(timeline.visual_track, totalDuration),
-      // visual_overlaps: [],
-      visual_overlaps: getOverlaps(timeline.visual_track)
-    };
-    return refinedTimeline;
-  }
-  
+  const totalDuration = getTotalDuration([
+    ...timeline.audio_track,
+    ...timeline.visual_track,
+  ]);
+  const refinedTimeline: RefinedTimeline = {
+    ...timeline,
+    audio_gaps: getGaps(timeline.audio_track, totalDuration),
+    // audio_overlaps: [],
+    audio_overlaps: getOverlaps(timeline.audio_track),
+    visual_gaps: getGaps(timeline.visual_track, totalDuration),
+    // visual_overlaps: [],
+    visual_overlaps: getOverlaps(timeline.visual_track),
+  };
+  return refinedTimeline;
+};
