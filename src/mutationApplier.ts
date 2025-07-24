@@ -79,16 +79,25 @@ export function applyMutation(
     case "retime_clips": {
       const retimeClipsMutation = mutation as RetimeClipsMutation;
       for (const retime of retimeClipsMutation.retimes) {
-        const clip =
-          newTimeline.audio_track.find(
-            (clip) => clip.id === retime.clip_id
-          ) ||
-          newTimeline.visual_track.find(
-            (clip) => clip.id === retime.clip_id
-          );
-        if (clip) {
-          clip.start_ms = retime.start_time_ms;
-          clip.end_ms = retime.end_time_ms;
+        const audioIndex = newTimeline.audio_track.findIndex(
+          (clip) => clip.id === retime.clip_id
+        );
+        const visualIndex = newTimeline.visual_track.findIndex(
+          (clip) => clip.id === retime.clip_id
+        );
+        if (audioIndex !== -1) {
+          newTimeline.audio_track[audioIndex] = {
+            ...newTimeline.audio_track[audioIndex],
+            start_ms: retime.start_time_ms,
+            end_ms: retime.end_time_ms,
+          }
+        }
+        if (visualIndex !== -1) {
+          newTimeline.visual_track[visualIndex] = {
+            ...newTimeline.visual_track[visualIndex],
+            start_ms: retime.start_time_ms,
+            end_ms: retime.end_time_ms,
+          }
         }
       }
       break;
