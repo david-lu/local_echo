@@ -5,7 +5,6 @@ import VisualClip from './VisualClip';
 
 interface TimelineTrackProps {
   clips: (AudioClipType | VisualClipType)[];
-  trackLabel: string;
   zIndex: number;
   getWidth: (start: number, end: number) => number;
   getLeft: (start: number) => number;
@@ -14,7 +13,6 @@ interface TimelineTrackProps {
 
 export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   clips,
-  trackLabel,
   zIndex,
   getWidth,
   getLeft,
@@ -22,9 +20,6 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
 }) => {
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-12 text-right pr-2 text-xs font-semibold text-zinc-300 select-none flex items-center justify-end gap-1`}>
-        <span>{trackLabel}</span>
-      </div>
       <div className="relative flex-1 h-8 bg-zinc-800 border border-zinc-700 rounded overflow-visible" style={{ zIndex }}>
         {clips.map((clip, i) => {
           const startPercent = getLeft(clip.start_ms);

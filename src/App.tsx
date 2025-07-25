@@ -1,10 +1,11 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { OpenAI } from "openai";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import Timeline from "./components/Timeline";
 import ChatContainer from "./components/ChatContainer";
 import ChatInput from "./components/ChatInput";
 import ClipDisplayer from "./components/ClipDisplayer";
+import TimelineControls from "./components/TimelineControls";
 import {
   Message,
   UserMessage,
@@ -48,11 +49,19 @@ const App: React.FC = () => {
   >(null);
   const [partialMessages, setPartialMessages] = useState<Message[]>([]);
 
+  // Playback state
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  
+
+
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   // Create a ref to store the OpenAI client
   const openAIClientRef = useRef<OpenAI | null>(null);
+
+
 
   // console.log(zodResponseFormat(SystemMessageSchema, "message"));
 
@@ -265,7 +274,47 @@ const App: React.FC = () => {
     return applyMutations(currentTimeline, mutations);
   }, [currentTimeline, partialMessages]);
 
-  console.log("rendering", displayTimeline);
+  // Calculate timeline duration
+  const timelineDuration = useMemo(() => {
+    const maxEnd = Math.max(
+      ...displayTimeline.audio_track.map(c => c.start_ms + c.duration_ms),
+      ...displayTimeline.visual_track.map(c => c.start_ms + c.duration_ms),
+      10000 // fallback
+    );
+    return maxEnd;
+  }, [displayTimeline]);
+
+  // Playback animation loop
+  useEffect(() => {
+    if (!isPlaying) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentTime(prev => {
+        const newTime = prev + 16; // ~60fps (16ms per frame)
+        if (newTime >= timelineDuration) {
+          setIsPlaying(false);
+          return timelineDuration;
+        }
+        return newTime;
+      });
+    }, 16);
+
+    return () => clearInterval(interval);
+  }, [isPlaying, timelineDuration]);
+
+  // Playback control functions
+  const handlePlayPause = () => {
+    console.log('Play/Pause clicked, current isPlaying:', isPlaying);
+    setIsPlaying(prev => !prev);
+  };
+
+  const handleSeek = (time: number) => {
+    setCurrentTime(Math.max(0, Math.min(time, timelineDuration)));
+  };
+
+  console.log("rendering", displayTimeline, "isPlaying:", isPlaying, "currentTime:", currentTime);
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950">
@@ -323,12 +372,23 @@ const App: React.FC = () => {
                 <ClipDisplayer selectedClip={selectedClip} />
               </div>
 
+              {/* Timeline Controls */}
+              <div className="flex-shrink-0">
+                <TimelineControls
+                  currentTime={currentTime}
+                  duration={timelineDuration}
+                />
+              </div>
+
               {/* Timeline */}
               <div className="flex-shrink-0 h-44">
                 <Timeline
                   timeline={displayTimeline}
                   onResetTimeline={resetTimeline}
                   onClipClick={handleClipClick}
+                  currentTime={currentTime}
+                  isPlaying={isPlaying}
+                  onPlayPause={handlePlayPause}
                 />
               </div>
             </div>
