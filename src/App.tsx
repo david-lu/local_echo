@@ -24,6 +24,7 @@ import {
     convertToOpenAIMessage,
     getClipAtTime,
     getMutationsFromMessages,
+    hashToArrayItem,
     refineTimeline,
     stringifyWithoutNull,
 } from "./utils";
@@ -329,7 +330,11 @@ const App: React.FC = () => {
                 duration_ms: clip.duration_ms,
                 speaker: clip.speaker,
                 type: "video",
-                src: "https://videos.pexels.com/video-files/33003281/14065566_2560_1440_24fps.mp4",
+                src: hashToArrayItem(clip.id, [
+                  "https://videos.pexels.com/video-files/33003281/14065566_2560_1440_24fps.mp4",
+                  "https://images.pexels.com/video-files/3256542/3256542-sd_960_540_25fps.mp4",
+                  "https://images.pexels.com/video-files/5091624/5091624-sd_960_540_24fps.mp4",
+                ]) ,
             };
         });
     }, [currentTimeline]);

@@ -232,3 +232,14 @@ export function objectFitContain(container: Size, child: Size): Rect {
 
   return { width, height, x, y };
 }
+
+export function hashToArrayItem(str: string, items: any[], hash = 5234): any {
+  // Basic hash function (djb2)
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 33) ^ str.charCodeAt(i);
+  }
+
+  // Ensure positive index
+  const index = Math.abs(hash) % items.length;
+  return items[index];
+}
