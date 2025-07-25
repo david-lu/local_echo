@@ -19,6 +19,16 @@ import {
 export const stringifyWithoutNull = (obj: unknown): string =>
   JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
 
+export const formatTime = (ms: number): string => {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const centiseconds = Math.floor((ms % 1000) / 10);
+  
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`;
+};
+
 export function sortTimeline(timeline: Timeline): Timeline {
   timeline.audio_track = timeline.audio_track.sort(
     (a, b) => a.start_ms - b.start_ms
