@@ -102,7 +102,10 @@ export const PixiVideoPlayer: React.FC<Props> = ({
             }
             // Set video time
             const localTime = playheadTimeMs - visual.start_ms;
-            if (Math.abs(visual.video!.currentTime * 1000 - localTime) > 50) {
+            const videoTime = visual.video!.currentTime * 1000;
+            console.log("video time", videoTime, localTime);
+            if (Math.abs(videoTime - localTime) > 50) {
+                console.log("setting video time", localTime / 1000);
                 visual.video!.currentTime = localTime / 1000;
             }
         }
