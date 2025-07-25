@@ -193,4 +193,5 @@ export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
     visual_gaps: getGaps(timeline.visual_track, totalDuration),
   };
   return refinedTimeline;
-};
+};// Convert JSON to Timeline with Zod validation
+

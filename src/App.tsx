@@ -29,7 +29,7 @@ import {
 } from "./utils";
 import { getMutationFromToolCall } from "./utils";
 import { AGENT_PROMPT, AGENT_PROMPT_LONG } from "./prompts";
-import { parseTimeline } from "./timelineConverter";
+import { parseTimeline } from './utils';
 import timelineJson from "./data/sampleTimeline.json";
 import { Timeline as TimelineType } from "./type";
 import { zodFunction, zodResponseFormat } from "openai/helpers/zod";
@@ -52,16 +52,12 @@ const App: React.FC = () => {
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  
-
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   // Create a ref to store the OpenAI client
   const openAIClientRef = useRef<OpenAI | null>(null);
-
-
 
   // console.log(zodResponseFormat(SystemMessageSchema, "message"));
 
@@ -88,15 +84,6 @@ const App: React.FC = () => {
   const addPartialMessage = (message: Message) => {
     setPartialMessages((prev) => [...prev, message]);
   };
-
-  /**
-   * messages.push({
-      role: "tool",
-      tool_call_id: toolCall.id,
-      content: result.toString()
-  });
-    * 
-    */
 
   const buildConversationHistory = (systemMessages: Message[]) => {
     console.log(messages, systemMessages);
@@ -277,8 +264,8 @@ const App: React.FC = () => {
   // Calculate timeline duration
   const timelineDuration = useMemo(() => {
     const maxEnd = Math.max(
-      ...displayTimeline.audio_track.map(c => c.start_ms + c.duration_ms),
-      ...displayTimeline.visual_track.map(c => c.start_ms + c.duration_ms),
+      ...displayTimeline.audio_track.map((c) => c.start_ms + c.duration_ms),
+      ...displayTimeline.visual_track.map((c) => c.start_ms + c.duration_ms),
       10000 // fallback
     );
     return maxEnd;
@@ -291,7 +278,7 @@ const App: React.FC = () => {
     }
 
     const interval = setInterval(() => {
-      setCurrentTime(prev => {
+      setCurrentTime((prev) => {
         const newTime = prev + 16; // ~60fps (16ms per frame)
         if (newTime >= timelineDuration) {
           setIsPlaying(false);
@@ -306,15 +293,22 @@ const App: React.FC = () => {
 
   // Playback control functions
   const handlePlayPause = () => {
-    console.log('Play/Pause clicked, current isPlaying:', isPlaying);
-    setIsPlaying(prev => !prev);
+    console.log("Play/Pause clicked, current isPlaying:", isPlaying);
+    setIsPlaying((prev) => !prev);
   };
 
   const handleSeek = (time: number) => {
     setCurrentTime(Math.max(0, Math.min(time, timelineDuration)));
   };
 
-  console.log("rendering", displayTimeline, "isPlaying:", isPlaying, "currentTime:", currentTime);
+  console.log(
+    "rendering",
+    displayTimeline,
+    "isPlaying:",
+    isPlaying,
+    "currentTime:",
+    currentTime
+  );
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950">

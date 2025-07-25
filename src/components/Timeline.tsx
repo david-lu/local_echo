@@ -35,9 +35,6 @@ export const Timeline: React.FC<TimelineProps> = ({
   const getLeft = (start: number) => (start / maxEnd) * 100;
 
 
-
-
-
   return (
     <div className="h-full bg-zinc-900 border-t border-zinc-800 flex flex-col">
       <div className="flex-shrink-0 p-2 border-b border-zinc-800 bg-zinc-950">
