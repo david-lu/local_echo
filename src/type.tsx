@@ -6,25 +6,29 @@ export const AgentStateSchema = z
   .describe("Current state of the AI agent");
 export type AgentState = z.infer<typeof AgentStateSchema>;
 
-export const SpanSchema = z
+export const RangeSchema = z
   .object({
     start_ms: z.number().describe("Start time of the span in milliseconds"),
     end_ms: z.number().describe("End time of the span in milliseconds"),
   })
   .describe("A span of time in a Timeline track.");
-export type Span = z.infer<typeof SpanSchema>;
+export type Range = z.infer<typeof RangeSchema>;
 
 // Core timeline schemas
-export const BaseClipSchema = SpanSchema.extend({
-  id: z.string().describe("Unique identifier for the clip"),
-  speaker: z
-    .string()
-    .nullable()
-    .describe(
-      "Name of the speaker for the clips. The speaker of an audio and a visual clip should match if they're the same person."
-    ),
-}).describe("A clip is a span of time in a Timeline track.");
-export type BaseClip = z.infer<typeof BaseClipSchema>;
+export const ClipSchema = z
+  .object({
+    id: z.string().describe("Unique identifier for the clip"),
+    start_ms: z.number().describe("Start time of the clip in milliseconds"),
+    duration_ms: z.number().describe("Duration of the clip in milliseconds"),
+    speaker: z
+      .string()
+      .nullable()
+      .describe(
+        "Name of the speaker for the clips. The speaker of an audio and a visual clip should match if they're the same person."
+      ),
+  })
+  .describe("A clip is a span of time in a Timeline track.");
+export type Clip = z.infer<typeof ClipSchema>;
 
 export const AudioGenerationParamsSchema = z
   .object({
@@ -39,7 +43,7 @@ export const AudioGenerationParamsSchema = z
   .describe("Parameters for text-to-speech audio generation");
 export type AudioGenerationParams = z.infer<typeof AudioGenerationParamsSchema>;
 
-export const AudioClipSchema = BaseClipSchema.extend({
+export const AudioClipSchema = ClipSchema.extend({
   type: z.literal("audio").describe("Type identifier for audio clips"),
   audio_generation_params: AudioGenerationParamsSchema.nullable().describe(
     "Text-to-speech parameters, null if audio is pre-generated"
@@ -115,7 +119,7 @@ export const VideoGenerationParamsSchema = z
   .describe("Parameters for AI video generation");
 export type VideoGenerationParams = z.infer<typeof VideoGenerationParamsSchema>;
 
-export const VisualClipSchema = BaseClipSchema.extend({
+export const VisualClipSchema = ClipSchema.extend({
   type: z.literal("visual").describe("Type identifier for visual clips"),
   image_generation_params: z
     .union([
@@ -158,24 +162,32 @@ export const TimelineSchema = z
   .describe("Complete timeline with separate audio and visual tracks");
 export type Timeline = z.infer<typeof TimelineSchema>;
 
-export const OverlapSchema = SpanSchema.extend({
-  clip_ids: z.array(z.string()).describe("IDs of the clips that overlap"),
-}).describe("An overlap between at least two clips in a timeline");
-export type Overlap = z.infer<typeof OverlapSchema>;
+export const RefinedSchema = z
+  .object({
+    overlaps: z.array(
+      z
+        .object({
+          clip_id: z.string().describe("ID of the clip that overlaps"),
+        })
+        .merge(RangeSchema)
+    ),
+    end_ms: z.number().describe("End time of the clip in milliseconds"),
+  })
+  .describe("An overlap between two clips in a timeline");
 
 export const RefinedTimelineSchema = TimelineSchema.extend({
   audio_gaps: z
-    .array(SpanSchema)
+    .array(RangeSchema)
     .describe("All the gaps between audio clips in milliseconds"),
-  audio_overlaps: z
-    .array(SpanSchema)
-    .describe("All the overlaps between audio clips in milliseconds"),
   visual_gaps: z
-    .array(SpanSchema)
+    .array(RangeSchema)
     .describe("All the gaps between visual clips in milliseconds"),
-  visual_overlaps: z
-    .array(SpanSchema)
-    .describe("All the overlaps between visual clips in milliseconds"),
+  audio_track: z
+    .array(AudioClipSchema.merge(RefinedSchema))
+    .describe("Array of audio clips in chronological order"),
+  visual_track: z
+    .array(VisualClipSchema.merge(RefinedSchema))
+    .describe("Array of visual clips in chronological order"),
 }).describe(
   "Complete timeline with separate audio and visual tracks but also with the gaps and overlaps of the clips."
 );
@@ -251,15 +263,19 @@ export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>;
 
 export const RetimeClipsMutationSchema = BaseMutationSchema.extend({
   type: z.literal("retime_clips"),
-  retimes: z.array(z.object({
-    clip_id: z.string().describe("ID of the clip to shift"),
-    start_time_ms: z
-      .number()
-      .describe("New start time of the clip in milliseconds"),
-    end_time_ms: z
-      .number()
-      .describe("New end time of the clip in milliseconds"),
-  })).describe("Array of retimes to apply to the clips"),
+  retimes: z
+    .array(
+      z.object({
+        clip_id: z.string().describe("ID of the clip to shift"),
+        start_time_ms: z
+          .number()
+          .describe("New start time of the clip in milliseconds"),
+        duration_ms: z
+          .number()
+          .describe("New duration of the clip in milliseconds"),
+      })
+    )
+    .describe("Array of retimes to apply to the clips"),
 }).describe("Retime the noted clips by the given amount");
 export type RetimeClipsMutation = z.infer<typeof RetimeClipsMutationSchema>;
 
@@ -324,7 +340,7 @@ export const UserMessageSchema = MessageSchema.extend({
   role: z
     .literal("user")
     .describe("Message role indicating it's from the user"),
-    timeline: TimelineSchema.describe("Timeline to edit"),
+  timeline: TimelineSchema.describe("Timeline to edit"),
 }).describe("User message in the chat conversation");
 export type UserMessage = z.infer<typeof UserMessageSchema>;
 

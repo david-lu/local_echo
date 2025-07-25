@@ -17,9 +17,6 @@ import {
   RemoveAudioMutationSchema,
   RemoveVisualMutationSchema,
   AssistantMessage,
-  ToolCall,
-  AnyMutation,
-  BaseMutation,
   RetimeClipsMutationSchema,
   AgentState,
 } from "./type";
@@ -92,9 +89,7 @@ const App: React.FC = () => {
     * 
     */
 
-  const buildConversationHistory = (
-    systemMessages: Message[]
-  ) => {
+  const buildConversationHistory = (systemMessages: Message[]) => {
     console.log(messages, systemMessages);
     let mutatedTimeline = currentTimeline;
     let history = [];
@@ -158,15 +153,14 @@ const App: React.FC = () => {
 
       while (true) {
         console.log("while true");
-        const conversationHistory = buildConversationHistory(
-          localPartialMessages
-        );
+        const conversationHistory =
+          buildConversationHistory(localPartialMessages);
         console.log("CONVERSATION HISTORY", conversationHistory);
 
         const completion = await client.chat.completions.create({
           model: "gpt-4.1-mini",
           max_tokens: 10000,
-          temperature: 1,
+          // temperature: 1,
           // model: "o4-mini",
           // reasoning_effort: "low",
           // max_completion_tokens: 10000,

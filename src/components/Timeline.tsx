@@ -14,8 +14,8 @@ const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
 export const Timeline: React.FC<TimelineProps> = ({ timeline, onResetTimeline, onClipClick }) => {
   // Find the max end time for scaling
   const maxEnd = Math.max(
-    ...timeline.audio_track.map(c => c.end_ms),
-    ...timeline.visual_track.map(c => c.end_ms),
+    ...timeline.audio_track.map(c => c.start_ms + c.duration_ms),
+    ...timeline.visual_track.map(c => c.start_ms + c.duration_ms),
     10000 // fallback
   );
 

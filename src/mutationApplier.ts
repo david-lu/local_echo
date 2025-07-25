@@ -89,14 +89,14 @@ export function applyMutation(
           newTimeline.audio_track[audioIndex] = {
             ...newTimeline.audio_track[audioIndex],
             start_ms: retime.start_time_ms,
-            end_ms: retime.end_time_ms,
+            duration_ms: retime.duration_ms,
           };
         }
         if (visualIndex !== -1) {
           newTimeline.visual_track[visualIndex] = {
             ...newTimeline.visual_track[visualIndex],
             start_ms: retime.start_time_ms,
-            end_ms: retime.end_time_ms,
+            duration_ms: retime.duration_ms,
           };
         }
       }

@@ -18,7 +18,7 @@ export const AudioClip: React.FC<AudioClipProps> = ({
   onClick
 }) => {
   const speaker = clip.speaker || 'Audio';
-  const title = `Audio: ${speaker} (${msToSec(clip.start_ms)} - ${msToSec(clip.end_ms)})`;
+  const title = `Audio: ${speaker} (${msToSec(clip.start_ms)} - ${msToSec(clip.start_ms + clip.duration_ms)})`;
 
   return (
     <BaseClip

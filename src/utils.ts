@@ -10,9 +10,8 @@ import {
   Message,
   Timeline,
   TimelineSchema,
-  BaseClip,
-  Overlap,
-  Span,
+  Clip,
+  Range,
   RefinedTimeline,
   RetimeClipsMutationSchema,
 } from "./type";
@@ -35,90 +34,57 @@ export function parseTimeline(jsonData: unknown): Timeline {
   return sortTimeline(result);
 }
 
-function isOverlapping(a: Span, b: Span): boolean {
-  return Math.max(a.start_ms, b.start_ms) < Math.min(a.end_ms, b.end_ms);
-}
+function getOverlapRange(a: Clip, b: Clip): Range | null {
+  const start = Math.max(a.start_ms, b.start_ms);
+  const end = Math.min(a.start_ms + a.duration_ms, b.start_ms + b.duration_ms);
 
-export function getOverlaps(clips: BaseClip[]): Overlap[] {
-  let overlaps: Overlap[] = [];
-  const others = [...clips];
-
-  console.log("getOverlaps clips", clips);
-
-  for (const clip of clips) {
-    const oldOverlaps: Overlap[] = [...overlaps];
-    // First, check against existing overlaps
-    for (const overlap of oldOverlaps) {
-      if (
-        clip.start_ms === overlap.start_ms &&
-        clip.end_ms === overlap.end_ms
-      ) {
-        // Exact match, add clip_id if missing
-        if (!overlap.clip_ids.includes(clip.id)) {
-          overlap.clip_ids.push(clip.id);
-        }
-      } else if (isOverlapping(clip, overlap)) {
-        // Partial overlap, create a new overlap with intersection
-        overlaps.push({
-          start_ms: Math.max(clip.start_ms, overlap.start_ms),
-          end_ms: Math.min(clip.end_ms, overlap.end_ms),
-          clip_ids: Array.from(new Set(overlap.clip_ids.concat(clip.id))),
-        });
-      }
-    }
-
-    // Then check against other spans to find pairwise overlaps
-    for (const other of others) {
-      if (clip.id === other.id) continue;
-      if (isOverlapping(clip, other)) {
-        const overlapStart = Math.max(clip.start_ms, other.start_ms);
-        const overlapEnd = Math.min(clip.end_ms, other.end_ms);
-
-        // Check if this exact overlap already exists
-        const existing = overlaps.find(
-          (o) => o.start_ms === overlapStart && o.end_ms === overlapEnd
-        );
-
-        if (existing) {
-          if (!existing.clip_ids.includes(clip.id))
-            existing.clip_ids.push(clip.id);
-          if (!existing.clip_ids.includes(other.id))
-            existing.clip_ids.push(other.id);
-        } else {
-          overlaps.push({
-            start_ms: overlapStart,
-            end_ms: overlapEnd,
-            clip_ids: [clip.id, other.id],
-          });
-        }
-      }
-    }
+  if (start < end) {
+    return { start_ms: start, end_ms: end };
   }
 
-  return overlaps;
+  return null;
 }
 
-export const getTotalDuration = (spans: Span[]): number => {
-  return spans.reduce((max, clip) => Math.max(max, clip.end_ms), 0);
+export const refineClip = (clip: Clip, track: Clip[]) => {
+  const overlaps = [];
+  for (const otherClip of track) {
+    const overlap = getOverlapRange(clip, otherClip);
+    if (overlap) {
+      overlaps.push({
+        clip_id: otherClip.id,
+        ...overlap,
+      });
+    }
+  }
+  return {...clip, overlaps: overlaps, end_ms: clip.start_ms + clip.duration_ms};
+}
+
+export const refineTrack = (track: Clip[]): any[] => {
+  return track.map(clip => refineClip(clip, track));
+}
+
+export const getTotalDuration = (spans: Clip[]): number => {
+  return spans.reduce((max, clip) => Math.max(max, clip.start_ms + clip.duration_ms), 0);
 };
 
 export const getGaps = (
-  clips: BaseClip[],
+  clips: Clip[],
   timeline_duration_ms?: number
-): Span[] => {
+): Range[] => {
   console.log("getGaps clips", clips);
   const timelineEnd = Math.max(
     getTotalDuration(clips),
     timeline_duration_ms || 0
   );
 
-  let gaps: Span[] = [{ start_ms: 0, end_ms: timelineEnd }];
+  let gaps: Range[] = [{ start_ms: 0, end_ms: timelineEnd }];
 
   for (const clip of clips) {
-    const nextGaps: Span[] = [];
+    const clipEnd = clip.start_ms + clip.duration_ms;
+    const nextGaps: Range[] = [];
 
     for (const gap of gaps) {
-      if (clip.end_ms <= gap.start_ms || clip.start_ms >= gap.end_ms) {
+      if (clipEnd <= gap.start_ms || clip.start_ms >= gap.end_ms) {
         // No overlap, keep gap as is
         nextGaps.push(gap);
       } else {
@@ -128,8 +94,8 @@ export const getGaps = (
           nextGaps.push({ start_ms: gap.start_ms, end_ms: clip.start_ms });
         }
 
-        if (gap.end_ms > clip.end_ms) {
-          nextGaps.push({ start_ms: clip.end_ms, end_ms: gap.end_ms });
+        if (gap.end_ms > clipEnd) {
+          nextGaps.push({ start_ms: clipEnd, end_ms: gap.end_ms });
         }
         // If clip fully covers the gap, we add nothing
       }
@@ -184,6 +150,8 @@ export const getMutationFromToolCall = (
   }
   return null;
 };
+
+
 export const getMutationsFromMessages = (
   messages: Message[]
 ): BaseMutation[] => {
@@ -209,12 +177,10 @@ export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
   ]);
   const refinedTimeline: RefinedTimeline = {
     ...timeline,
+    audio_track: refineTrack(timeline.audio_track),
+    visual_track: refineTrack(timeline.visual_track),
     audio_gaps: getGaps(timeline.audio_track, totalDuration),
-    // audio_overlaps: [],
-    audio_overlaps: getOverlaps(timeline.audio_track),
     visual_gaps: getGaps(timeline.visual_track, totalDuration),
-    // visual_overlaps: [],
-    visual_overlaps: getOverlaps(timeline.visual_track),
   };
   return refinedTimeline;
 };

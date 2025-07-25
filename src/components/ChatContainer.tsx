@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import ChatUserMessage from './ChatUserMessage';
 import ChatSystemMessage from './ChatSystemMessage';
 import LoadingMessage from './LoadingMessage';
-import { Message, AssistantMessage, UserMessage } from '../type';
+import { Message, UserMessage } from '../type';
 
 interface ChatContainerProps {
   messages: Message[];

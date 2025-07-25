@@ -32,7 +32,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
       <div className="relative flex-1 h-8 bg-zinc-800 border border-zinc-700 rounded overflow-visible" style={{ zIndex }}>
         {clips.map((clip, i) => {
           const startPercent = getLeft(clip.start_ms);
-          const widthPercent = getWidth(clip.start_ms, clip.end_ms);
+          const widthPercent = getWidth(clip.start_ms, clip.start_ms + clip.duration_ms);
           
           if (clip.type === 'audio') {
             return (
