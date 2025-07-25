@@ -30,7 +30,7 @@ import {
 } from "./utils";
 import { getMutationFromToolCall } from "./utils";
 import { AGENT_PROMPT, AGENT_PROMPT_LONG } from "./prompts";
-import { parseTimeline } from './utils';
+import { parseTimeline } from "./utils";
 import timelineJson from "./data/sampleTimeline.json";
 import { Timeline as TimelineType } from "./type";
 import { zodFunction, zodResponseFormat } from "openai/helpers/zod";
@@ -307,7 +307,6 @@ const App: React.FC = () => {
   const currentAudioClip = useMemo(() => {
     return getClipAtTime(displayTimeline.audio_track, currentTime);
   }, [displayTimeline, currentTime]);
-  
 
   console.log(
     "rendering",
@@ -371,7 +370,7 @@ const App: React.FC = () => {
             <div className="h-full flex flex-col bg-zinc-900 min-h-0">
               {/* ClipDisplayer */}
               <ClipDisplayer selectedClip={currentVisualClip} />
-                <ClipDisplayer selectedClip={currentAudioClip} />
+              <ClipDisplayer selectedClip={currentAudioClip} />
 
               {/* Timeline Controls */}
               <div className="flex-shrink-0">
