@@ -195,3 +195,7 @@ export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
   return refinedTimeline;
 };// Convert JSON to Timeline with Zod validation
 
+
+export const getClipAtTime = (track: Clip[], time: number): Clip | null => {
+  return track.find(clip => clip.start_ms <= time && clip.start_ms + clip.duration_ms > time) || null;
+};

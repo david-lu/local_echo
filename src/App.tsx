@@ -23,6 +23,7 @@ import {
 } from "./type";
 import {
   convertToOpenAIMessage,
+  getClipAtTime,
   getMutationsFromMessages,
   refineTimeline,
   stringifyWithoutNull,
@@ -44,9 +45,6 @@ const App: React.FC = () => {
   const [currentTimeline, setCurrentTimeline] = useState(
     parseTimeline(timelineJson)
   );
-  const [selectedClip, setSelectedClip] = useState<
-    AudioClip | VisualClip | null
-  >(null);
   const [partialMessages, setPartialMessages] = useState<Message[]>([]);
 
   // Playback state
@@ -253,7 +251,8 @@ const App: React.FC = () => {
   };
 
   const handleClipClick = (clip: AudioClip | VisualClip) => {
-    setSelectedClip(clip);
+    setCurrentTime(clip.start_ms);
+    // setSelectedClip(clip);
   };
 
   const displayTimeline = useMemo(() => {
@@ -300,6 +299,15 @@ const App: React.FC = () => {
   const handleSeek = (time: number) => {
     setCurrentTime(Math.max(0, Math.min(time, timelineDuration)));
   };
+
+  const currentVisualClip = useMemo(() => {
+    return getClipAtTime(displayTimeline.visual_track, currentTime);
+  }, [displayTimeline, currentTime]);
+
+  const currentAudioClip = useMemo(() => {
+    return getClipAtTime(displayTimeline.audio_track, currentTime);
+  }, [displayTimeline, currentTime]);
+  
 
   console.log(
     "rendering",
@@ -360,11 +368,10 @@ const App: React.FC = () => {
           <PanelResizeHandle className="w-1 bg-zinc-700 hover:bg-zinc-600 transition-colors" />
 
           <Panel defaultSize={50} minSize={40}>
-            <div className="h-full flex flex-col bg-zinc-900">
+            <div className="h-full flex flex-col bg-zinc-900 min-h-0">
               {/* ClipDisplayer */}
-              <div className="flex-1 min-h-0">
-                <ClipDisplayer selectedClip={selectedClip} />
-              </div>
+              <ClipDisplayer selectedClip={currentVisualClip} />
+                <ClipDisplayer selectedClip={currentAudioClip} />
 
               {/* Timeline Controls */}
               <div className="flex-shrink-0">
