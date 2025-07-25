@@ -34,7 +34,7 @@ import { parseTimeline } from "./utils";
 import timelineJson from "./data/sampleTimeline.json";
 import { Timeline as TimelineType } from "./type";
 import { zodFunction, zodResponseFormat } from "openai/helpers/zod";
-import { applyMutations } from "./mutationApplier";
+import { applyMutations } from "./mutation";
 import { v4 as uuidv4 } from "uuid";
 import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
 
@@ -49,7 +49,7 @@ const App: React.FC = () => {
 
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [currentTimeMs, setCurrentTimeMs] = useState(0);
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
@@ -251,7 +251,7 @@ const App: React.FC = () => {
   };
 
   const handleClipClick = (clip: AudioClip | VisualClip) => {
-    setCurrentTime(clip.start_ms);
+    setCurrentTimeMs(clip.start_ms);
     // setSelectedClip(clip);
   };
 
@@ -277,7 +277,7 @@ const App: React.FC = () => {
     }
 
     const interval = setInterval(() => {
-      setCurrentTime((prev) => {
+      setCurrentTimeMs((prev) => {
         const newTime = prev + 16; // ~60fps (16ms per frame)
         if (newTime >= timelineDuration) {
           setIsPlaying(false);
@@ -297,16 +297,16 @@ const App: React.FC = () => {
   };
 
   const handleSeek = (time: number) => {
-    setCurrentTime(Math.max(0, Math.min(time, timelineDuration)));
+    setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)));
   };
 
   const currentVisualClip = useMemo(() => {
-    return getClipAtTime(displayTimeline.visual_track, currentTime);
-  }, [displayTimeline, currentTime]);
+    return getClipAtTime(displayTimeline.visual_track, currentTimeMs);
+  }, [displayTimeline, currentTimeMs]);
 
   const currentAudioClip = useMemo(() => {
-    return getClipAtTime(displayTimeline.audio_track, currentTime);
-  }, [displayTimeline, currentTime]);
+    return getClipAtTime(displayTimeline.audio_track, currentTimeMs);
+  }, [displayTimeline, currentTimeMs]);
 
   console.log(
     "rendering",
@@ -314,7 +314,7 @@ const App: React.FC = () => {
     "isPlaying:",
     isPlaying,
     "currentTime:",
-    currentTime
+    currentTimeMs
   );
 
   return (
@@ -374,19 +374,11 @@ const App: React.FC = () => {
 
               {/* Timeline Controls */}
               <div className="flex-shrink-0">
-                <TimelineControls
-                  currentTime={currentTime}
-                  duration={timelineDuration}
-                />
-              </div>
-
-              {/* Timeline */}
-              <div className="flex-shrink-0 h-44">
                 <Timeline
                   timeline={displayTimeline}
                   onResetTimeline={resetTimeline}
                   onClipClick={handleClipClick}
-                  currentTime={currentTime}
+                  currentTimeMs={currentTimeMs}
                   isPlaying={isPlaying}
                   onPlayPause={handlePlayPause}
                   onSeek={handleSeek}

@@ -3,12 +3,13 @@ import { Timeline as TimelineType, AudioClip, VisualClip } from '../type';
 import TimelineTrack from './TimelineTrack';
 import TimelineAxis from './TimelineAxis';
 import TimelineCursor from './TimelineCursor';
+import { formatTime } from '../utils';
 
 interface TimelineProps {
   timeline: TimelineType;
   onResetTimeline?: () => void;
   onClipClick?: (clip: AudioClip | VisualClip) => void;
-  currentTime?: number;
+  currentTimeMs?: number;
   isPlaying?: boolean;
   onPlayPause?: () => void;
   onSeek?: (time: number) => void;
@@ -18,7 +19,7 @@ export const Timeline: React.FC<TimelineProps> = ({
   timeline, 
   onResetTimeline, 
   onClipClick, 
-  currentTime = 0,
+  currentTimeMs = 0,
   isPlaying = false,
   onPlayPause,
   onSeek
@@ -34,21 +35,12 @@ export const Timeline: React.FC<TimelineProps> = ({
   const getWidth = (start: number, end: number) => ((end - start) / maxEnd) * 100;
   const getLeft = (start: number) => (start / maxEnd) * 100;
 
-
   return (
-    <div className="h-full bg-zinc-900 border-t border-zinc-800 flex flex-col">
+    <div className="h-full bg-zinc-900 border-t border-zinc-800 flex flex-col text-white">
       <div className="flex-shrink-0 p-2 border-b border-zinc-800 bg-zinc-950">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold text-zinc-200">Timeline</h2>
-            <button
-              onClick={onResetTimeline}
-              className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
-            >
-              Reset
-            </button>
-          </div>
-          <div className="flex items-center gap-2">
             <button
               onClick={() => {
                 console.log('Button clicked!');
@@ -66,6 +58,16 @@ export const Timeline: React.FC<TimelineProps> = ({
                 </svg>
               )}
             </button>
+            {formatTime(currentTimeMs)}
+          </div>
+          <div className="flex items-center gap-2">
+          <button
+              onClick={onResetTimeline}
+              className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+            >
+              Reset
+            </button>
+            
           </div>
         </div>
       </div>
@@ -76,7 +78,7 @@ export const Timeline: React.FC<TimelineProps> = ({
           <TimelineAxis maxEnd={maxEnd} />
           
           {/* Timeline Cursor */}
-          <TimelineCursor currentTime={currentTime} maxEnd={maxEnd} onSeek={onSeek} />
+          <TimelineCursor currentTime={currentTimeMs} maxEnd={maxEnd} onSeek={onSeek} />
           
           {/* Visual Track */}
           <TimelineTrack

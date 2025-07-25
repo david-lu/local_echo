@@ -1,4 +1,3 @@
-import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
 import {
   Timeline,
   AudioClip,
@@ -12,7 +11,6 @@ import {
   RemoveVisualMutation,
   RetimeClipsMutation,
 } from "./type";
-import { getMutationFromToolCall } from "./utils";
 
 /**
  * Applies a single mutation to the timeline
