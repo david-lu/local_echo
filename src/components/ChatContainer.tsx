@@ -22,7 +22,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
   }, [messages, partialMessages]);
 
   const displayMessages = [...messages, ...partialMessages];
-  console.log('displayMessages', messages, partialMessages);
+  // console.log('displayMessages', messages, partialMessages);
 
   const renderMessage = (message: Message) => {
     if (message.role === 'user') {

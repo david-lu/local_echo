@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import type { Renderer } from "pixi.js";
 import * as PIXI from "pixi.js";
 import {
@@ -23,6 +23,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({
     width,
     height,
 }) => {
+    // console.log(clips, playheadTimeMs, isPlaying)
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const spriteRef = useRef<PIXI.Sprite | null>(null);
@@ -32,8 +33,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({
     const { loadedVisuals, allLoaded } = useVisualLoader(clips);
 
     const initPixiApp = async () => {
-        if (!canvasRef.current) return;
-        contextRef.current = canvasRef.current.getContext("2d");
+        contextRef.current = canvasRef.current!.getContext("2d");
 
         try {
             rendererRef.current = await PIXI.autoDetectRenderer({
@@ -50,11 +50,24 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         sprite.width = width;
         sprite.height = height;
         stageRef.current.addChild(sprite);
+        console.log("sprite", sprite);
         spriteRef.current = sprite;
     };
 
     useEffect(() => {
-        initPixiApp();
+        console.log("initPixiApp", canvasRef.current);
+
+        if (canvasRef.current) {
+            initPixiApp();
+        }
+
+        return () => {
+            rendererRef.current?.destroy(true);
+            rendererRef.current = null;
+            stageRef.current?.removeChildren();
+            spriteRef.current = null;
+            console.log("Cleaned up Pixi renderer");
+        };
     }, []);
 
     const findClip = (timeMs: number): LoadedVisualClip | undefined => {
@@ -65,25 +78,29 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         );
     };
 
-    // Resize renderer on canvas size change
-    useEffect(() => {
-        const sprite = spriteRef.current;
-        if (rendererRef.current && sprite) {
-            rendererRef.current?.resize(width, height);
-            sprite.width = width;
-            sprite.height = height;
-        }
-    }, [width, height]);
+    // // Resize renderer on canvas size change
+    // useEffect(() => {
+    //     const sprite = spriteRef.current;
+    //     if (rendererRef.current && sprite) {
+    //         rendererRef.current?.resize(width, height);
+    //         sprite.width = width;
+    //         sprite.height = height;
+    //     }
+    // }, [width, height]);
 
     const tick = (deltaMs: number) => {
         console.log("tick", deltaMs);
         const visual = findClip(playheadTimeMs);
         if (!visual) {
+            // Set empty texture if no visual is found
             spriteRef.current!.texture = PIXI.Texture.EMPTY;
         } else {
-            if (spriteRef.current!.texture.uid !== visual.texture?.uid) {
+            // Set texture
+            console.log("setting texture", spriteRef.current, visual.texture);
+            if (spriteRef.current!.texture?.uid !== visual.texture?.uid) {
                 spriteRef.current!.texture = visual.texture!;
             }
+            // Set video time
             const localTime = playheadTimeMs - visual.start_ms;
             if (Math.abs(visual.video!.currentTime * 1000 - localTime) > 50) {
                 visual.video!.currentTime = localTime / 1000;
@@ -99,32 +116,28 @@ export const PixiVideoPlayer: React.FC<Props> = ({
             }
         }
 
+        // Render
         console.log("render", rendererRef.current);
         rendererRef.current?.render(stageRef.current);
         contextRef.current?.clearRect(0, 0, width, height);
-        contextRef.current?.beginPath(); // Start a new path
-        contextRef.current!.fillStyle = "blue";
-        contextRef.current?.rect(10, 20, 100, 100); // Add a rectangle to the current path
-        contextRef.current?.fill(); // Render the path
-        // contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
+        contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
     };
 
     useTicker(tick, isPlaying);
 
-    if (!allLoaded) return <div>Loading video assets...</div>;
+    // if (!allLoaded) return <div>Loading video assets...</div>;
 
     return (
-        <div className="flex-1">
+        <div className="flex-1 p-4">
             <canvas
+                id="pixi-canvas"
                 ref={canvasRef}
                 style={{
-                    aspectRatio: width / height,
-                    maxHeight: "100%",
-                    maxWidth: "100%",
-                    backgroundColor: "red",
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "contain",
                 }}
             />
-            ;
         </div>
     );
 };

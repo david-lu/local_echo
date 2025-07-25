@@ -33,6 +33,7 @@ export type LoadedVisualClip = z.infer<typeof LoadedVisualClipSchema>;
 
 function loadVideoElement(src: string): Promise<HTMLVideoElement> {
   return new Promise((resolve, reject) => {
+    console.log("loading video", src);
     const video = document.createElement("video");
     video.src = src;
     video.crossOrigin = "anonymous";
