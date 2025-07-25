@@ -51,7 +51,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({
 
     return app;
   };
-  
+
   useEffect(() => {
     initPixiApp();
   }, []);
@@ -75,21 +75,20 @@ export const PixiVideoPlayer: React.FC<Props> = ({
     }
   }, [width, height]);
 
-
   const tick = (deltaMs: number) => {
     const visual = findClip(playheadTimeMs);
-      if (!visual) {
-        spriteRef.current!.texture = PIXI.Texture.EMPTY;
-        return;
-      }
+    if (!visual) {
+      spriteRef.current!.texture = PIXI.Texture.EMPTY;
+      return;
+    }
 
-      const localTime = playheadTimeMs - visual.start_ms;
+    const localTime = playheadTimeMs - visual.start_ms;
 
-      if (!visual.video) return;
-      if (Math.abs(visual.video.currentTime * 1000 - localTime) > 50) {
-        visual.video.currentTime = localTime / 1000;
-      }
-  }
+    if (!visual.video) return;
+    if (Math.abs(visual.video.currentTime * 1000 - localTime) > 50) {
+      visual.video.currentTime = localTime / 1000;
+    }
+  };
 
   useTicker(tick, isPlaying);
 
