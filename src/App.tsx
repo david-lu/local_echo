@@ -271,16 +271,16 @@ const App: React.FC = () => {
     return maxEnd;
   }, [displayTimeline]);
 
-  // useTicker((deltaMs) => {
-  //   setCurrentTimeMs((prev) => {
-  //     const newTime = prev + deltaMs;
-  //     if (newTime >= timelineDuration) {
-  //       setIsPlaying(false);
-  //       return timelineDuration;
-  //     }
-  //     return newTime;
-  //   });
-  // }, isPlaying);
+  useTicker((deltaMs) => {
+    setCurrentTimeMs((prev) => {
+      const newTime = prev + deltaMs;
+      if (newTime >= timelineDuration) {
+        setIsPlaying(false);
+        return timelineDuration;
+      }
+      return newTime;
+    });
+  }, isPlaying);
 
   // Playback control functions
   const handlePlayPause = () => {
@@ -361,7 +361,7 @@ const App: React.FC = () => {
           <Panel defaultSize={50} minSize={40}>
             <div className="h-full flex flex-col bg-zinc-900 min-h-0 justify-between">
               {/* ClipDisplayer */}
-              {/* <PixiVideoPlayer clips={[]} playheadTimeMs={currentTimeMs} width={860} height={640} /> */}
+              <PixiVideoPlayer clips={[]} playheadTimeMs={currentTimeMs} width={860} height={640} isPlaying={isPlaying} />
               {/* <ClipDisplayer selectedClip={currentVisualClip} /> */}
               <ClipDisplayer selectedClip={currentAudioClip} />
 

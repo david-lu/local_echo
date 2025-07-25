@@ -5,10 +5,12 @@ import {
   useVisualLoader,
   LoadedVisualClip,
 } from "../loader";
+import { useTicker } from "../tick";
 
 type Props = {
   clips: PlayableVisualClip[];
   playheadTimeMs: number;
+  isPlaying: boolean;
   width: number;
   height: number;
 };
@@ -16,6 +18,7 @@ type Props = {
 export const PixiVideoPlayer: React.FC<Props> = ({
   clips,
   playheadTimeMs,
+  isPlaying,
   width,
   height,
 }) => {
@@ -25,21 +28,6 @@ export const PixiVideoPlayer: React.FC<Props> = ({
   const activeIndexRef = useRef<number | null>(null);
 
   const { loadedVisuals, allLoaded } = useVisualLoader(clips);
-
-  // Clean up any existing app
-  const cleanup = () => {
-    appRef.current?.destroy(true, { children: true, texture: true });
-    appRef.current = null;
-    spriteRef.current = null;
-
-    loadedVisuals.forEach(({ video }) => {
-      if (video) {
-        video.pause();
-        video.removeAttribute("src");
-        video.load();
-      }
-    });
-  };
 
   const initPixiApp = () => {
     if (!canvasRef.current) return;
@@ -63,11 +51,33 @@ export const PixiVideoPlayer: React.FC<Props> = ({
 
     return app;
   };
+  
+  useEffect(() => {
+    initPixiApp();
+  }, []);
 
-  const bindTicker = (app: PIXI.Application) => {
-    console.log("bindTicker", app);
-    app.ticker.add(() => {
-      const visual = findClip(playheadTimeMs);
+  const findClip = (timeMs: number): LoadedVisualClip | undefined => {
+    return loadedVisuals.find(
+      (visual) =>
+        visual.start_ms <= timeMs &&
+        visual.start_ms + visual.duration_ms > timeMs
+    );
+  };
+
+  // Resize renderer on canvas size change
+  useEffect(() => {
+    const app = appRef.current;
+    const sprite = spriteRef.current;
+    if (app && sprite) {
+      app.renderer?.resize(width, height);
+      sprite.width = width;
+      sprite.height = height;
+    }
+  }, [width, height]);
+
+
+  const tick = (deltaMs: number) => {
+    const visual = findClip(playheadTimeMs);
       if (!visual) {
         spriteRef.current!.texture = PIXI.Texture.EMPTY;
         return;
@@ -79,34 +89,9 @@ export const PixiVideoPlayer: React.FC<Props> = ({
       if (Math.abs(visual.video.currentTime * 1000 - localTime) > 50) {
         visual.video.currentTime = localTime / 1000;
       }
-    });
-  };
+  }
 
-  const findClip = (timeMs: number): LoadedVisualClip | undefined => {
-    return loadedVisuals.find(
-      (visual) =>
-        visual.start_ms <= timeMs &&
-        visual.start_ms + visual.duration_ms > timeMs
-    );
-  };
-
-  // Handle full app init and cleanup when loadedVideos change
-  useEffect(() => {
-    const app = initPixiApp();
-    bindTicker(app!);
-    return cleanup;
-  }, []);
-
-  // Resize renderer on canvas size change
-  useEffect(() => {
-    const app = appRef.current;
-    const sprite = spriteRef.current;
-    if (app && sprite) {
-      app.renderer.resize(width, height);
-      sprite.width = width;
-      sprite.height = height;
-    }
-  }, [width, height]);
+  useTicker(tick, isPlaying);
 
   if (!allLoaded) return <div>Loading video assets...</div>;
 
