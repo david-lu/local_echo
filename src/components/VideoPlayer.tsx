@@ -133,10 +133,12 @@ export const PixiVideoPlayer: React.FC<Props> = ({
     };
 
     const renderCanvas = () => {
-        rendererRef.current?.render(stageRef.current);
-        contextRef.current?.clearRect(0, 0, width, height);
-        console.log("drawImage", rendererRef.current?.canvas);
-        contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
+        if (rendererRef.current?.canvas) {    
+            rendererRef.current?.render(stageRef.current);
+            contextRef.current?.clearRect(0, 0, width, height);
+            console.log("drawImage", rendererRef.current?.canvas);
+            contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
+        }
     }
 
     useEffect(() => {
