@@ -1,9 +1,9 @@
 import React from 'react';
-import { AudioClip as AudioClipType } from '../type';
-import BaseClip from './BaseClip';
+import { AudioClip } from '../type';
+import TimelineClip from './TimelineClip';
 
-interface AudioClipProps {
-  clip: AudioClipType;
+interface TimelineAudioClipProps {
+  clip: AudioClip;
   startPercent: number;
   widthPercent: number;
   onClick?: () => void;
@@ -11,7 +11,7 @@ interface AudioClipProps {
 
 const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
 
-export const AudioClip: React.FC<AudioClipProps> = ({
+export const TimelineAudioClip: React.FC<TimelineAudioClipProps> = ({
   clip,
   startPercent,
   widthPercent,
@@ -21,7 +21,7 @@ export const AudioClip: React.FC<AudioClipProps> = ({
   const title = `Audio: ${speaker} (${msToSec(clip.start_ms)} - ${msToSec(clip.start_ms + clip.duration_ms)})`;
 
   return (
-    <BaseClip
+    <TimelineClip
       startPercent={startPercent}
       widthPercent={widthPercent}
       color="bg-blue-500"
@@ -31,8 +31,8 @@ export const AudioClip: React.FC<AudioClipProps> = ({
       <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
         {speaker}: {clip.audio_generation_params?.text}
       </span>
-    </BaseClip>
+    </TimelineClip>
   );
 };
 
-export default AudioClip; 
+export default TimelineAudioClip; 

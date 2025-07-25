@@ -1,15 +1,15 @@
 import React from 'react';
-import { VisualClip as VisualClipType } from '../type';
-import BaseClip from './BaseClip';
+import { VisualClip } from '../type';
+import TimelineClip from './TimelineClip';
 
-interface VisualClipProps {
-  clip: VisualClipType;
+interface TimelineVisualClipProps {
+  clip: VisualClip;
   startPercent: number;
   widthPercent: number;
   onClick?: () => void;
 }
 
-export const VisualClip: React.FC<VisualClipProps> = ({
+export const TimelineVisualClip: React.FC<TimelineVisualClipProps> = ({
   clip,
   startPercent,
   widthPercent,
@@ -24,7 +24,7 @@ export const VisualClip: React.FC<VisualClipProps> = ({
   const title = `${isImage ? 'Image' : 'Video'}`;
 
   return (
-    <BaseClip
+    <TimelineClip
       startPercent={startPercent}
       widthPercent={widthPercent}
       color="bg-emerald-500"
@@ -34,8 +34,8 @@ export const VisualClip: React.FC<VisualClipProps> = ({
       <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">
         {icon} {content}
       </span>
-    </BaseClip>
+    </TimelineClip>
   );
 };
 
-export default VisualClip; 
+export default TimelineVisualClip; 

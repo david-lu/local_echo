@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface BaseClipProps {
+interface TimelineClipProps {
   startPercent: number;
   widthPercent: number;
   color: string;
@@ -9,7 +9,7 @@ interface BaseClipProps {
   onClick?: () => void;
 }
 
-export const BaseClip: React.FC<BaseClipProps> = ({
+export const TimelineClip: React.FC<TimelineClipProps> = ({
   startPercent,
   widthPercent,
   color,
@@ -32,4 +32,4 @@ export const BaseClip: React.FC<BaseClipProps> = ({
   );
 };
 
-export default BaseClip; 
+export default TimelineClip; 

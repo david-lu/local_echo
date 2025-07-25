@@ -1,7 +1,7 @@
 import React from 'react';
 import { AudioClip as AudioClipType, VisualClip as VisualClipType } from '../type';
-import AudioClip from './AudioClip';
-import VisualClip from './VisualClip';
+import TimelineAudioClip from './TimelineAudioClip';
+import TimelineVisualClip from './TimelineVisualClip';
 
 interface TimelineTrackProps {
   clips: (AudioClipType | VisualClipType)[];
@@ -27,7 +27,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
           
           if (clip.type === 'audio') {
             return (
-              <AudioClip
+              <TimelineAudioClip
                 key={clip.id}
                 clip={clip}
                 startPercent={startPercent}
@@ -37,7 +37,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
             );
           } else {
             return (
-              <VisualClip
+              <TimelineVisualClip
                 key={clip.id}
                 clip={clip}
                 startPercent={startPercent}

@@ -5,7 +5,6 @@ import Timeline from "./components/Timeline";
 import ChatContainer from "./components/ChatContainer";
 import ChatInput from "./components/ChatInput";
 import ClipDisplayer from "./components/ClipDisplayer";
-import TimelineControls from "./components/TimelineControls";
 import {
   Message,
   UserMessage,
