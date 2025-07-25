@@ -366,7 +366,7 @@ const App: React.FC = () => {
               <ClipDisplayer selectedClip={currentAudioClip} />
 
               {/* Timeline Controls */}
-              <div className="flex-shrink-0">
+              <div className="flex-grow-1">
                 <Timeline
                   timeline={displayTimeline}
                   onResetTimeline={resetTimeline}
