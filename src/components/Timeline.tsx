@@ -9,8 +9,6 @@ interface TimelineProps {
   onClipClick?: (clip: AudioClip | VisualClip) => void;
 }
 
-const msToSec = (ms: number) => (ms / 1000).toFixed(1) + 's';
-
 export const Timeline: React.FC<TimelineProps> = ({ timeline, onResetTimeline, onClipClick }) => {
   // Find the max end time for scaling
   const maxEnd = Math.max(
@@ -48,8 +46,6 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline, onResetTimeline, o
           <TimelineTrack
             clips={timeline.visual_track}
             trackLabel="Visual"
-            trackColor="text-emerald-600"
-            maxEnd={maxEnd}
             zIndex={1}
             getWidth={getWidth}
             getLeft={getLeft}
@@ -60,8 +56,6 @@ export const Timeline: React.FC<TimelineProps> = ({ timeline, onResetTimeline, o
           <TimelineTrack
             clips={timeline.audio_track}
             trackLabel="Audio"
-            trackColor="text-blue-600"
-            maxEnd={maxEnd}
             zIndex={2}
             getWidth={getWidth}
             getLeft={getLeft}

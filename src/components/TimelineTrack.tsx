@@ -6,8 +6,6 @@ import VisualClip from './VisualClip';
 interface TimelineTrackProps {
   clips: (AudioClipType | VisualClipType)[];
   trackLabel: string;
-  trackColor: string;
-  maxEnd: number;
   zIndex: number;
   getWidth: (start: number, end: number) => number;
   getLeft: (start: number) => number;
@@ -17,8 +15,6 @@ interface TimelineTrackProps {
 export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   clips,
   trackLabel,
-  trackColor,
-  maxEnd,
   zIndex,
   getWidth,
   getLeft,
