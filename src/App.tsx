@@ -36,6 +36,8 @@ import { zodFunction, zodResponseFormat } from "openai/helpers/zod";
 import { applyMutations } from "./mutation";
 import { v4 as uuidv4 } from "uuid";
 import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
+import { PixiVideoPlayer } from "./components/VideoPlayer";
+import { useTicker } from "./tick";
 
 const App: React.FC = () => {
   const [messages, setMessages] = useState<(Message | AssistantMessage)[]>([]);
@@ -269,25 +271,16 @@ const App: React.FC = () => {
     return maxEnd;
   }, [displayTimeline]);
 
-  // Playback animation loop
-  useEffect(() => {
-    if (!isPlaying) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setCurrentTimeMs((prev) => {
-        const newTime = prev + 16; // ~60fps (16ms per frame)
-        if (newTime >= timelineDuration) {
-          setIsPlaying(false);
-          return timelineDuration;
-        }
-        return newTime;
-      });
-    }, 16);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, timelineDuration]);
+  // useTicker((deltaMs) => {
+  //   setCurrentTimeMs((prev) => {
+  //     const newTime = prev + deltaMs;
+  //     if (newTime >= timelineDuration) {
+  //       setIsPlaying(false);
+  //       return timelineDuration;
+  //     }
+  //     return newTime;
+  //   });
+  // }, isPlaying);
 
   // Playback control functions
   const handlePlayPause = () => {
@@ -368,7 +361,8 @@ const App: React.FC = () => {
           <Panel defaultSize={50} minSize={40}>
             <div className="h-full flex flex-col bg-zinc-900 min-h-0 justify-between">
               {/* ClipDisplayer */}
-              <ClipDisplayer selectedClip={currentVisualClip} />
+              {/* <PixiVideoPlayer clips={[]} playheadTimeMs={currentTimeMs} width={860} height={640} /> */}
+              {/* <ClipDisplayer selectedClip={currentVisualClip} /> */}
               <ClipDisplayer selectedClip={currentAudioClip} />
 
               {/* Timeline Controls */}

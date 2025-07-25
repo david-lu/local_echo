@@ -65,6 +65,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({
   };
 
   const bindTicker = (app: PIXI.Application) => {
+    console.log("bindTicker", app);
     app.ticker.add(() => {
       const visual = findClip(playheadTimeMs);
       if (!visual) {
