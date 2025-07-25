@@ -1,30 +1,48 @@
-import React, { useEffect, useRef } from 'react';
-import * as PIXI from 'pixi.js';
-import { usePreloadVideosWithQueries } from '../loader';
-
-interface VideoClip {
-  src: string;
-  startTimeMs: number;
-  durationMs: number;
-}
+import React, { useEffect, useRef } from "react";
+import * as PIXI from "pixi.js";
+import {
+  PlayableVisualClip,
+  useVisualLoader,
+  LoadedVisualClip,
+} from "../loader";
 
 type Props = {
-  clips: VideoClip[]; 
-  currentTimeMs: number;
+  clips: PlayableVisualClip[];
+  playheadTimeMs: number;
   width: number;
   height: number;
 };
 
-export const PixiVideoPlayer: React.FC<Props> = ({ clips, currentTimeMs, width, height }) => {
+export const PixiVideoPlayer: React.FC<Props> = ({
+  clips,
+  playheadTimeMs,
+  width,
+  height,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const appRef = useRef<PIXI.Application | null>(null);
   const spriteRef = useRef<PIXI.Sprite | null>(null);
   const activeIndexRef = useRef<number | null>(null);
 
-  const { loadedVideos, allLoaded } = usePreloadVideosWithQueries(clips);
+  const { loadedVisuals, allLoaded } = useVisualLoader(clips);
 
-  useEffect(() => {
-    if (!canvasRef.current || !allLoaded) return;
+  // Clean up any existing app
+  const cleanup = () => {
+    appRef.current?.destroy(true, { children: true, texture: true });
+    appRef.current = null;
+    spriteRef.current = null;
+
+    loadedVisuals.forEach(({ video }) => {
+      if (video) {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      }
+    });
+  };
+
+  const initPixiApp = () => {
+    if (!canvasRef.current) return;
 
     const app = new PIXI.Application({
       view: canvasRef.current,
@@ -43,42 +61,45 @@ export const PixiVideoPlayer: React.FC<Props> = ({ clips, currentTimeMs, width, 
     app.stage.addChild(sprite);
     spriteRef.current = sprite;
 
-    const textures = loadedVideos.map(({ video }) => PIXI.Texture.from(video!));
+    return app;
+  };
 
+  const bindTicker = (app: PIXI.Application) => {
     app.ticker.add(() => {
-      const index = findClipIndex(currentTimeMs);
-      if (index === null) return;
-
-      const { video, clip } = loadedVideos[index];
-      const localTime = currentTimeMs - clip.startTimeMs;
-
-      if (!video) return;
-      if (Math.abs(video.currentTime * 1000 - localTime) > 50) {
-        video.currentTime = localTime / 1000;
+      const visual = findClip(playheadTimeMs);
+      if (!visual) {
+        spriteRef.current!.texture = PIXI.Texture.EMPTY;
+        return;
       }
 
-      textures[index].update();
+      const localTime = playheadTimeMs - visual.start_ms;
 
-      if (activeIndexRef.current !== index) {
-        sprite.texture = textures[index];
-        activeIndexRef.current = index;
+      if (!visual.video) return;
+      if (Math.abs(visual.video.currentTime * 1000 - localTime) > 50) {
+        visual.video.currentTime = localTime / 1000;
       }
     });
+  };
 
-    return () => {
-      app.destroy(true, { children: true, texture: true });
-      for (const { video } of loadedVideos) {
-        video?.pause();
-        video?.removeAttribute('src');
-        video?.load();
-      }
-    };
-  }, [allLoaded, loadedVideos]);
+  const findClip = (timeMs: number): LoadedVisualClip | undefined => {
+    return loadedVisuals.find(
+      (visual) =>
+        visual.start_ms <= timeMs &&
+        visual.start_ms + visual.duration_ms > timeMs
+    );
+  };
 
+  // Handle full app init and cleanup when loadedVideos change
+  useEffect(() => {
+    const app = initPixiApp();
+    bindTicker(app!);
+    return cleanup;
+  }, []);
+
+  // Resize renderer on canvas size change
   useEffect(() => {
     const app = appRef.current;
     const sprite = spriteRef.current;
-
     if (app && sprite) {
       app.renderer.resize(width, height);
       sprite.width = width;
@@ -86,17 +107,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({ clips, currentTimeMs, width, 
     }
   }, [width, height]);
 
-  function findClipIndex(ms: number): number | null {
-    for (let i = 0; i < clips.length; i++) {
-      const clip = clips[i];
-      if (ms >= clip.startTimeMs && ms < clip.startTimeMs + clip.durationMs) {
-        return i;
-      }
-    }
-    return null;
-  }
-
   if (!allLoaded) return <div>Loading video assets...</div>;
 
-  return <canvas ref={canvasRef} style={{ width, height, display: 'block' }} />;
+  return <canvas ref={canvasRef} style={{ width, height, display: "block" }} />;
 };
