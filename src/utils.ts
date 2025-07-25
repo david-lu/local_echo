@@ -199,3 +199,36 @@ export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
 export const getClipAtTime = (track: Clip[], time: number): Clip | null => {
   return track.find(clip => clip.start_ms <= time && clip.start_ms + clip.duration_ms > time) || null;
 };
+
+type Size = {
+  width: number;
+  height: number;
+};
+
+type Rect = {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};
+
+export function objectFitContain(container: Size, child: Size): Rect {
+  const containerRatio = container.width / container.height;
+  const childRatio = child.width / child.height;
+
+  let scale: number;
+  if (childRatio > containerRatio) {
+    // Fit to width
+    scale = container.width / child.width;
+  } else {
+    // Fit to height
+    scale = container.height / child.height;
+  }
+
+  const width = child.width * scale;
+  const height = child.height * scale;
+  const x = (container.width - width) / 2;
+  const y = (container.height - height) / 2;
+
+  return { width, height, x, y };
+}

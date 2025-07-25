@@ -7,6 +7,7 @@ import {
     LoadedVisualClip,
 } from "../loader";
 import { useTicker } from "../tick";
+import { objectFitContain } from "../utils";
 
 type Props = {
     clips: PlayableVisualClip[];
@@ -24,6 +25,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({
     height,
 }) => {
     // console.log(clips, playheadTimeMs, isPlaying)
+    const isReadyRef = useRef(false);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
     const spriteRef = useRef<PIXI.Sprite | null>(null);
@@ -33,25 +35,27 @@ export const PixiVideoPlayer: React.FC<Props> = ({
     const { loadedVisuals, allLoaded } = useVisualLoader(clips);
 
     const initPixiApp = async () => {
+        canvasRef.current!.width = width;
+        canvasRef.current!.height = height;
         contextRef.current = canvasRef.current!.getContext("2d");
+        contextRef.current!.imageSmoothingEnabled = false;
+
+        const sprite = new PIXI.Sprite();
+        stageRef.current.addChild(sprite);
+        // console.log("sprite", sprite);
+        spriteRef.current = sprite;
 
         try {
             rendererRef.current = await PIXI.autoDetectRenderer({
-                width: 1920,
-                height: 1080,
+                width: width,
+                height: height,
                 background: "black",
                 preference: "webgpu",
             });
+            isReadyRef.current = true;
         } catch (error) {
             console.error(error);
         }
-
-        const sprite = new PIXI.Sprite();
-        sprite.width = width;
-        sprite.height = height;
-        stageRef.current.addChild(sprite);
-        console.log("sprite", sprite);
-        spriteRef.current = sprite;
     };
 
     useEffect(() => {
@@ -78,41 +82,40 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         );
     };
 
-    // // Resize renderer on canvas size change
-    // useEffect(() => {
-    //     const sprite = spriteRef.current;
-    //     if (rendererRef.current && sprite) {
-    //         rendererRef.current?.resize(width, height);
-    //         sprite.width = width;
-    //         sprite.height = height;
-    //     }
-    // }, [width, height]);
-
-    const tick = (deltaMs: number) => {
-        console.log("tick", deltaMs);
+    const render = (deltaMs: number) => {
+        console.log("RENDER", playheadTimeMs);
         const visual = findClip(playheadTimeMs);
         if (!visual) {
             // Set empty texture if no visual is found
             spriteRef.current!.texture = PIXI.Texture.EMPTY;
         } else {
             // Set texture
-            console.log("setting texture", spriteRef.current, visual.texture);
             if (spriteRef.current!.texture?.uid !== visual.texture?.uid) {
+                console.log("setting texture", spriteRef.current, visual.texture);
                 spriteRef.current!.texture = visual.texture!;
             }
             // Set video time
             const localTime = playheadTimeMs - visual.start_ms;
             const videoTime = visual.video!.currentTime * 1000;
-            console.log("video time", videoTime, localTime);
-            if (Math.abs(videoTime - localTime) > 50) {
+            console.log("video time", playheadTimeMs, videoTime);
+            if (Math.abs(videoTime - localTime) > 100) {
                 console.log("setting video time", localTime / 1000);
                 visual.video!.currentTime = localTime / 1000;
             }
+
+            const container = { width, height };
+            const child = { width: visual!.texture!.width, height: visual!.texture!.height };
+            const rect = objectFitContain(container, child);
+            console.log("rect", container, child, rect);
+            spriteRef.current!.width = rect.width;
+            spriteRef.current!.height = rect.height;
+            spriteRef.current!.x = rect.x;
+            spriteRef.current!.y = rect.y;
         }
 
         // Pause all other videos
         for (const v of loadedVisuals) {
-            if (v === visual) {
+            if (v === visual && isPlaying) {
                 v.video?.play();
             } else {
                 v.video?.pause();
@@ -120,13 +123,28 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         }
 
         // Render
-        console.log("render", rendererRef.current);
+        // console.log("render", rendererRef.current);
         rendererRef.current?.render(stageRef.current);
         contextRef.current?.clearRect(0, 0, width, height);
+        console.log("drawImage", rendererRef.current?.canvas);
         contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
     };
 
-    useTicker(tick, isPlaying);
+    useEffect(() => {
+        if (rendererRef.current) {
+            rendererRef.current.resize(width, height);
+        }
+    }, [width, height]);
+
+    // UGH this sucks...
+    useEffect(() => {
+        if (!isReadyRef.current) {
+            return;
+        }
+        render(0);
+    }, [isPlaying, playheadTimeMs]);
+
+    // useTicker(render, isPlaying);
 
     // if (!allLoaded) return <div>Loading video assets...</div>;
 
@@ -136,9 +154,10 @@ export const PixiVideoPlayer: React.FC<Props> = ({
                 id="pixi-canvas"
                 ref={canvasRef}
                 style={{
+                    aspectRatio: width / height,
                     height: "100%",
                     width: "100%",
-                    objectFit: "contain",
+                    objectFit: "contain"
                 }}
             />
         </div>

@@ -312,14 +312,14 @@ const App: React.FC = () => {
         return getClipAtTime(displayTimeline.audio_track, currentTimeMs);
     }, [displayTimeline, currentTimeMs]);
 
-    console.log(
-        "rendering",
-        displayTimeline,
-        "isPlaying:",
-        isPlaying,
-        "currentTime:",
-        currentTimeMs
-    );
+    // console.log(
+    //     "rendering",
+    //     displayTimeline,
+    //     "isPlaying:",
+    //     isPlaying,
+    //     "currentTime:",
+    //     currentTimeMs
+    // );
 
     const playableClips: PlayableVisualClip[] = useMemo(() => {
         return currentTimeline.visual_track.map((clip) => {
