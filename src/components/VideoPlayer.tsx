@@ -74,6 +74,14 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         };
     }, []);
 
+    // More garbage...
+    useEffect(() => {
+        if (allLoaded) {
+            renderPrep();
+            renderCanvas();
+        }
+    }, [allLoaded])
+
     const findClip = (timeMs: number): LoadedVisualClip | undefined => {
         return loadedVisuals.find(
             (visual) =>
@@ -82,7 +90,8 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         );
     };
 
-    const render = (deltaMs: number) => {
+    // TODO: Refactor this
+    const renderPrep = () => {
         console.log("RENDER", playheadTimeMs);
         const visual = findClip(playheadTimeMs);
         if (!visual) {
@@ -121,14 +130,14 @@ export const PixiVideoPlayer: React.FC<Props> = ({
                 v.video?.pause();
             }
         }
+    };
 
-        // Render
-        // console.log("render", rendererRef.current);
+    const renderCanvas = () => {
         rendererRef.current?.render(stageRef.current);
         contextRef.current?.clearRect(0, 0, width, height);
         console.log("drawImage", rendererRef.current?.canvas);
         contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
-    };
+    }
 
     useEffect(() => {
         if (rendererRef.current) {
@@ -141,7 +150,8 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         if (!isReadyRef.current) {
             return;
         }
-        render(0);
+        renderPrep();
+        renderCanvas();
     }, [isPlaying, playheadTimeMs]);
 
     // useTicker(render, isPlaying);
