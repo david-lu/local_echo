@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Timeline as TimelineType, AudioClip, VisualClip } from '../type';
 import TimelineTrack from './TimelineTrack';
 import TimelineAxis from './TimelineAxis';
@@ -11,6 +11,7 @@ interface TimelineProps {
   currentTime?: number;
   isPlaying?: boolean;
   onPlayPause?: () => void;
+  onSeek?: (time: number) => void;
 }
 
 export const Timeline: React.FC<TimelineProps> = ({ 
@@ -19,7 +20,8 @@ export const Timeline: React.FC<TimelineProps> = ({
   onClipClick, 
   currentTime = 0,
   isPlaying = false,
-  onPlayPause
+  onPlayPause,
+  onSeek
 }) => {
   // Find the max end time for scaling
   const maxEnd = Math.max(
@@ -31,6 +33,38 @@ export const Timeline: React.FC<TimelineProps> = ({
   // Helper to get percent width and position
   const getWidth = (start: number, end: number) => ((end - start) / maxEnd) * 100;
   const getLeft = (start: number) => (start / maxEnd) * 100;
+
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!onSeek) return;
+    setIsDragging(true);
+    e.preventDefault();
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !onSeek) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickPercent = clickX / rect.width;
+    const clickTime = clickPercent * maxEnd;
+    
+    onSeek(Math.max(0, Math.min(clickTime, maxEnd)));
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Add global mouse up listener
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => document.removeEventListener('mouseup', handleMouseUp);
+    }
+  }, [isDragging]);
 
 
 
@@ -70,9 +104,14 @@ export const Timeline: React.FC<TimelineProps> = ({
       </div>
       
       <div className="flex-1 p-2">
-        <div className="space-y-2 relative">
+        <div 
+          className="space-y-2 relative"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        >
           {/* Timeline Axis */}
-          <TimelineAxis maxEnd={maxEnd}/>
+          <TimelineAxis maxEnd={maxEnd} />
           
           {/* Timeline Cursor */}
           <TimelineCursor currentTime={currentTime} maxEnd={maxEnd} />

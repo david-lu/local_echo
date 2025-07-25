@@ -389,6 +389,7 @@ const App: React.FC = () => {
                   currentTime={currentTime}
                   isPlaying={isPlaying}
                   onPlayPause={handlePlayPause}
+                  onSeek={handleSeek}
                 />
               </div>
             </div>
