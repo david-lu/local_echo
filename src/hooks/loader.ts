@@ -84,11 +84,12 @@ export interface LoadedClips {
   getLoadedClipAtTime: (timeMs: number) => LoadedClip | undefined;
 }
 
-
+// TODO: SEPARATE CLIP SETTING LOGIC FROM LOADING LOGIC
+// THIS IS PREVENTING THE CLIPS FROM BEING UPDATED WHEN THE CLIP PARAMS CHANGES
 export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
   const results = useQueries({
-    queries: clips.map((clip, idx) => ({
-      queryKey: ["playable", clip.src, idx],
+    queries: clips.map((clip) => ({
+      queryKey: ["playable", clip.id, clip.src],
       queryFn: async (): Promise<LoadedClip | undefined> => {
         if (clip.type === "video") {
           const video = await loadVideoElement(clip.src);

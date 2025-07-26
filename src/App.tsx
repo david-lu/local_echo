@@ -260,11 +260,50 @@ const App: React.FC = () => {
         setSelectedClip(clip);
     };
 
-    const displayTimeline = useMemo(() => {
-      console.log('new display timeline')
-        const mutations = getMutationsFromMessages(partialMessages);
-        return applyMutations(currentTimeline, mutations);
-    }, [currentTimeline, partialMessages]);
+    const { displayTimeline, playableVisualClips, playableAudioClips } =
+        useMemo(() => {
+            console.log("new display timeline");
+            const mutations = getMutationsFromMessages(partialMessages);
+            const displayTimeline = applyMutations(currentTimeline, mutations);
+
+            const playableVisualClips: PlayableClip[] = displayTimeline.visual_track.map(
+                (clip) => {
+                    return {
+                        ...clip,
+                        type: clip.video_asset_id ? "video" : "image",
+                        src: clip.video_asset_id
+                            ? hashToArrayItem(clip.id, [
+                                  "https://videos.pexels.com/video-files/855971/855971-hd_1920_1080_30fps.mp4",
+                                  "https://videos.pexels.com/video-files/6950902/6950902-uhd_3840_2160_25fps.mp4",
+                                  "https://videos.pexels.com/video-files/26867682/12024481_1080_1920_30fps.mp4",
+                              ])
+                            : hashToArrayItem(clip.id, [
+                                  "https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg",
+                                  "https://images.pexels.com/photos/46505/swiss-shepherd-dog-dog-pet-portrait-46505.jpeg",
+                                  "https://images.pexels.com/photos/485294/pexels-photo-485294.jpeg",
+                              ]),
+                    };
+                }
+            );
+
+            const playableAudioClips: PlayableClip[] = displayTimeline.audio_track.map(
+                (clip) => {
+                    return {
+                        ...clip,
+                        type: "audio",
+                        src: hashToArrayItem(clip.id, [
+                            "https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o-tone.mp3",
+                            "https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o.mp3",
+                            "https://ia801309.us.archive.org/9/items/Quran-MP3-Ghamdi/001.mp3",
+                        ]),
+                    };
+                }
+            );
+
+            console.log(displayTimeline, playableVisualClips, playableAudioClips)
+
+            return { displayTimeline, playableVisualClips, playableAudioClips };
+        }, [currentTimeline, partialMessages]);
 
     // Calculate timeline duration
     const timelineDuration = useMemo(() => {
@@ -311,40 +350,6 @@ const App: React.FC = () => {
     //     currentTimeMs
     // );
 
-    // Placeholder for when we actually hook this up to generations
-    const playableVisualClips: PlayableClip[] = useMemo(() => {
-        return displayTimeline.visual_track.map((clip) => {
-            return {
-                ...clip,
-                type: clip.video_asset_id ? "video" : "image",
-                src: clip.video_asset_id
-                    ? hashToArrayItem(clip.id, [
-                          "https://videos.pexels.com/video-files/855971/855971-hd_1920_1080_30fps.mp4",
-                          "https://videos.pexels.com/video-files/6950902/6950902-uhd_3840_2160_25fps.mp4",
-                          "https://videos.pexels.com/video-files/26867682/12024481_1080_1920_30fps.mp4",
-                      ])
-                    : hashToArrayItem(clip.id, [
-                          "https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg",
-                          "https://images.pexels.com/photos/46505/swiss-shepherd-dog-dog-pet-portrait-46505.jpeg",
-                          "https://images.pexels.com/photos/485294/pexels-photo-485294.jpeg",
-                      ]),
-            };
-        });
-    }, [displayTimeline]);
-
-    const playableAudioClips: PlayableClip[] = useMemo(() => {
-        return displayTimeline.audio_track.map((clip) => {
-            return {
-                ...clip,
-                type: "audio",
-                src: hashToArrayItem(clip.id, [
-                    "https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o-tone.mp3",
-                    "https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o.mp3",
-                    "https://ia801309.us.archive.org/9/items/Quran-MP3-Ghamdi/001.mp3",
-                ]),
-            };
-        });
-    }, [displayTimeline]);
     usePlayAudioTrack(playableAudioClips, currentTimeMs, isPlaying);
 
     return (
