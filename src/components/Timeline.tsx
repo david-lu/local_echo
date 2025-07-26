@@ -102,6 +102,7 @@ export const Timeline: React.FC<TimelineProps> = ({
             getWidth={getWidth}
             getLeft={getLeft}
             onClipClick={onClipClick}
+            maxEnd={maxEnd}
           />
 
           {/* Audio Track */}
@@ -111,6 +112,7 @@ export const Timeline: React.FC<TimelineProps> = ({
             getWidth={getWidth}
             getLeft={getLeft}
             onClipClick={onClipClick}
+            maxEnd={maxEnd}
           />
         </div>
       </div>
