@@ -29,7 +29,7 @@ export const TimelinePlayer: React.FC<Props> = ({
     const stageRef = useRef<PIXI.Container>(new PIXI.Container());
     const rendererRef = useRef<PIXI.Renderer | null>(null);
 
-    const { loadedPlayables: loadedVisuals, allLoaded } = usePlayableLoader(clips);
+    const { loadedPlayables: loadedVisuals, allLoaded, getLoadedClipAtTime } = usePlayableLoader(clips);
 
     const initPixiApp = async () => {
         canvasRef.current!.width = width;
@@ -79,19 +79,10 @@ export const TimelinePlayer: React.FC<Props> = ({
         }
     }, [allLoaded]);
 
-    const findClip = (timeMs: number): LoadedClip | undefined => {
-        // console.log("findClip", timeMs, loadedVisuals, loadedVisuals[0]);
-        return loadedVisuals.find(
-            (visual) =>
-                visual?.data?.start_ms! <= timeMs &&
-                visual?.data?.start_ms! + visual?.data?.duration_ms! > timeMs
-        )?.data;
-    };
-
     // TODO: Refactor this
     const renderPrep = () => {
         console.log("RENDER", playheadTimeMs);
-        const visual = findClip(playheadTimeMs);
+        const visual = getLoadedClipAtTime(playheadTimeMs);
         console.log("visual", visual);
         if (!visual) {
             // Set empty texture if no visual is found

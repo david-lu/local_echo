@@ -1,6 +1,7 @@
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import * as PIXI from "pixi.js";
 import { LoadedClip, PlayableClip } from "../types/loader";
+import { useCallback } from "react";
 
 function loadVideoElement(src: string): Promise<HTMLVideoElement> {
   return new Promise((resolve, reject) => {
@@ -78,7 +79,9 @@ function loadAudioElement(src: string): Promise<HTMLAudioElement> {
 export interface LoadedClips {
   loadedPlayables: UseQueryResult<LoadedClip | undefined>[];
   allLoaded: boolean;
+  getLoadedClipAtTime: (timeMs: number) => LoadedClip | undefined;
 }
+
 
 export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
   const results = useQueries({
@@ -120,5 +123,15 @@ export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
     (entry) => !entry.isLoading && !entry.isError
   );
 
-  return { loadedPlayables: results, allLoaded };
+  const getLoadedClipAtTime = useCallback((
+      timeMs: number
+  ): LoadedClip | undefined => {
+      return results.find(
+          (clip) =>
+              clip?.data?.start_ms! <= timeMs &&
+              clip?.data?.start_ms! + clip?.data?.duration_ms! > timeMs
+      )?.data;
+  }, [results]);
+
+  return { loadedPlayables: results, allLoaded, getLoadedClipAtTime };
 }
