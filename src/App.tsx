@@ -51,6 +51,7 @@ const App: React.FC = () => {
         parseTimeline(timelineJson)
     );
     const [partialMessages, setPartialMessages] = useState<Message[]>([]);
+    const [selectedClip, setSelectedClip] = useState<AudioClip | VisualClip | null>(null);
 
     // Playback state
     const [isPlaying, setIsPlaying] = useState(false);
@@ -261,8 +262,7 @@ const App: React.FC = () => {
     };
 
     const handleClipClick = (clip: AudioClip | VisualClip) => {
-        setCurrentTimeMs(clip.start_ms);
-        // setSelectedClip(clip);
+        setSelectedClip(clip);
     };
 
     const displayTimeline = useMemo(() => {
@@ -350,11 +350,14 @@ const App: React.FC = () => {
                     <Panel defaultSize={50} minSize={30}>
                         <div className="h-full flex flex-col bg-zinc-900">
                             <div className="flex-1 min-h-0">
-                                <ChatContainer
+                              {selectedClip && <div className="flex flex-col items-end justify-center">
+                                <button className="p-4 rounded bg-zinc-600 text-white" onClick={() => setSelectedClip(null)}>X</button>
+                                <ClipDisplayer selectedClip={selectedClip} /></div>}
+                                {!selectedClip && <ChatContainer
                                     messages={messages}
                                     loading={agentState !== "idle"}
                                     partialMessages={partialMessages}
-                                />
+                                />}
                             </div>
 
                             {error && (
@@ -404,8 +407,6 @@ const App: React.FC = () => {
                                 height={640}
                                 isPlaying={isPlaying}
                             />
-                            {/* <ClipDisplayer selectedClip={currentVisualClip} /> */}
-                            <ClipDisplayer selectedClip={currentAudioClip} />
 
                             {/* Timeline Controls */}
                             <div className="flex-grow-1">

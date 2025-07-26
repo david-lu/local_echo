@@ -10,7 +10,7 @@ export const TimelineAxis: React.FC<TimelineAxisProps> = ({ maxEnd }) => {
   const secondMarkings = Array.from({ length: totalSeconds + 1 }, (_, i) => i);
 
   return (
-    <div className="flex items-center gap-2 h-8">
+    <div className="flex items-center gap-2 h-8 touch-none select-none">
       <div className="relative flex-1 h-3">
         {/* Main timeline line */}
         <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-zinc-600 rounded-full" />
