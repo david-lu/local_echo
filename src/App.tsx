@@ -324,7 +324,6 @@ const App: React.FC = () => {
             const newTime = prev + deltaMs;
             if (newTime >= timelineDuration) {
                 setIsPlaying(false);
-                setCurrentTimeMs(timelineDuration);
                 return 0;
             }
             return newTime;
