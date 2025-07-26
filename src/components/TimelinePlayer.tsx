@@ -124,10 +124,10 @@ export const TimelinePlayer: React.FC<Props> = ({
                 } else {
                     v.data?.video?.pause();
                 }
-                // We do a lil trick here to set all non-current videos after the playhead to time 0
+                // We do a lil trick here to set all non-current videos to time 0
                 // This way the videos are immediately ready when we get to them
                 if (
-                    v.data.start_ms > playheadTimeMs &&
+                    v.data !== visual && 
                     v.data.video?.currentTime !== 0
                 ) {
                     v.data.video!.currentTime = 0;
