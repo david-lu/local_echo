@@ -86,7 +86,7 @@ export const Timeline: React.FC<TimelineProps> = ({
       <div className="flex-1 p-2">
         <div className="space-y-2 relative timeline-container">
           {/* Timeline Axis */}
-          <TimelineAxis maxEnd={maxEnd} />
+          <TimelineAxis maxEnd={maxEnd} onSeek={onSeek} />
 
           {/* Timeline Cursor */}
           <TimelineCursor
