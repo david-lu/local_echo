@@ -39,7 +39,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
 import { PixiVideoPlayer } from "./components/VideoPlayer";
 import { useTicker } from "./tick";
-import { PlayableVisualClip } from "./loader";
+import { PlayableClip } from "./loader";
 
 const App: React.FC = () => {
     const [messages, setMessages] = useState<(Message | AssistantMessage)[]>(
@@ -322,13 +322,10 @@ const App: React.FC = () => {
     //     currentTimeMs
     // );
 
-    const playableClips: PlayableVisualClip[] = useMemo(() => {
+    const playableVisualClips: PlayableClip[] = useMemo(() => {
         return currentTimeline.visual_track.map((clip) => {
             return {
-                id: clip.id,
-                start_ms: clip.start_ms,
-                duration_ms: clip.duration_ms,
-                speaker: clip.speaker,
+                ...clip,
                 type: clip.video_asset_id ? "video" : "image",
                 src: clip.video_asset_id ? hashToArrayItem(clip.id, [
                   "https://videos.pexels.com/video-files/33003281/14065566_2560_1440_24fps.mp4",
@@ -401,7 +398,7 @@ const App: React.FC = () => {
                         <div className="h-full flex flex-col bg-zinc-900 min-h-0 justify-between">
                             {/* ClipDisplayer */}
                             <PixiVideoPlayer
-                                clips={playableClips}
+                                clips={playableVisualClips}
                                 playheadTimeMs={currentTimeMs}
                                 width={860}
                                 height={640}

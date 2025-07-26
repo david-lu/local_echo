@@ -2,15 +2,15 @@ import React, { useEffect, useLayoutEffect, useRef } from "react";
 import type { Renderer } from "pixi.js";
 import * as PIXI from "pixi.js";
 import {
-    PlayableVisualClip,
+    PlayableClip,
     useVisualLoader,
-    LoadedVisualClip,
+    LoadedClip,
 } from "../loader";
 import { useTicker } from "../tick";
 import { objectFitContain } from "../utils";
 
 type Props = {
-    clips: PlayableVisualClip[];
+    clips: PlayableClip[];
     playheadTimeMs: number;
     isPlaying: boolean;
     width: number;
@@ -82,7 +82,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({
         }
     }, [allLoaded]);
 
-    const findClip = (timeMs: number): LoadedVisualClip | undefined => {
+    const findClip = (timeMs: number): LoadedClip | undefined => {
         // console.log("findClip", timeMs, loadedVisuals, loadedVisuals[0]);
         return loadedVisuals.find(
             (visual) =>

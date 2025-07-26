@@ -3,11 +3,11 @@ import * as PIXI from "pixi.js";
 import { ClipSchema } from "./type";
 import z from "zod";
 
-export const PlayableVisualClipSchema = ClipSchema.extend({
-  type: z.enum(["image", "video"]),
+export const PlayableClipSchema = ClipSchema.extend({
+  type: z.enum(["image", "video", "audio"]),
   src: z.string(),
 });
-export type PlayableVisualClip = z.infer<typeof PlayableVisualClipSchema>;
+export type PlayableClip = z.infer<typeof PlayableClipSchema>;
 
 /**
  * 
@@ -21,12 +21,13 @@ export type PlayableVisualClip = z.infer<typeof PlayableVisualClipSchema>;
     }
  */
 
-export const LoadedVisualClipSchema = PlayableVisualClipSchema.extend({
+export const LoadedClipSchema = PlayableClipSchema.extend({
   video: z.instanceof(HTMLVideoElement).nullable().optional(),
   image: z.instanceof(HTMLImageElement).nullable().optional(),
-  texture: z.instanceof(PIXI.Texture).nullable(),
+  audio: z.instanceof(HTMLAudioElement).nullable().optional(),
+  texture: z.instanceof(PIXI.Texture).nullable().optional(),
 });
-export type LoadedVisualClip = z.infer<typeof LoadedVisualClipSchema>;
+export type LoadedClip = z.infer<typeof LoadedClipSchema>;
 
 function loadVideoElement(src: string): Promise<HTMLVideoElement> {
   return new Promise((resolve, reject) => {
@@ -74,16 +75,43 @@ function loadImageElement(src: string): Promise<HTMLImageElement> {
   });
 }
 
-export interface LoadedVisuals {
-  loadedVisuals: UseQueryResult<LoadedVisualClip>[];
+function loadAudioElement(src: string): Promise<HTMLAudioElement> {
+  return new Promise((resolve, reject) => {
+    const audio = document.createElement('audio');
+    audio.src = src;
+    audio.crossOrigin = 'anonymous';
+
+    const onCanPlayThrough = () => {
+        cleanup();
+        resolve(audio);
+      };
+      const onError = (e: any) => {
+        cleanup();
+        reject(e);
+      };
+  
+      function cleanup() {
+        audio.removeEventListener("canplaythrough", onCanPlayThrough);
+        audio.removeEventListener("error", onError);
+      }
+  
+      audio.addEventListener("canplaythrough", onCanPlayThrough);
+      audio.addEventListener("error", onError);
+  
+      audio.load();
+  });
+}
+
+export interface LoadedClips {
+  loadedVisuals: UseQueryResult<LoadedClip | undefined>[];
   allLoaded: boolean;
 }
 
-export function useVisualLoader(clips: PlayableVisualClip[]): LoadedVisuals {
+export function useVisualLoader(clips: PlayableClip[]): LoadedClips {
   const results = useQueries({
     queries: clips.map((clip, idx) => ({
       queryKey: ["visual", clip.src, idx],
-      queryFn: async (): Promise<LoadedVisualClip> => {
+      queryFn: async (): Promise<LoadedClip | undefined> => {
         if (clip.type === "video") {
           const video = await loadVideoElement(clip.src);
           const texture = PIXI.Texture.from(video);
@@ -93,7 +121,13 @@ export function useVisualLoader(clips: PlayableVisualClip[]): LoadedVisuals {
             image: null,
             texture,
           };
-        } else {
+        } else if (clip.type === "audio") {
+          const audio = await loadAudioElement(clip.src);
+          return {
+            ...clip,
+            audio,
+          };
+        } else if (clip.type === "image")  {
           const image = await loadImageElement(clip.src);
           const texture = PIXI.Texture.from(image);
           return {
@@ -110,7 +144,7 @@ export function useVisualLoader(clips: PlayableVisualClip[]): LoadedVisuals {
   });
 
   const allLoaded = results.every(
-    (entry) => entry.data?.texture !== null && !entry.isLoading && !entry.isError
+    (entry) => !entry.isLoading && !entry.isError
   );
 
   return { loadedVisuals: results, allLoaded };
