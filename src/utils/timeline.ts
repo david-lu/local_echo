@@ -129,3 +129,36 @@ export const getClipAtTime = (track: Clip[], time: number): Clip | null => {
         ) || null
     );
 };
+
+export const updateLoadedClipTime = (
+    loadedClip: LoadedClip,
+    playheadTimeMs: number
+) => {
+    if (loadedClip.type === "video" && loadedClip.video) {
+        updateMediaCurrentTime(
+            loadedClip.video,
+            loadedClip.start_ms,
+            playheadTimeMs
+        );
+    } else if (loadedClip.type === "audio" && loadedClip.audio) {
+        updateMediaCurrentTime(
+            loadedClip.audio,
+            loadedClip.start_ms,
+            playheadTimeMs
+        );
+    }
+};
+
+export const updateMediaCurrentTime = (
+    media: HTMLVideoElement | HTMLAudioElement,
+    startMs: number,
+    playheadTimeMs: number
+) => {
+    const localTime = playheadTimeMs - startMs;
+    const videoTime = media.currentTime * 1000;
+    console.log("video time", playheadTimeMs, videoTime);
+    if (Math.abs(videoTime - localTime) > 100) {
+        console.log("setting video time", localTime / 1000);
+        media!.currentTime = localTime / 1000;
+    }
+};

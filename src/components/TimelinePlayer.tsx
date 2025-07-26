@@ -5,6 +5,7 @@ import {
 } from "../hooks/loader";
 import { PlayableClip, LoadedClip } from "../types/loader";
 import { objectFitContain } from "../utils/misc";
+import { updateLoadedClipTime } from "../utils/timeline";
 
 type Props = {
     visualClips: PlayableClip[];
@@ -98,15 +99,7 @@ export const TimelinePlayer: React.FC<Props> = ({
                 spriteRef.current!.texture = visual.texture!;
             }
             // Set video time
-            if (visual.type === "video" && visual.video) {
-                const localTime = playheadTimeMs - visual.start_ms;
-                const videoTime = visual.video!.currentTime * 1000;
-                console.log("video time", playheadTimeMs, videoTime);
-                if (Math.abs(videoTime - localTime) > 100) {
-                    console.log("setting video time", localTime / 1000);
-                    visual.video!.currentTime = localTime / 1000;
-                }
-            }
+            updateLoadedClipTime(visual, playheadTimeMs);
 
             const container = { width, height };
             const child = {
