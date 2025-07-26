@@ -1,5 +1,5 @@
 import React from 'react';
-import { AudioClip as AudioClipType, VisualClip as VisualClipType } from '../type';
+import { AudioClip as AudioClipType, VisualClip as VisualClipType } from "../types/timeline";
 import TimelineClip from './TimelineClip';
 
 interface TimelineTrackProps {
@@ -21,6 +21,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   onClipMove,
   maxEnd
 }) => {
+  
   return (
     <div className="flex items-center gap-2">
       <div className="relative flex-1 h-8 bg-zinc-800 border border-zinc-700 rounded overflow-visible" style={{ zIndex }}>

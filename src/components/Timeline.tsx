@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Timeline as TimelineType, AudioClip, VisualClip } from "../type";
+import { Timeline as TimelineType, AudioClip, VisualClip } from "../types/timeline";
 import TimelineTrack from "./TimelineTrack";
 import TimelineAxis from "./TimelineAxis";
 import TimelineCursor from "./TimelineCursor";

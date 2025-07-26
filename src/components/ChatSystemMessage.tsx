@@ -1,5 +1,5 @@
 import React from 'react';
-import { Message } from '../type';
+import { Message } from "../types/agent";
 import { getMutationFromToolCall } from "../utils";
 
 interface ChatSystemMessageProps {

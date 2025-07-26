@@ -1,14 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 import {
-    PlayableClip,
-    useVisualLoader,
-    LoadedClip,
-} from "../loader";
+    usePlayableLoader,
+} from "../hooks/loader";
+import { PlayableClip, LoadedClip } from "../types/loader";
 import { objectFitContain } from "../utils";
 
 type Props = {
-    clips: PlayableClip[];
+    visualClips: PlayableClip[];
     playheadTimeMs: number;
     isPlaying: boolean;
     width: number;
@@ -16,7 +15,7 @@ type Props = {
 };
 
 export const TimelinePlayer: React.FC<Props> = ({
-    clips,
+    visualClips: clips,
     playheadTimeMs,
     isPlaying,
     width,
@@ -30,7 +29,7 @@ export const TimelinePlayer: React.FC<Props> = ({
     const stageRef = useRef<PIXI.Container>(new PIXI.Container());
     const rendererRef = useRef<PIXI.Renderer | null>(null);
 
-    const { loadedVisuals, allLoaded } = useVisualLoader(clips);
+    const { loadedPlayables: loadedVisuals, allLoaded } = usePlayableLoader(clips);
 
     const initPixiApp = async () => {
         canvasRef.current!.width = width;

@@ -1,7 +1,9 @@
 import {
   Timeline,
   AudioClip,
-  VisualClip,
+  VisualClip
+} from "./types/timeline";
+import {
   AddVisualMutation,
   AddAudioMutation,
   ModifyVisualMutation,
@@ -9,8 +11,8 @@ import {
   BaseMutation,
   RemoveAudioMutation,
   RemoveVisualMutation,
-  RetimeClipsMutation,
-} from "./type";
+  RetimeClipsMutation
+} from "./types/mutations";
 
 /**
  * Applies a single mutation to the timeline

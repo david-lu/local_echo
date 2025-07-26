@@ -1,33 +1,6 @@
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import * as PIXI from "pixi.js";
-import { ClipSchema } from "./type";
-import z from "zod";
-
-export const PlayableClipSchema = ClipSchema.extend({
-  type: z.enum(["image", "video", "audio"]),
-  src: z.string(),
-});
-export type PlayableClip = z.infer<typeof PlayableClipSchema>;
-
-/**
- * 
- * {
-      clip: clips[idx],
-      video,
-      texture,
-      isLoading: result.isLoading,
-      isError: result.isError,
-      error: result.error,
-    }
- */
-
-export const LoadedClipSchema = PlayableClipSchema.extend({
-  video: z.instanceof(HTMLVideoElement).nullable().optional(),
-  image: z.instanceof(HTMLImageElement).nullable().optional(),
-  audio: z.instanceof(HTMLAudioElement).nullable().optional(),
-  texture: z.instanceof(PIXI.Texture).nullable().optional(),
-});
-export type LoadedClip = z.infer<typeof LoadedClipSchema>;
+import { LoadedClip, PlayableClip } from "../types/loader";
 
 function loadVideoElement(src: string): Promise<HTMLVideoElement> {
   return new Promise((resolve, reject) => {
@@ -103,14 +76,14 @@ function loadAudioElement(src: string): Promise<HTMLAudioElement> {
 }
 
 export interface LoadedClips {
-  loadedVisuals: UseQueryResult<LoadedClip | undefined>[];
+  loadedPlayables: UseQueryResult<LoadedClip | undefined>[];
   allLoaded: boolean;
 }
 
-export function useVisualLoader(clips: PlayableClip[]): LoadedClips {
+export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
   const results = useQueries({
     queries: clips.map((clip, idx) => ({
-      queryKey: ["visual", clip.src, idx],
+      queryKey: ["playable", clip.src, idx],
       queryFn: async (): Promise<LoadedClip | undefined> => {
         if (clip.type === "video") {
           const video = await loadVideoElement(clip.src);
@@ -147,5 +120,5 @@ export function useVisualLoader(clips: PlayableClip[]): LoadedClips {
     (entry) => !entry.isLoading && !entry.isError
   );
 
-  return { loadedVisuals: results, allLoaded };
+  return { loadedPlayables: results, allLoaded };
 }

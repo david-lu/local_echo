@@ -6,20 +6,22 @@ import ChatContainer from "./components/ChatContainer";
 import ChatInput from "./components/ChatInput";
 import ClipDisplayer from "./components/ClipDisplayer";
 import {
-    Message,
-    UserMessage,
-    AudioClip,
-    VisualClip,
-    AddVisualMutationSchema,
-    AddAudioMutationSchema,
-    ModifyAudioMutationSchema,
-    ModifyVisualMutationSchema,
-    RemoveAudioMutationSchema,
-    RemoveVisualMutationSchema,
-    AssistantMessage,
-    RetimeClipsMutationSchema,
-    AgentState,
-} from "./type";
+  AudioClip,
+  VisualClip,
+  AgentState
+} from "./types/timeline";
+import {
+  Message,
+  UserMessage, AssistantMessage
+} from "./types/agent";
+import {
+  AddVisualMutationSchema,
+  AddAudioMutationSchema,
+  ModifyAudioMutationSchema,
+  ModifyVisualMutationSchema,
+  RemoveAudioMutationSchema,
+  RemoveVisualMutationSchema, RetimeClipsMutationSchema
+} from "./types/mutations";
 import {
     convertToOpenAIMessage,
     getClipAtTime,
@@ -36,8 +38,8 @@ import { zodFunction } from "openai/helpers/zod";
 import { applyMutations } from "./mutation";
 import { v4 as uuidv4 } from "uuid";
 import { TimelinePlayer } from "./components/TimelinePlayer";
-import { useTicker } from "./tick";
-import { PlayableClip } from "./loader";
+import { useTicker } from "./hooks/tick";
+import { PlayableClip } from "./types/loader";
 
 const App: React.FC = () => {
     const [messages, setMessages] = useState<(Message | AssistantMessage)[]>(
@@ -396,7 +398,7 @@ const App: React.FC = () => {
                         <div className="h-full flex flex-col bg-zinc-900 min-h-0 justify-between">
                             {/* ClipDisplayer */}
                             <TimelinePlayer
-                                clips={playableVisualClips}
+                                visualClips={playableVisualClips}
                                 playheadTimeMs={currentTimeMs}
                                 width={860}
                                 height={640}

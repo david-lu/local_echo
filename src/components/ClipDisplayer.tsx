@@ -1,5 +1,5 @@
 import React from 'react';
-import { AudioClip, Clip, VisualClip } from '../type';
+import { AudioClip, Clip, VisualClip } from "../types/timeline";
 
 interface ClipDisplayerProps {
   selectedClip: Clip | null;

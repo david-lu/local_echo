@@ -1,20 +1,21 @@
 import { ChatCompletionMessageToolCall } from "openai/resources/index";
 import {
+  Timeline,
+  TimelineSchema,
+  Clip,
+  Range,
+  RefinedTimeline
+} from "./types/timeline";
+import { Message } from "./types/agent";
+import {
   BaseMutation,
   AddVisualMutationSchema,
   RemoveVisualMutationSchema,
   ModifyVisualMutationSchema,
   AddAudioMutationSchema,
   RemoveAudioMutationSchema,
-  ModifyAudioMutationSchema,
-  Message,
-  Timeline,
-  TimelineSchema,
-  Clip,
-  Range,
-  RefinedTimeline,
-  RetimeClipsMutationSchema,
-} from "./type";
+  ModifyAudioMutationSchema, RetimeClipsMutationSchema
+} from "./types/mutations";
 
 export const stringifyWithoutNull = (obj: unknown): string =>
   JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
