@@ -12,7 +12,7 @@ import {
   RemoveAudioMutation,
   RemoveVisualMutation,
   RetimeClipsMutation
-} from "./types/mutations";
+} from "./types/mutation";
 
 /**
  * Applies a single mutation to the timeline

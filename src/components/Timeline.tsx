@@ -3,7 +3,7 @@ import { Timeline as TimelineType, AudioClip, VisualClip } from "../types/timeli
 import TimelineTrack from "./TimelineTrack";
 import TimelineAxis from "./TimelineAxis";
 import TimelineCursor from "./TimelineCursor";
-import { formatTime } from "../utils";
+import { formatTime } from "../utils/misc";
 
 interface TimelineProps {
   timeline: TimelineType;

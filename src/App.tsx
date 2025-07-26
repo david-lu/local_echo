@@ -21,18 +21,19 @@ import {
   ModifyVisualMutationSchema,
   RemoveAudioMutationSchema,
   RemoveVisualMutationSchema, RetimeClipsMutationSchema
-} from "./types/mutations";
+} from "./types/mutation";
 import {
-    convertToOpenAIMessage,
-    getClipAtTime,
-    getMutationsFromMessages,
-    hashToArrayItem,
-    refineTimeline,
-    stringifyWithoutNull,
-} from "./utils";
-import { getMutationFromToolCall } from "./utils";
+  hashToArrayItem,
+  stringifyWithoutNull
+} from "./utils/misc";
+import {
+  convertToOpenAIMessage,
+  getMutationsFromMessages
+} from "./utils/mutation";
+import { getClipAtTime, refineTimeline } from "./utils/timeline";
+import { getMutationFromToolCall } from "./utils/mutation";
 import { AGENT_PROMPT, AGENT_PROMPT_LONG } from "./prompts";
-import { parseTimeline } from "./utils";
+import { parseTimeline } from "./utils/timeline";
 import timelineJson from "./data/sampleTimeline.json";
 import { zodFunction } from "openai/helpers/zod";
 import { applyMutations } from "./mutation";

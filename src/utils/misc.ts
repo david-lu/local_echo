@@ -1,0 +1,60 @@
+
+export const stringifyWithoutNull = (obj: unknown): string => JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
+
+export const formatTime = (ms: number): string => {
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const centiseconds = Math.floor((ms % 1000) / 10);
+
+  return `${hours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}.${centiseconds
+      .toString()
+      .padStart(2, "0")}`;
+};
+
+type Size = {
+  width: number;
+  height: number;
+};
+
+type Rect = {
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};
+
+export function objectFitContain(container: Size, child: Size): Rect {
+  const containerRatio = container.width / container.height;
+  const childRatio = child.width / child.height;
+
+  let scale: number;
+  if (childRatio > containerRatio) {
+    // Fit to width
+    scale = container.width / child.width;
+  } else {
+    // Fit to height
+    scale = container.height / child.height;
+  }
+
+  const width = child.width * scale;
+  const height = child.height * scale;
+  const x = (container.width - width) / 2;
+  const y = (container.height - height) / 2;
+
+  return { width, height, x, y };
+}
+
+export function hashToArrayItem(str: string, items: any[], hash = 5234): any {
+  // Basic hash function (djb2)
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 33) ^ str.charCodeAt(i);
+  }
+
+  // Ensure positive index
+  const index = Math.abs(hash) % items.length;
+  return items[index];
+}

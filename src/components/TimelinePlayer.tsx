@@ -4,7 +4,7 @@ import {
     usePlayableLoader,
 } from "../hooks/loader";
 import { PlayableClip, LoadedClip } from "../types/loader";
-import { objectFitContain } from "../utils";
+import { objectFitContain } from "../utils/misc";
 
 type Props = {
     visualClips: PlayableClip[];
