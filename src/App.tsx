@@ -152,7 +152,6 @@ const App: React.FC = () => {
             setPartialMessages([...localPartialMessages]);
 
             while (true) {
-                console.log("while true");
                 const conversationHistory =
                     buildConversationHistory(localPartialMessages);
                 console.log("CONVERSATION HISTORY", conversationHistory);
@@ -262,7 +261,7 @@ const App: React.FC = () => {
 
     const { displayTimeline, playableVisualClips, playableAudioClips } =
         useMemo(() => {
-            console.log("new display timeline");
+            // console.log("new display timeline");
             const mutations = getMutationsFromMessages(partialMessages);
             const displayTimeline = applyMutations(currentTimeline, mutations);
 
@@ -300,8 +299,6 @@ const App: React.FC = () => {
                 }
             );
 
-            console.log(displayTimeline, playableVisualClips, playableAudioClips)
-
             return { displayTimeline, playableVisualClips, playableAudioClips };
         }, [currentTimeline, partialMessages]);
 
@@ -332,22 +329,12 @@ const App: React.FC = () => {
 
     // Playback control functions
     const handlePlayPause = () => {
-        console.log("Play/Pause clicked, current isPlaying:", isPlaying);
         setIsPlaying((prev) => !prev);
     };
 
     const handleSeek = (time: number) => {
         setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)));
     };
-
-    // console.log(
-    //     "rendering",
-    //     displayTimeline,
-    //     "isPlaying:",
-    //     isPlaying,
-    //     "currentTime:",
-    //     currentTimeMs
-    // );
 
     usePlayAudioTrack(playableAudioClips, currentTimeMs, isPlaying);
 

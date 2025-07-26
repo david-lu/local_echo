@@ -70,7 +70,6 @@ export const TimelinePlayer: React.FC<Props> = ({
             rendererRef.current = null;
             stageRef.current?.removeChildren();
             spriteRef.current = null;
-            console.log("Cleaned up Pixi renderer");
         };
     }, []);
 
@@ -84,20 +83,15 @@ export const TimelinePlayer: React.FC<Props> = ({
 
     // TODO: Refactor this
     const renderPrep = () => {
-        console.log("RENDER", playheadTimeMs);
+        // console.log("RENDER", playheadTimeMs);
         const currentVisual = getLoadedClipAtTime(playheadTimeMs);
-        console.log("visual", currentVisual);
+        // console.log("visual", currentVisual);
         if (!currentVisual) {
             // Set empty texture if no visual is found
             spriteRef.current!.texture = PIXI.Texture.EMPTY;
         } else {
             // Set texture
             if (spriteRef.current!.texture?.uid !== currentVisual.texture?.uid) {
-                console.log(
-                    "setting texture",
-                    spriteRef.current,
-                    currentVisual.texture
-                );
                 spriteRef.current!.texture = currentVisual.texture!;
             }
             // Set video time
@@ -109,7 +103,6 @@ export const TimelinePlayer: React.FC<Props> = ({
                 height: currentVisual!.texture!.height,
             };
             const rect = objectFitContain(container, child);
-            console.log("rect", container, child, rect);
             spriteRef.current!.width = rect.width;
             spriteRef.current!.height = rect.height;
             spriteRef.current!.x = rect.x;
@@ -137,7 +130,6 @@ export const TimelinePlayer: React.FC<Props> = ({
         if (rendererRef.current?.canvas) {
             rendererRef.current?.render(stageRef.current);
             contextRef.current?.clearRect(0, 0, width, height);
-            console.log("drawImage", rendererRef.current?.canvas);
             contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
         }
     };

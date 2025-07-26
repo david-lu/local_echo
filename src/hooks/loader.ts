@@ -5,7 +5,7 @@ import { useCallback, useMemo } from "react";
 
 function loadVideoElement(src: string): Promise<HTMLVideoElement> {
   return new Promise((resolve, reject) => {
-    console.log("loading video", src);
+    // console.log("loading video", src);
     const video = document.createElement("video");
     video.src = src;
     video.crossOrigin = "anonymous";

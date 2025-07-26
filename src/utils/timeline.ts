@@ -69,7 +69,7 @@ export const getGaps = (
     clips: Clip[],
     timeline_duration_ms?: number
 ): Range[] => {
-    console.log("getGaps clips", clips);
+    // console.log("getGaps clips", clips);
     const timelineEnd = Math.max(
         getTotalDuration(clips),
         timeline_duration_ms || 0
@@ -156,7 +156,7 @@ export const updateMediaCurrentTime = (
 ) => {
     const localTime = playheadTimeMs - startMs;
     const videoTime = media.currentTime * 1000;
-    console.log("video time", playheadTimeMs, videoTime);
+    // console.log("video time", playheadTimeMs, videoTime);
     if (Math.abs(videoTime - localTime) > 100) {
         console.log("setting video time", localTime / 1000);
         media!.currentTime = localTime / 1000;

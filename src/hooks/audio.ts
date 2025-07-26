@@ -12,8 +12,6 @@ export const usePlayAudioTrack = (
     const { loadedPlayables: loadedAudio, getLoadedClipAtTime } =
         usePlayableLoader(audioTrack);
 
-    console.log('loadedAudio', loadedAudio)
-
     useEffect(() => {
         const currentAudio = getLoadedClipAtTime(playheadTimeMs);
         if (currentAudio) {

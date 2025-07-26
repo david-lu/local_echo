@@ -42,7 +42,6 @@ export const Timeline: React.FC<TimelineProps> = ({
         <div className="flex justify-between items-center">
         <button
               onClick={() => {
-                console.log("Button clicked!");
                 onPlayPause?.();
               }}
               className="flex items-center justify-center w-8 h-8 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded-md transition-colors"
