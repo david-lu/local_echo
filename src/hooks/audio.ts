@@ -15,15 +15,15 @@ export const usePlayAudioTrack = (
     console.log('loadedAudio', loadedAudio)
 
     useEffect(() => {
-        const audio = getLoadedClipAtTime(playheadTimeMs);
-        if (audio) {
-            updateLoadedClipTime(audio, playheadTimeMs);
+        const currentAudio = getLoadedClipAtTime(playheadTimeMs);
+        if (currentAudio) {
+            updateLoadedClipTime(currentAudio, playheadTimeMs);
         }
         for (const a of loadedAudio) {
-            if (a.data === audio && isPlaying) {
-                a.data?.audio?.play();
+            if (a === currentAudio && isPlaying) {
+                a.audio?.play();
             } else {
-                a.data?.audio?.pause();
+                a.audio?.pause();
             }
         }
     }, [isPlaying, playheadTimeMs]);

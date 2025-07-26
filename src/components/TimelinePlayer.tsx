@@ -85,28 +85,28 @@ export const TimelinePlayer: React.FC<Props> = ({
     // TODO: Refactor this
     const renderPrep = () => {
         console.log("RENDER", playheadTimeMs);
-        const visual = getLoadedClipAtTime(playheadTimeMs);
-        console.log("visual", visual);
-        if (!visual) {
+        const currentVisual = getLoadedClipAtTime(playheadTimeMs);
+        console.log("visual", currentVisual);
+        if (!currentVisual) {
             // Set empty texture if no visual is found
             spriteRef.current!.texture = PIXI.Texture.EMPTY;
         } else {
             // Set texture
-            if (spriteRef.current!.texture?.uid !== visual.texture?.uid) {
+            if (spriteRef.current!.texture?.uid !== currentVisual.texture?.uid) {
                 console.log(
                     "setting texture",
                     spriteRef.current,
-                    visual.texture
+                    currentVisual.texture
                 );
-                spriteRef.current!.texture = visual.texture!;
+                spriteRef.current!.texture = currentVisual.texture!;
             }
             // Set video time
-            updateLoadedClipTime(visual, playheadTimeMs);
+            updateLoadedClipTime(currentVisual, playheadTimeMs);
 
             const container = { width, height };
             const child = {
-                width: visual!.texture!.width,
-                height: visual!.texture!.height,
+                width: currentVisual!.texture!.width,
+                height: currentVisual!.texture!.height,
             };
             const rect = objectFitContain(container, child);
             console.log("rect", container, child, rect);
@@ -118,19 +118,16 @@ export const TimelinePlayer: React.FC<Props> = ({
 
         // Pause all other videos
         for (const v of loadedVisuals) {
-            if (v.data?.type === "video") {
-                if (v.data === visual && isPlaying) {
-                    v.data?.video?.play();
+            if (v.type === "video") {
+                if (v === currentVisual && isPlaying) {
+                    v.video?.play();
                 } else {
-                    v.data?.video?.pause();
-                }
-                // We do a lil trick here to set all non-current videos to time 0
-                // This way the videos are immediately ready when we get to them
-                if (
-                    v.data !== visual && 
-                    v.data.video?.currentTime !== 0
-                ) {
-                    v.data.video!.currentTime = 0;
+                    // We do a lil trick here to set all non-current videos to time 0
+                    // This way the videos are immediately ready when we get to them
+                    if (v.video?.currentTime !== 0) {
+                        v.video!.currentTime = 0;
+                    }
+                    v.video?.pause();
                 }
             }
         }

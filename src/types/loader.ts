@@ -9,10 +9,18 @@ export const PlayableClipSchema = ClipSchema.extend({
 });
 export type PlayableClip = z.infer<typeof PlayableClipSchema>;
 
-export const LoadedClipSchema = PlayableClipSchema.extend({
-    video: z.instanceof(HTMLVideoElement).nullable().optional(),
-    image: z.instanceof(HTMLImageElement).nullable().optional(),
-    audio: z.instanceof(HTMLAudioElement).nullable().optional(),
-    texture: z.instanceof(PIXI.Texture).nullable().optional(),
+export const PlayableMediaSchema = z.object({
+    video: z.instanceof(HTMLVideoElement).optional(),
+    image: z.instanceof(HTMLImageElement).optional(),
+    audio: z.instanceof(HTMLAudioElement).optional(),
+    texture: z.instanceof(PIXI.Texture).optional(),
+});
+export type PlayableMedia = z.infer<typeof PlayableMediaSchema>;
+
+export const LoadedClipSchema = PlayableClipSchema.merge(PlayableMediaSchema).extend({
+    isLoading: z.boolean().optional(),
+    isError: z.boolean().optional(),
+    error: z.string().optional(),
 });
 export type LoadedClip = z.infer<typeof LoadedClipSchema>;
+

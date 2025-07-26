@@ -1,7 +1,7 @@
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import * as PIXI from "pixi.js";
-import { LoadedClip, PlayableClip } from "../types/loader";
-import { useCallback } from "react";
+import { LoadedClip, PlayableClip, PlayableMedia } from "../types/loader";
+import { useCallback, useMemo } from "react";
 
 function loadVideoElement(src: string): Promise<HTMLVideoElement> {
   return new Promise((resolve, reject) => {
@@ -79,7 +79,7 @@ function loadAudioElement(src: string): Promise<HTMLAudioElement> {
 }
 
 export interface LoadedClips {
-  loadedPlayables: UseQueryResult<LoadedClip | undefined>[];
+  loadedPlayables: LoadedClip[];
   allLoaded: boolean;
   getLoadedClipAtTime: (timeMs: number) => LoadedClip | undefined;
 }
@@ -87,31 +87,27 @@ export interface LoadedClips {
 // TODO: SEPARATE CLIP SETTING LOGIC FROM LOADING LOGIC
 // THIS IS PREVENTING THE CLIPS FROM BEING UPDATED WHEN THE CLIP PARAMS CHANGES
 export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
+  // console.log("usePlayableLoader", clips);
   const results = useQueries({
     queries: clips.map((clip) => ({
       queryKey: ["playable", clip.id, clip.src],
-      queryFn: async (): Promise<LoadedClip | undefined> => {
+      queryFn: async (): Promise<PlayableMedia | undefined> => {
         if (clip.type === "video") {
           const video = await loadVideoElement(clip.src);
           const texture = PIXI.Texture.from(video);
           return {
-            ...clip,
             video,
-            image: null,
             texture,
           };
         } else if (clip.type === "audio") {
           const audio = await loadAudioElement(clip.src);
           return {
-            ...clip,
             audio,
           };
         } else if (clip.type === "image")  {
           const image = await loadImageElement(clip.src);
           const texture = PIXI.Texture.from(image);
           return {
-            ...clip,
-            video: null,
             image,
             texture,
           };
@@ -126,15 +122,27 @@ export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
     (entry) => !entry.isLoading && !entry.isError
   );
 
+  const loadedPlayables: LoadedClip[] = useMemo(() => {
+    return clips.map((clip, idx) => {
+      return {
+        ...clip,
+        ...results[idx].data,
+        isLoading: results[idx].isLoading,
+        isError: results[idx].isError,
+        error: results[idx].error?.message,
+      }
+    })
+  }, [results, clips])
+
   const getLoadedClipAtTime = useCallback((
       timeMs: number
   ): LoadedClip | undefined => {
-      return results.find(
+      return loadedPlayables.find(
           (clip) =>
-              clip?.data?.start_ms! <= timeMs &&
-              clip?.data?.start_ms! + clip?.data?.duration_ms! > timeMs
-      )?.data;
-  }, [results]);
+              clip?.start_ms! <= timeMs &&
+              clip?.start_ms! + clip?.duration_ms! > timeMs
+      );
+  }, [loadedPlayables]);
 
-  return { loadedPlayables: results, allLoaded, getLoadedClipAtTime };
+  return { loadedPlayables, allLoaded, getLoadedClipAtTime };
 }
