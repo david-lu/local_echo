@@ -11,6 +11,7 @@ function loadVideoElement(src: string): Promise<HTMLVideoElement> {
     video.crossOrigin = "anonymous";
     video.muted = true;
     video.loop = false;
+    video.autoplay = false;
     video.playsInline = true;
     video.preload = "auto";
 
@@ -54,6 +55,7 @@ function loadAudioElement(src: string): Promise<HTMLAudioElement> {
     const audio = document.createElement('audio');
     audio.src = src;
     audio.crossOrigin = 'anonymous';
+    audio.preload = 'auto';
 
     const onCanPlayThrough = () => {
         cleanup();

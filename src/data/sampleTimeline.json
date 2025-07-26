@@ -27,6 +27,20 @@
       },
       "audio_task_id": "task_audio_002",
       "audio_asset_id": "asset_audio_002"
+    },
+    {
+      "id": "audio_clip_003",
+      "type": "audio",
+      "start_ms": 14000,
+      "duration_ms": 5000,
+      "speaker": "expert",
+      "audio_generation_params": {
+        "text": "AI has revolutionized how we approach problem-solving and automation across various industries.",
+        "speed": 0.9,
+        "stability": 0.9
+      },
+      "audio_task_id": "task_audio_003",
+      "audio_asset_id": "asset_audio_003"
     }
   ],
   "visual_track": [
@@ -44,9 +58,14 @@
       },
       "image_task_id": "task_image_001",
       "image_asset_id": "asset_image_001",
-      "video_generation_params": null,
-      "video_task_id": null,
-      "video_asset_id": null
+      "video_generation_params": {
+        "type": "video",
+        "ai_model_id": "sora",
+        "description": "A smooth transition showing AI applications in healthcare, finance, and transportation with animated graphics",
+        "aspect_ratio": "16:9"
+      },
+      "video_task_id": "task_video_001",
+      "video_asset_id": "asset_video_001"
     },
     {
       "id": "visual_clip_002",
@@ -72,17 +91,45 @@
       "start_ms": 8000,
       "duration_ms": 7000,
       "speaker": "expert",
-      "image_generation_params": null,
-      "image_task_id": null,
-      "image_asset_id": null,
+      "image_generation_params": {
+        "type": "text_to_image",
+        "ai_model_id": "dall-e-3",
+        "prompt": "A modern presentation slide with the title 'Introduction to AI' featuring clean typography and subtle tech elements",
+        "aspect_ratio": "16:9"
+      },
+      "image_task_id": "task_image_003",
+      "image_asset_id": "asset_image_003",
       "video_generation_params": {
         "type": "video",
         "ai_model_id": "sora",
         "description": "A smooth transition showing AI applications in healthcare, finance, and transportation with animated graphics",
         "aspect_ratio": "16:9"
       },
-      "video_task_id": "task_video_001",
-      "video_asset_id": "asset_video_001"
+      "video_task_id": "task_video_003",
+      "video_asset_id": "asset_video_003"
+    },
+    {
+      "id": "visual_clip_005",
+      "type": "visual",
+      "start_ms": 15000,
+      "duration_ms": 4000,
+      "speaker": "expert",
+      "image_generation_params": {
+        "type": "text_to_image",
+        "ai_model_id": "dall-e-3",
+        "prompt": "A modern presentation slide with the title 'Introduction to AI' featuring clean typography and subtle tech elements",
+        "aspect_ratio": "16:9"
+      },
+      "image_task_id": "task_image_005",
+      "image_asset_id": "asset_image_005",
+      "video_generation_params": {
+        "type": "video",
+        "ai_model_id": "sora",
+        "description": "A smooth transition showing AI applications in healthcare, finance, and transportation with animated graphics",
+        "aspect_ratio": "16:9"
+      },
+      "video_task_id": "task_video_005",
+      "video_asset_id": "asset_video_005"
     }
   ]
 } 

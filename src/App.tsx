@@ -5,30 +5,21 @@ import Timeline from "./components/Timeline";
 import ChatContainer from "./components/ChatContainer";
 import ChatInput from "./components/ChatInput";
 import ClipDisplayer from "./components/ClipDisplayer";
+import { AudioClip, VisualClip, AgentState } from "./types/timeline";
+import { Message, UserMessage, AssistantMessage } from "./types/agent";
 import {
-  AudioClip,
-  VisualClip,
-  AgentState
-} from "./types/timeline";
-import {
-  Message,
-  UserMessage, AssistantMessage
-} from "./types/agent";
-import {
-  AddVisualMutationSchema,
-  AddAudioMutationSchema,
-  ModifyAudioMutationSchema,
-  ModifyVisualMutationSchema,
-  RemoveAudioMutationSchema,
-  RemoveVisualMutationSchema, RetimeClipsMutationSchema
+    AddVisualMutationSchema,
+    AddAudioMutationSchema,
+    ModifyAudioMutationSchema,
+    ModifyVisualMutationSchema,
+    RemoveAudioMutationSchema,
+    RemoveVisualMutationSchema,
+    RetimeClipsMutationSchema,
 } from "./types/mutation";
+import { hashToArrayItem, stringifyWithoutNull } from "./utils/misc";
 import {
-  hashToArrayItem,
-  stringifyWithoutNull
-} from "./utils/misc";
-import {
-  convertToOpenAIMessage,
-  getMutationsFromMessages
+    convertToOpenAIMessage,
+    getMutationsFromMessages,
 } from "./utils/mutation";
 import { getClipAtTime, refineTimeline } from "./utils/timeline";
 import { getMutationFromToolCall } from "./utils/mutation";
@@ -41,6 +32,7 @@ import { v4 as uuidv4 } from "uuid";
 import { TimelinePlayer } from "./components/TimelinePlayer";
 import { useTicker } from "./hooks/tick";
 import { PlayableClip } from "./types/loader";
+import { usePlayAudioTrack } from "./hooks/audio";
 
 const App: React.FC = () => {
     const [messages, setMessages] = useState<(Message | AssistantMessage)[]>(
@@ -52,7 +44,9 @@ const App: React.FC = () => {
         parseTimeline(timelineJson)
     );
     const [partialMessages, setPartialMessages] = useState<Message[]>([]);
-    const [selectedClip, setSelectedClip] = useState<AudioClip | VisualClip | null>(null);
+    const [selectedClip, setSelectedClip] = useState<
+        AudioClip | VisualClip | null
+    >(null);
 
     // Playback state
     const [isPlaying, setIsPlaying] = useState(false);
@@ -267,6 +261,7 @@ const App: React.FC = () => {
     };
 
     const displayTimeline = useMemo(() => {
+      console.log('new display timeline')
         const mutations = getMutationsFromMessages(partialMessages);
         return applyMutations(currentTimeline, mutations);
     }, [currentTimeline, partialMessages]);
@@ -290,7 +285,8 @@ const App: React.FC = () => {
             const newTime = prev + deltaMs;
             if (newTime >= timelineDuration) {
                 setIsPlaying(false);
-                return timelineDuration;
+                setCurrentTimeMs(timelineDuration);
+                return 0;
             }
             return newTime;
         });
@@ -306,14 +302,6 @@ const App: React.FC = () => {
         setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)));
     };
 
-    const currentVisualClip = useMemo(() => {
-        return getClipAtTime(displayTimeline.visual_track, currentTimeMs);
-    }, [displayTimeline, currentTimeMs]);
-
-    const currentAudioClip = useMemo(() => {
-        return getClipAtTime(displayTimeline.audio_track, currentTimeMs);
-    }, [displayTimeline, currentTimeMs]);
-
     // console.log(
     //     "rendering",
     //     displayTimeline,
@@ -323,23 +311,41 @@ const App: React.FC = () => {
     //     currentTimeMs
     // );
 
+    // Placeholder for when we actually hook this up to generations
     const playableVisualClips: PlayableClip[] = useMemo(() => {
-        return currentTimeline.visual_track.map((clip) => {
+        return displayTimeline.visual_track.map((clip) => {
             return {
                 ...clip,
                 type: clip.video_asset_id ? "video" : "image",
-                src: clip.video_asset_id ? hashToArrayItem(clip.id, [
-                  "https://videos.pexels.com/video-files/33003281/14065566_2560_1440_24fps.mp4",
-                  "https://images.pexels.com/video-files/3256542/3256542-sd_960_540_25fps.mp4",
-                  "https://images.pexels.com/video-files/5091624/5091624-sd_960_540_24fps.mp4",
-                ]) : hashToArrayItem(clip.id, [
-                  "https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg",
-                  "https://images.pexels.com/photos/46505/swiss-shepherd-dog-dog-pet-portrait-46505.jpeg",
-                  "https://images.pexels.com/photos/485294/pexels-photo-485294.jpeg",
+                src: clip.video_asset_id
+                    ? hashToArrayItem(clip.id, [
+                          "https://videos.pexels.com/video-files/855971/855971-hd_1920_1080_30fps.mp4",
+                          "https://videos.pexels.com/video-files/6950902/6950902-uhd_3840_2160_25fps.mp4",
+                          "https://videos.pexels.com/video-files/26867682/12024481_1080_1920_30fps.mp4",
+                      ])
+                    : hashToArrayItem(clip.id, [
+                          "https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg",
+                          "https://images.pexels.com/photos/46505/swiss-shepherd-dog-dog-pet-portrait-46505.jpeg",
+                          "https://images.pexels.com/photos/485294/pexels-photo-485294.jpeg",
+                      ]),
+            };
+        });
+    }, [displayTimeline]);
+
+    const playableAudioClips: PlayableClip[] = useMemo(() => {
+        return displayTimeline.audio_track.map((clip) => {
+            return {
+                ...clip,
+                type: "audio",
+                src: hashToArrayItem(clip.id, [
+                    "https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o-tone.mp3",
+                    "https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o.mp3",
+                    "https://ia801309.us.archive.org/9/items/Quran-MP3-Ghamdi/001.mp3",
                 ]),
             };
         });
-    }, [currentTimeline]);
+    }, [displayTimeline]);
+    usePlayAudioTrack(playableAudioClips, currentTimeMs, isPlaying);
 
     return (
         <div className="h-screen flex flex-col bg-zinc-950">
@@ -348,14 +354,28 @@ const App: React.FC = () => {
                     <Panel defaultSize={50} minSize={30}>
                         <div className="h-full flex flex-col bg-zinc-900">
                             <div className="flex-1 min-h-0">
-                              {selectedClip && <div className="flex flex-col items-end justify-center">
-                                <button className="p-4 rounded bg-zinc-600 text-white" onClick={() => setSelectedClip(null)}>X</button>
-                                <ClipDisplayer selectedClip={selectedClip} /></div>}
-                                {!selectedClip && <ChatContainer
-                                    messages={messages}
-                                    loading={agentState !== "idle"}
-                                    partialMessages={partialMessages}
-                                />}
+                                {selectedClip && (
+                                    <div className="flex flex-col items-end justify-center">
+                                        <button
+                                            className="p-4 rounded bg-zinc-600 text-white"
+                                            onClick={() =>
+                                                setSelectedClip(null)
+                                            }
+                                        >
+                                            X
+                                        </button>
+                                        <ClipDisplayer
+                                            selectedClip={selectedClip}
+                                        />
+                                    </div>
+                                )}
+                                {!selectedClip && (
+                                    <ChatContainer
+                                        messages={messages}
+                                        loading={agentState !== "idle"}
+                                        partialMessages={partialMessages}
+                                    />
+                                )}
                             </div>
 
                             {error && (

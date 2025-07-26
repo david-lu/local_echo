@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
-import {
-    usePlayableLoader,
-} from "../hooks/loader";
+import { usePlayableLoader } from "../hooks/loader";
 import { PlayableClip, LoadedClip } from "../types/loader";
 import { objectFitContain } from "../utils/misc";
 import { updateLoadedClipTime } from "../utils/timeline";
@@ -30,7 +28,11 @@ export const TimelinePlayer: React.FC<Props> = ({
     const stageRef = useRef<PIXI.Container>(new PIXI.Container());
     const rendererRef = useRef<PIXI.Renderer | null>(null);
 
-    const { loadedPlayables: loadedVisuals, allLoaded, getLoadedClipAtTime } = usePlayableLoader(clips);
+    const {
+        loadedPlayables: loadedVisuals,
+        allLoaded,
+        getLoadedClipAtTime,
+    } = usePlayableLoader(clips);
 
     const initPixiApp = async () => {
         canvasRef.current!.width = width;
@@ -121,6 +123,14 @@ export const TimelinePlayer: React.FC<Props> = ({
                     v.data?.video?.play();
                 } else {
                     v.data?.video?.pause();
+                }
+                // We do a lil trick here to set all non-current videos after the playhead to time 0
+                // This way the videos are immediately ready when we get to them
+                if (
+                    v.data.start_ms > playheadTimeMs &&
+                    v.data.video?.currentTime !== 0
+                ) {
+                    v.data.video!.currentTime = 0;
                 }
             }
         }
