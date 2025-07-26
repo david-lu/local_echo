@@ -1,12 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef } from "react";
-import type { Renderer } from "pixi.js";
+import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
 import {
     PlayableClip,
     useVisualLoader,
     LoadedClip,
 } from "../loader";
-import { useTicker } from "../tick";
 import { objectFitContain } from "../utils";
 
 type Props = {
@@ -17,7 +15,7 @@ type Props = {
     height: number;
 };
 
-export const PixiVideoPlayer: React.FC<Props> = ({
+export const TimelinePlayer: React.FC<Props> = ({
     clips,
     playheadTimeMs,
     isPlaying,

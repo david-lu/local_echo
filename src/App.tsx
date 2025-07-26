@@ -32,12 +32,10 @@ import { getMutationFromToolCall } from "./utils";
 import { AGENT_PROMPT, AGENT_PROMPT_LONG } from "./prompts";
 import { parseTimeline } from "./utils";
 import timelineJson from "./data/sampleTimeline.json";
-import { Timeline as TimelineType } from "./type";
-import { zodFunction, zodResponseFormat } from "openai/helpers/zod";
+import { zodFunction } from "openai/helpers/zod";
 import { applyMutations } from "./mutation";
 import { v4 as uuidv4 } from "uuid";
-import { ChatCompletionMessageToolCall } from "openai/resources/chat/completions/completions";
-import { PixiVideoPlayer } from "./components/VideoPlayer";
+import { TimelinePlayer } from "./components/TimelinePlayer";
 import { useTicker } from "./tick";
 import { PlayableClip } from "./loader";
 
@@ -397,7 +395,7 @@ const App: React.FC = () => {
                     <Panel defaultSize={50} minSize={40}>
                         <div className="h-full flex flex-col bg-zinc-900 min-h-0 justify-between">
                             {/* ClipDisplayer */}
-                            <PixiVideoPlayer
+                            <TimelinePlayer
                                 clips={playableVisualClips}
                                 playheadTimeMs={currentTimeMs}
                                 width={860}
