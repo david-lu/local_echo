@@ -82,7 +82,7 @@ export interface LoadedVisuals {
 export function useVisualLoader(clips: PlayableVisualClip[]): LoadedVisuals {
   const results = useQueries({
     queries: clips.map((clip, idx) => ({
-      queryKey: ["video", clip.src, idx],
+      queryKey: ["visual", clip.src, idx],
       queryFn: async (): Promise<LoadedVisualClip> => {
         if (clip.type === "video") {
           const video = await loadVideoElement(clip.src);
@@ -110,7 +110,7 @@ export function useVisualLoader(clips: PlayableVisualClip[]): LoadedVisuals {
   });
 
   const allLoaded = results.every(
-    (entry) => entry.data?.texture !== null
+    (entry) => entry.data?.texture !== null && !entry.isLoading && !entry.isError
   );
 
   return { loadedVisuals: results, allLoaded };

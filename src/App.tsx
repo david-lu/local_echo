@@ -329,12 +329,16 @@ const App: React.FC = () => {
                 start_ms: clip.start_ms,
                 duration_ms: clip.duration_ms,
                 speaker: clip.speaker,
-                type: "video",
-                src: hashToArrayItem(clip.id, [
+                type: clip.video_asset_id ? "video" : "image",
+                src: clip.video_asset_id ? hashToArrayItem(clip.id, [
                   "https://videos.pexels.com/video-files/33003281/14065566_2560_1440_24fps.mp4",
                   "https://images.pexels.com/video-files/3256542/3256542-sd_960_540_25fps.mp4",
                   "https://images.pexels.com/video-files/5091624/5091624-sd_960_540_24fps.mp4",
-                ]) ,
+                ]) : hashToArrayItem(clip.id, [
+                  "https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg",
+                  "https://images.pexels.com/photos/46505/swiss-shepherd-dog-dog-pet-portrait-46505.jpeg",
+                  "https://images.pexels.com/photos/485294/pexels-photo-485294.jpeg",
+                ]),
             };
         });
     }, [currentTimeline]);
