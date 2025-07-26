@@ -80,40 +80,51 @@ export const PixiVideoPlayer: React.FC<Props> = ({
             renderPrep();
             renderCanvas();
         }
-    }, [allLoaded])
+    }, [allLoaded]);
 
     const findClip = (timeMs: number): LoadedVisualClip | undefined => {
+        // console.log("findClip", timeMs, loadedVisuals, loadedVisuals[0]);
         return loadedVisuals.find(
             (visual) =>
-                visual.start_ms <= timeMs &&
-                visual.start_ms + visual.duration_ms > timeMs
-        );
+                visual?.data?.start_ms! <= timeMs &&
+                visual?.data?.start_ms! + visual?.data?.duration_ms! > timeMs
+        )?.data;
     };
 
     // TODO: Refactor this
     const renderPrep = () => {
         console.log("RENDER", playheadTimeMs);
         const visual = findClip(playheadTimeMs);
+        console.log("visual", visual);
         if (!visual) {
             // Set empty texture if no visual is found
             spriteRef.current!.texture = PIXI.Texture.EMPTY;
         } else {
             // Set texture
             if (spriteRef.current!.texture?.uid !== visual.texture?.uid) {
-                console.log("setting texture", spriteRef.current, visual.texture);
+                console.log(
+                    "setting texture",
+                    spriteRef.current,
+                    visual.texture
+                );
                 spriteRef.current!.texture = visual.texture!;
             }
             // Set video time
-            const localTime = playheadTimeMs - visual.start_ms;
-            const videoTime = visual.video!.currentTime * 1000;
-            console.log("video time", playheadTimeMs, videoTime);
-            if (Math.abs(videoTime - localTime) > 100) {
-                console.log("setting video time", localTime / 1000);
-                visual.video!.currentTime = localTime / 1000;
+            if (visual.type === "video" && visual.video) {
+                const localTime = playheadTimeMs - visual.start_ms;
+                const videoTime = visual.video!.currentTime * 1000;
+                console.log("video time", playheadTimeMs, videoTime);
+                if (Math.abs(videoTime - localTime) > 100) {
+                    console.log("setting video time", localTime / 1000);
+                    visual.video!.currentTime = localTime / 1000;
+                }
             }
 
             const container = { width, height };
-            const child = { width: visual!.texture!.width, height: visual!.texture!.height };
+            const child = {
+                width: visual!.texture!.width,
+                height: visual!.texture!.height,
+            };
             const rect = objectFitContain(container, child);
             console.log("rect", container, child, rect);
             spriteRef.current!.width = rect.width;
@@ -124,22 +135,24 @@ export const PixiVideoPlayer: React.FC<Props> = ({
 
         // Pause all other videos
         for (const v of loadedVisuals) {
-            if (v === visual && isPlaying) {
-                v.video?.play();
-            } else {
-                v.video?.pause();
+            if (v.data?.type === "video") {
+                if (v.data === visual && isPlaying) {
+                    v.data?.video?.play();
+                } else {
+                    v.data?.video?.pause();
+                }
             }
         }
     };
 
     const renderCanvas = () => {
-        if (rendererRef.current?.canvas) {    
+        if (rendererRef.current?.canvas) {
             rendererRef.current?.render(stageRef.current);
             contextRef.current?.clearRect(0, 0, width, height);
             console.log("drawImage", rendererRef.current?.canvas);
             contextRef.current?.drawImage(rendererRef.current?.canvas!, 0, 0);
         }
-    }
+    };
 
     useEffect(() => {
         if (rendererRef.current) {
@@ -169,7 +182,7 @@ export const PixiVideoPlayer: React.FC<Props> = ({
                     aspectRatio: width / height,
                     height: "100%",
                     width: "100%",
-                    objectFit: "contain"
+                    objectFit: "contain",
                 }}
             />
         </div>

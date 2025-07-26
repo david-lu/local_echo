@@ -1,4 +1,4 @@
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import * as PIXI from "pixi.js";
 import { ClipSchema } from "./type";
 import z from "zod";
@@ -22,12 +22,9 @@ export type PlayableVisualClip = z.infer<typeof PlayableVisualClipSchema>;
  */
 
 export const LoadedVisualClipSchema = PlayableVisualClipSchema.extend({
-  video: z.instanceof(HTMLVideoElement).nullable(),
-  // image: z.instanceof(HTMLImageElement).nullable(),
+  video: z.instanceof(HTMLVideoElement).nullable().optional(),
+  image: z.instanceof(HTMLImageElement).nullable().optional(),
   texture: z.instanceof(PIXI.Texture).nullable(),
-  isLoading: z.boolean(),
-  isError: z.boolean(),
-  error: z.any().nullable(),
 });
 export type LoadedVisualClip = z.infer<typeof LoadedVisualClipSchema>;
 
@@ -63,16 +60,22 @@ function loadVideoElement(src: string): Promise<HTMLVideoElement> {
   });
 }
 
-// function loadImageElement(src: string): Promise<HTMLImageElement> {
-//   return new Promise((resolve, reject) => {
-//     const image = document.createElement('img');
-//     image.src = src;
-//     image.crossOrigin = 'anonymous';
-//   });
-// }
+function loadImageElement(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = document.createElement('img');
+    image.src = src;
+    image.crossOrigin = 'anonymous';
+    image.onload = () => {
+      resolve(image);
+    };
+    image.onerror = (e) => {
+      reject(e);
+    };
+  });
+}
 
 export interface LoadedVisuals {
-  loadedVisuals: LoadedVisualClip[];
+  loadedVisuals: UseQueryResult<LoadedVisualClip>[];
   allLoaded: boolean;
 }
 
@@ -80,30 +83,35 @@ export function useVisualLoader(clips: PlayableVisualClip[]): LoadedVisuals {
   const results = useQueries({
     queries: clips.map((clip, idx) => ({
       queryKey: ["video", clip.src, idx],
-      queryFn: async () => loadVideoElement(clip.src),
+      queryFn: async (): Promise<LoadedVisualClip> => {
+        if (clip.type === "video") {
+          const video = await loadVideoElement(clip.src);
+          const texture = PIXI.Texture.from(video);
+          return {
+            ...clip,
+            video,
+            image: null,
+            texture,
+          };
+        } else {
+          const image = await loadImageElement(clip.src);
+          const texture = PIXI.Texture.from(image);
+          return {
+            ...clip,
+            video: null,
+            image,
+            texture,
+          };
+        }
+      },
       staleTime: Infinity,
       cacheTime: Infinity,
     })),
   });
 
-  const loadedVisuals = results.map((result, idx) => {
-    const video = result.data ?? null;
-    const texture = video ? PIXI.Texture.from(video) : null;
-    const clip: PlayableVisualClip = clips[idx];
-
-    return {
-      ...clip,
-      video,
-      texture,
-      isLoading: result.isLoading,
-      isError: result.isError,
-      error: result.error,
-    };
-  });
-
-  const allLoaded = loadedVisuals.every(
-    (entry) => entry.texture !== null && !entry.isLoading && !entry.isError
+  const allLoaded = results.every(
+    (entry) => entry.data?.texture !== null
   );
 
-  return { loadedVisuals, allLoaded };
+  return { loadedVisuals: results, allLoaded };
 }
