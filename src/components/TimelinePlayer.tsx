@@ -112,8 +112,10 @@ export const TimelinePlayer: React.FC<Props> = ({
         // Pause all other videos
         for (const v of loadedVisuals) {
             if (v.type === "video") {
-                if (v === currentVisual && isPlaying) {
-                    v.video?.play();
+                if (v === currentVisual) {
+                    if (isPlaying) {
+                        v.video?.play();
+                    }
                 } else {
                     // We do a lil trick here to set all non-current videos to time 0
                     // This way the videos are immediately ready when we get to them
