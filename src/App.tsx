@@ -407,7 +407,7 @@ const App: React.FC = () => {
                     <PanelResizeHandle className="w-1 bg-zinc-700 hover:bg-zinc-600 transition-colors" />
 
                     <Panel defaultSize={50} minSize={40}>
-                        <div className="h-full flex flex-col bg-zinc-900 min-h-0 justify-between">
+                        <div className="h-full flex flex-col bg-zinc-900 justify-between">
                             {/* ClipDisplayer */}
                             <TimelinePlayer
                                 visualClips={playableVisualClips}
@@ -418,7 +418,7 @@ const App: React.FC = () => {
                             />
 
                             {/* Timeline Controls */}
-                            <div className="flex-grow-1">
+                            <div className="flex-shrink-1">
                                 <Timeline
                                     timeline={displayTimeline}
                                     onResetTimeline={resetTimeline}
