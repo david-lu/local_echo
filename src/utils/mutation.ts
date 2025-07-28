@@ -1,17 +1,19 @@
 import { ChatCompletionMessageToolCall } from "openai/resources/index";
 import { Message } from "../types/agent";
 import { BaseMutation, AddVisualMutationSchema, RemoveVisualMutationSchema, ModifyVisualMutationSchema, AddAudioMutationSchema, RemoveAudioMutationSchema, ModifyAudioMutationSchema, RetimeClipsMutationSchema } from "../types/mutation";
+import { refineTimeline } from "./timeline";
 
 
 export const convertToOpenAIMessage = (message: Message) => {
   // Extract only the properties that OpenAI API expects
-  const { role, content, tool_calls, function_call, refusal, annotations } = message;
+  const { role, content, tool_calls, function_call, refusal, annotations, timeline } = message as any;
   const openAIMessage: any = { role, content };
 
   if (tool_calls) openAIMessage.tool_calls = tool_calls;
   if (function_call) openAIMessage.function_call = function_call;
   if (refusal) openAIMessage.refusal = refusal;
   if (annotations) openAIMessage.annotations = annotations;
+  if (timeline) openAIMessage.content = openAIMessage.content + "\n\n" + JSON.stringify(refineTimeline(timeline));
 
   return openAIMessage;
 };
