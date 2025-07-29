@@ -91,11 +91,22 @@ export const TimelinePlayer: React.FC<Props> = ({
             spriteRef.current!.texture = PIXI.Texture.EMPTY;
         } else {
             // Set texture
-            if (spriteRef.current!.texture?.uid !== currentVisual.texture?.uid) {
+            if (
+                spriteRef.current!.texture?.uid !== currentVisual.texture?.uid
+            ) {
                 spriteRef.current!.texture = currentVisual.texture!;
             }
             // Set video time
             updateLoadedClipTime(currentVisual, playheadTimeMs);
+            if (!isPlaying) {
+                currentVisual?.video?.addEventListener(
+                    "seeked",
+                    async () => {
+                        renderCanvas();
+                    },
+                    { once: true }
+                );
+            }
 
             const container = { width, height };
             const child = {
