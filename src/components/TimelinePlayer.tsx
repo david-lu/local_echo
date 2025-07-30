@@ -1,24 +1,23 @@
-import React, { useEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
+import React, { useEffect, useRef } from "react";
+
 import { usePlayableLoader } from "../hooks/loader";
-import { PlayableClip, LoadedClip } from "../types/loader";
+import { PlayableClip } from "../types/loader";
 import { objectFitContain } from "../utils/misc";
-import { updateLoadedClipTime } from "../utils/timeline";
+import { updateMediaCurrentTime } from "../utils/timeline";
 
 type Props = {
     visualClips: PlayableClip[];
     playheadTimeMs: number;
     isPlaying: boolean;
-    width: number;
-    height: number;
+    isLandscape: boolean;
 };
 
 export const TimelinePlayer: React.FC<Props> = ({
     visualClips: clips,
     playheadTimeMs,
     isPlaying,
-    width,
-    height,
+    isLandscape,
 }) => {
     // console.log(clips, playheadTimeMs, isPlaying)
     const isReadyRef = useRef(false);
@@ -27,6 +26,9 @@ export const TimelinePlayer: React.FC<Props> = ({
     const spriteRef = useRef<PIXI.Sprite | null>(null);
     const stageRef = useRef<PIXI.Container>(new PIXI.Container());
     const rendererRef = useRef<PIXI.Renderer | null>(null);
+
+    const width = isLandscape ? 1280 : 720;
+    const height = isLandscape ? 720 : 1280;
 
     const {
         loadedPlayables: loadedVisuals,
@@ -59,7 +61,7 @@ export const TimelinePlayer: React.FC<Props> = ({
     };
 
     useEffect(() => {
-        console.log("initPixiApp", canvasRef.current);
+        // console.log('initPixiApp', canvasRef.current)
 
         if (canvasRef.current) {
             initPixiApp();
@@ -76,8 +78,14 @@ export const TimelinePlayer: React.FC<Props> = ({
     // More garbage...
     useEffect(() => {
         if (allLoaded) {
-            renderPrep();
-            renderCanvas();
+            loadedVisuals[0]?.video?.addEventListener(
+                "timeupdate",
+                () => {
+                    renderPrep();
+                    renderCanvas();
+                },
+                { once: true }
+            );
         }
     }, [allLoaded]);
 
@@ -97,7 +105,13 @@ export const TimelinePlayer: React.FC<Props> = ({
                 spriteRef.current!.texture = currentVisual.texture!;
             }
             // Set video time
-            updateLoadedClipTime(currentVisual, playheadTimeMs);
+            if (currentVisual.video) {
+                updateMediaCurrentTime(
+                    currentVisual.video,
+                    currentVisual.start_ms,
+                    playheadTimeMs
+                );
+            }
             if (!isPlaying) {
                 currentVisual?.video?.addEventListener(
                     "seeked",
@@ -106,8 +120,12 @@ export const TimelinePlayer: React.FC<Props> = ({
                     },
                     { once: true }
                 );
+                // currentVisual?.video?.requestVideoFrameCallback(() => {
+                //   renderCanvas()
+                // })
             }
 
+            // TODO: Refactor out this logic
             const container = { width, height };
             const child = {
                 width: currentVisual!.texture!.width,
@@ -126,14 +144,16 @@ export const TimelinePlayer: React.FC<Props> = ({
                 if (v === currentVisual) {
                     if (isPlaying) {
                         v.video?.play();
+                    } else {
+                        v.video?.pause();
                     }
                 } else {
                     // We do a lil trick here to set all non-current videos to time 0
                     // This way the videos are immediately ready when we get to them
-                    v.video?.pause();
                     if (v.video?.currentTime !== 0) {
                         v.video!.currentTime = 0;
                     }
+                    v.video?.pause();
                 }
             }
         }
@@ -151,6 +171,10 @@ export const TimelinePlayer: React.FC<Props> = ({
         if (rendererRef.current) {
             rendererRef.current.resize(width, height);
         }
+        if (canvasRef.current) {
+            canvasRef.current.width = width;
+            canvasRef.current.height = height;
+        }
     }, [width, height]);
 
     // UGH this sucks...
@@ -167,7 +191,7 @@ export const TimelinePlayer: React.FC<Props> = ({
     // if (!allLoaded) return <div>Loading video assets...</div>;
 
     return (
-        <div className="min-h-0 flex-1 p-4">
+        <div className="h-full w-full">
             <canvas
                 id="pixi-canvas"
                 ref={canvasRef}

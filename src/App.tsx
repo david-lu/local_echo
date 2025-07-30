@@ -412,8 +412,7 @@ const App: React.FC = () => {
                             <TimelinePlayer
                                 visualClips={playableVisualClips}
                                 playheadTimeMs={currentTimeMs}
-                                width={860}
-                                height={640}
+                                isLandscape={true}
                                 isPlaying={isPlaying}
                             />
 
