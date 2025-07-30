@@ -130,10 +130,10 @@ export const TimelinePlayer: React.FC<Props> = ({
                 } else {
                     // We do a lil trick here to set all non-current videos to time 0
                     // This way the videos are immediately ready when we get to them
+                    v.video?.pause();
                     if (v.video?.currentTime !== 0) {
                         v.video!.currentTime = 0;
                     }
-                    v.video?.pause();
                 }
             }
         }

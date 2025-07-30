@@ -25,6 +25,9 @@ export const usePlayAudioTrack = (
                     a.audio?.pause();
                 }
             } else {
+                if (!!a.audio && a.audio?.currentTime !== 0) {
+                    a.audio!.currentTime = 0;
+                }
                 a.audio?.pause();
             }
         }
