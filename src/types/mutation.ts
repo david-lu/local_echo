@@ -27,6 +27,15 @@ export const BaseMutationSchema = z
     .describe("Base mutation schema with type and description");
 export type BaseMutation = z.infer<typeof BaseMutationSchema>;
 
+export const AddSceneMutationSchema = BaseMutationSchema.extend({
+    type: z
+        .literal("add_scene")
+        .describe("Add both a visual and audio clip to the timeline"),
+    visual_clip: VisualClipSchema.describe("Visual clip to add"),
+    audio_clip: AudioClipSchema.describe("Audio clip to add"),
+}).describe("Mutation to add a new scene");
+export type AddSceneMutation = z.infer<typeof AddSceneMutationSchema>;
+
 export const AddVisualMutationSchema = BaseMutationSchema.extend({
     type: z
         .literal("add_visual")

@@ -18,8 +18,12 @@ export const usePlayAudioTrack = (
             updateLoadedClipTime(currentAudio, playheadTimeMs);
         }
         for (const a of loadedAudio) {
-            if (a === currentAudio && isPlaying) {
-                a.audio?.play();
+            if (a === currentAudio) {
+                if (isPlaying) {
+                    a.audio?.play();
+                } else {
+                    a.audio?.pause();
+                }
             } else {
                 a.audio?.pause();
             }

@@ -90,59 +90,57 @@ export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
   // console.log("usePlayableLoader", clips);
   const results = useQueries({
     queries: clips.map((clip) => ({
-      queryKey: ["playable", clip.id, clip.src],
+      queryKey: ['playable', clip.id, clip.src],
       queryFn: async (): Promise<PlayableMedia | undefined> => {
-        if (clip.type === "video") {
-          const video = await loadVideoElement(clip.src);
-          const texture = PIXI.Texture.from(video);
+        if (clip.type === 'video') {
+          const video = await loadVideoElement(clip.src)
+          const texture = PIXI.Texture.from(video)
           return {
             video,
-            texture,
-          };
-        } else if (clip.type === "audio") {
-          const audio = await loadAudioElement(clip.src);
+            texture
+          }
+        } else if (clip.type === 'audio') {
+          const audio = await loadAudioElement(clip.src)
           return {
-            audio,
-          };
-        } else if (clip.type === "image")  {
-          const image = await loadImageElement(clip.src);
-          const texture = PIXI.Texture.from(image);
+            audio
+          }
+        } else if (clip.type === 'image') {
+          const image = await loadImageElement(clip.src)
+          const texture = PIXI.Texture.from(image)
           return {
             image,
-            texture,
-          };
+            texture
+          }
         }
       },
       staleTime: Infinity,
-      cacheTime: Infinity,
-    })),
-  });
+      cacheTime: Infinity
+    }))
+  })
 
-  const allLoaded = results.every(
-    (entry) => !entry.isLoading && !entry.isError
-  );
+  const allLoaded = results.every((entry) => !entry.isLoading && !entry.isError)
 
   const loadedPlayables: LoadedClip[] = useMemo(() => {
+    console.log('results', results, clips)
     return clips.map((clip, idx) => {
       return {
         ...clip,
-        ...results[idx].data,
-        isLoading: results[idx].isLoading,
-        isError: results[idx].isError,
-        error: results[idx].error?.message,
+        ...results?.[idx]?.data,
+        isLoading: results?.[idx]?.isLoading,
+        isError: results?.[idx]?.isError,
+        error: results?.[idx]?.error?.message
       }
     })
-  }, [results, clips])
+  }, [...results.flatMap((r) => [r.data, r.isLoading, r.isError, r.error]), clips])
 
-  const getLoadedClipAtTime = useCallback((
-      timeMs: number
-  ): LoadedClip | undefined => {
+  const getLoadedClipAtTime = useCallback(
+    (timeMs: number): LoadedClip | undefined => {
       return loadedPlayables.find(
-          (clip) =>
-              clip?.start_ms! <= timeMs &&
-              clip?.start_ms! + clip?.duration_ms! > timeMs
-      );
-  }, [loadedPlayables]);
+        (clip) => clip?.start_ms! <= timeMs && clip?.start_ms! + clip?.duration_ms! > timeMs
+      )
+    },
+    [loadedPlayables]
+  )
 
-  return { loadedPlayables, allLoaded, getLoadedClipAtTime };
+  return { loadedPlayables, allLoaded, getLoadedClipAtTime }
 }

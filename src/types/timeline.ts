@@ -128,8 +128,7 @@ export const VideoGenerationParamsSchema = z
     .describe("Parameters for AI video generation");
 export type VideoGenerationParams = z.infer<typeof VideoGenerationParamsSchema>;
 
-export const VisualClipSchema = ClipSchema.extend({
-    type: z.literal("visual").describe("Type identifier for visual clips"),
+export const VisualExtensionSchema = z.object({
     image_generation_params: z
         .union([
             TextToImageGenerationParamsSchema,
@@ -158,6 +157,11 @@ export const VisualClipSchema = ClipSchema.extend({
         .string()
         .nullable()
         .describe("ID of the generated video asset, null if not yet generated"),
+}).describe("Visual extension with an image asset");
+export type VisualExtension = z.infer<typeof VisualExtensionSchema>;
+
+export const VisualClipSchema = ClipSchema.merge(VisualExtensionSchema).extend({
+    type: z.literal("visual").describe("Type identifier for visual clips"),
 }).describe("Visual clip with image and video generation capabilities");
 export type VisualClip = z.infer<typeof VisualClipSchema>;
 

@@ -158,7 +158,7 @@ export const updateMediaCurrentTime = (
     const videoTime = media.currentTime * 1000;
     // console.log("video time", playheadTimeMs, videoTime);
     if (Math.abs(videoTime - localTime) > 100) {
-        console.log("setting video time", localTime / 1000);
+        console.log("setting time", videoTime, localTime);
         media!.currentTime = localTime / 1000;
     }
 };
