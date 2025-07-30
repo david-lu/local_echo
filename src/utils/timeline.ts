@@ -152,12 +152,13 @@ export const updateLoadedClipTime = (
 export const updateMediaCurrentTime = (
     media: HTMLVideoElement | HTMLAudioElement,
     startMs: number,
-    playheadTimeMs: number
+    playheadTimeMs: number,
+    thresholdMs: number = 200
 ) => {
     const localTime = playheadTimeMs - startMs;
     const videoTime = media.currentTime * 1000;
     // console.log("video time", playheadTimeMs, videoTime);
-    if (Math.abs(videoTime - localTime) > 100) {
+    if (Math.abs(videoTime - localTime) > thresholdMs) {
         console.log("setting time", videoTime, localTime);
         media!.currentTime = localTime / 1000;
     }
