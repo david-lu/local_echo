@@ -1,36 +1,46 @@
-import React, { useRef, useEffect } from 'react';
-import ChatUserMessage from './ChatUserMessage';
-import ChatSystemMessage from './ChatSystemMessage';
-import LoadingMessage from './ChatLoadingMessage';
-import { Message, UserMessage } from "../types/agent";
+import React, { useRef, useEffect } from 'react'
+import ChatUserMessage from './ChatUserMessage'
+import ChatSystemMessage from './ChatSystemMessage'
+import LoadingMessage from './ChatLoadingMessage'
+import { Message, UserMessage } from '../types/agent'
 
 interface ChatContainerProps {
-  messages: Message[];
-  loading: boolean;
-  partialMessages: Message[];
+  messages: Message[]
+  loading: boolean
+  partialMessages: Message[]
 }
 
 const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partialMessages }) => {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, partialMessages]);
+    scrollToBottom()
+  }, [messages, partialMessages])
 
-  const displayMessages = [...messages, ...partialMessages];
+  const displayMessages = [...messages, ...partialMessages]
   // console.log('displayMessages', messages, partialMessages);
 
   const renderMessage = (message: Message) => {
     if (message.role === 'user') {
-      return <ChatUserMessage key={message.id} message={message as UserMessage} />;
+      return (
+        <ChatUserMessage
+          key={message.id}
+          message={message as UserMessage}
+        />
+      )
     } else {
-      return <ChatSystemMessage key={message.id} message={message} />;
+      return (
+        <ChatSystemMessage
+          key={message.id}
+          message={message}
+        />
+      )
     }
-  };
+  }
 
   return (
     <div className="h-full w-full flex flex-col">
@@ -40,17 +50,15 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ messages, loading, partia
             <p className="text-lg">Start a conversation about your timeline...</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {displayMessages.map(renderMessage)}
-          </div>
+          <div className="space-y-6">{displayMessages.map(renderMessage)}</div>
         )}
-        
+
         {loading && !(partialMessages && partialMessages.length > 0) && <LoadingMessage />}
-        
+
         <div ref={messagesEndRef} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ChatContainer; 
+export default ChatContainer

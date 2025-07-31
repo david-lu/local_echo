@@ -1,50 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 interface TimelineCursorProps {
-  currentTime: number;
-  maxEnd: number;
-  onSeek?: (time: number) => void;
+  currentTime: number
+  maxEnd: number
+  onSeek?: (time: number) => void
 }
 
 export const TimelineCursor: React.FC<TimelineCursorProps> = ({ currentTime, maxEnd, onSeek }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const position = (currentTime / maxEnd) * 100;
+  const [isDragging, setIsDragging] = useState(false)
+  const position = (currentTime / maxEnd) * 100
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (!onSeek) return;
-    setIsDragging(true);
-    e.preventDefault();
-    e.stopPropagation();
-  };
+    if (!onSeek) return
+    setIsDragging(true)
+    e.preventDefault()
+    e.stopPropagation()
+  }
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging || !onSeek) return;
-    
-    const timelineElement = document.querySelector('.timeline-container');
-    if (!timelineElement) return;
-    
-    const rect = timelineElement.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const clickPercent = clickX / rect.width;
-    const clickTime = clickPercent * maxEnd;
-    
-    onSeek(Math.max(0, Math.min(clickTime, maxEnd)));
-  };
+    if (!isDragging || !onSeek) return
+
+    const timelineElement = document.querySelector('.timeline-container')
+    if (!timelineElement) return
+
+    const rect = timelineElement.getBoundingClientRect()
+    const clickX = e.clientX - rect.left
+    const clickPercent = clickX / rect.width
+    const clickTime = clickPercent * maxEnd
+
+    onSeek(Math.max(0, Math.min(clickTime, maxEnd)))
+  }
 
   const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+    setIsDragging(false)
+  }
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+      }
     }
-  }, [isDragging, onSeek, maxEnd]);
+  }, [isDragging, onSeek, maxEnd])
 
   return (
     <div
@@ -55,7 +55,7 @@ export const TimelineCursor: React.FC<TimelineCursorProps> = ({ currentTime, max
       {/* Cursor head */}
       <div className="absolute -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full shadow-lg" />
     </div>
-  );
-};
+  )
+}
 
-export default TimelineCursor; 
+export default TimelineCursor

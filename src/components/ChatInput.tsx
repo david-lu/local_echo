@@ -1,47 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 interface ChatInputProps {
-  onSubmit: (message: string) => void;
-  loading: boolean;
-  placeholder?: string;
-  onClearChat?: () => void;
+  onSubmit: (message: string) => void
+  loading: boolean
+  placeholder?: string
+  onClearChat?: () => void
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ 
-  onSubmit, 
-  loading, 
-  placeholder = "Describe timeline changes...",
+const ChatInput: React.FC<ChatInputProps> = ({
+  onSubmit,
+  loading,
+  placeholder = 'Describe timeline changes...',
   onClearChat
 }) => {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState('')
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
-    
-    onSubmit(input.trim());
-    setInput('');
-  };
+    e.preventDefault()
+    if (!input.trim() || loading) return
+
+    onSubmit(input.trim())
+    setInput('')
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit(e);
+      e.preventDefault()
+      handleSubmit(e)
     }
-  };
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-    
+    setInput(e.target.value)
+
     // Auto-resize textarea
-    const textarea = e.target;
-    textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
-  };
+    const textarea = e.target
+    textarea.style.height = 'auto'
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'
+  }
 
   return (
     <div className="bg-zinc-900 border-t border-zinc-800 p-4">
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-4xl mx-auto"
+      >
         <div className="flex gap-3">
           <div className="flex-1">
             <textarea
@@ -72,9 +75,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         </div>
         <div className="mt-2 flex justify-between items-center">
-          <div className="text-xs text-zinc-400">
-            Press Enter to send, Shift+Enter for new line
-          </div>
+          <div className="text-xs text-zinc-400">Press Enter to send, Shift+Enter for new line</div>
           {onClearChat && (
             <button
               type="button"
@@ -87,7 +88,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </div>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default ChatInput; 
+export default ChatInput

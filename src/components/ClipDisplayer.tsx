@@ -1,12 +1,11 @@
-import React from 'react';
-import { AudioClip, Clip, VisualClip } from "../types/timeline";
+import React from 'react'
+import { AudioClip, Clip, VisualClip } from '../types/timeline'
 
 interface ClipDisplayerProps {
-  selectedClip: Clip | null;
+  selectedClip: Clip | null
 }
 
 export const ClipDisplayer: React.FC<ClipDisplayerProps> = ({ selectedClip }) => {
-
   return (
     <div className="overflow-y-auto p-4">
       <p className="text-sm text-zinc-400 mt-1">
@@ -16,7 +15,7 @@ export const ClipDisplayer: React.FC<ClipDisplayerProps> = ({ selectedClip }) =>
         {JSON.stringify(selectedClip, null, 2)}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ClipDisplayer; 
+export default ClipDisplayer
