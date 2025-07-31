@@ -92,20 +92,23 @@ export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
     queries: clips.map((clip) => ({
       queryKey: ['playable', clip.id, clip.src],
       queryFn: async (): Promise<PlayableMedia | undefined> => {
+        const response = await fetch(clip.src)
+        const blob = await response.blob()
+        const src = URL.createObjectURL(blob)
         if (clip.type === 'video') {
-          const video = await loadVideoElement(clip.src)
+          const video = await loadVideoElement(src)
           const texture = PIXI.Texture.from(video)
           return {
             video,
             texture
           }
         } else if (clip.type === 'audio') {
-          const audio = await loadAudioElement(clip.src)
+          const audio = await loadAudioElement(src)
           return {
             audio
           }
         } else if (clip.type === 'image') {
-          const image = await loadImageElement(clip.src)
+          const image = await loadImageElement(src)
           const texture = PIXI.Texture.from(image)
           return {
             image,
