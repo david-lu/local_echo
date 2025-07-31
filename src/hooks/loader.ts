@@ -50,34 +50,6 @@ function loadImageElement(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function loadAudioElement(src: string): Promise<HTMLAudioElement> {
-  return new Promise((resolve, reject) => {
-    const audio = document.createElement('audio');
-    audio.src = src;
-    audio.crossOrigin = 'anonymous';
-    audio.preload = 'auto';
-
-    const onCanPlayThrough = () => {
-        cleanup();
-        resolve(audio);
-      };
-      const onError = (e: any) => {
-        cleanup();
-        reject(e);
-      };
-  
-      function cleanup() {
-        audio.removeEventListener("canplaythrough", onCanPlayThrough);
-        audio.removeEventListener("error", onError);
-      }
-  
-      audio.addEventListener("canplaythrough", onCanPlayThrough);
-      audio.addEventListener("error", onError);
-  
-      audio.load();
-  });
-}
-
 export interface LoadedClips {
   loadedPlayables: LoadedClip[];
   allLoaded: boolean;
@@ -86,40 +58,50 @@ export interface LoadedClips {
 
 // TODO: SEPARATE CLIP SETTING LOGIC FROM LOADING LOGIC
 // THIS IS PREVENTING THE CLIPS FROM BEING UPDATED WHEN THE CLIP PARAMS CHANGES
-export function usePlayableLoader(clips: PlayableClip[]): LoadedClips {
+export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioContext): LoadedClips {
   // console.log("usePlayableLoader", clips);
   const results = useQueries({
-    queries: clips.map((clip) => ({
+    queries: useMemo(() => clips.map((clip) => ({
       queryKey: ['playable', clip.id, clip.src],
       queryFn: async (): Promise<PlayableMedia | undefined> => {
-        const response = await fetch(clip.src)
-        const blob = await response.blob()
-        const src = URL.createObjectURL(blob)
+        const response = await fetch(clip.src);
+  
         if (clip.type === 'video') {
-          const video = await loadVideoElement(src)
-          const texture = PIXI.Texture.from(video)
+          const blob = await response.blob();
+          const src = URL.createObjectURL(blob);
+          const video = await loadVideoElement(src);
+          const texture = PIXI.Texture.from(video);
           return {
             video,
-            texture
-          }
+            texture,
+          };
         } else if (clip.type === 'audio') {
-          const audio = await loadAudioElement(src)
+          // console.log('DECODING AUDIO', audioContext)
+          if (!audioContext) throw new Error('AudioContext not available');
+          // console.log('DECODING', audioContext)
+          const arrayBuffer = await response.arrayBuffer();
+          // console.log('DECODING', arrayBuffer)
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+          // console.log('DECODING', audioBuffer)
           return {
-            audio
-          }
+            audio: audioBuffer,
+          };
         } else if (clip.type === 'image') {
-          const image = await loadImageElement(src)
-          const texture = PIXI.Texture.from(image)
+          const blob = await response.blob();
+          const src = URL.createObjectURL(blob);
+          const image = await loadImageElement(src);
+          const texture = PIXI.Texture.from(image);
           return {
             image,
-            texture
-          }
+            texture,
+          };
         }
+        return undefined;
       },
       staleTime: Infinity,
-      cacheTime: Infinity
-    }))
-  })
+      cacheTime: Infinity,
+    })), [clips, audioContext]) // <-- dependencies here
+  });
 
   const allLoaded = results.every((entry) => !entry.isLoading && !entry.isError)
 

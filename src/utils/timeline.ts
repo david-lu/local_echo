@@ -130,25 +130,6 @@ export const getClipAtTime = (track: Clip[], time: number): Clip | null => {
     );
 };
 
-export const updateLoadedClipTime = (
-    loadedClip: LoadedClip,
-    playheadTimeMs: number
-) => {
-    if (loadedClip.type === "video" && loadedClip.video) {
-        updateMediaCurrentTime(
-            loadedClip.video,
-            loadedClip.start_ms,
-            playheadTimeMs
-        );
-    } else if (loadedClip.type === "audio" && loadedClip.audio) {
-        updateMediaCurrentTime(
-            loadedClip.audio,
-            loadedClip.start_ms,
-            playheadTimeMs
-        );
-    }
-};
-
 export const updateMediaCurrentTime = (
     media: HTMLVideoElement | HTMLAudioElement,
     startMs: number,

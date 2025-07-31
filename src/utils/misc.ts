@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from "react";
 
 export const stringifyWithoutNull = (obj: unknown): string => JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
 
@@ -57,4 +58,35 @@ export function hashToArrayItem(str: string, items: any[], hash = 5234): any {
   // Ensure positive index
   const index = Math.abs(hash) % items.length;
   return items[index];
+}
+
+export function isApple() {
+  if (typeof navigator === "undefined") return false;
+
+  const ua = navigator.userAgent;
+  const isAppleDevice =
+    /Macintosh|iPhone|iPad|iPod/.test(ua) && navigator.maxTouchPoints > 0;
+
+  const isSafari =
+    /^((?!chrome|android).)*safari/i.test(ua) || ua.includes("Version/") && ua.includes("Safari");
+
+  return isAppleDevice || isSafari;
+}
+
+export function useAudioContext() {
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(
+    isApple() ? null : new AudioContext()
+  );
+
+  const activateAudio = useCallback(() => {
+    if (!audioContext) {
+      const context = new AudioContext();
+      setAudioContext(context);
+      context.resume();
+    } else if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+  }, [audioContext]);
+
+  return { audioContext, activateAudio };
 }

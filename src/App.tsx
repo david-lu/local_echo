@@ -16,7 +16,7 @@ import {
     RemoveVisualMutationSchema,
     RetimeClipsMutationSchema,
 } from "./types/mutation";
-import { hashToArrayItem, stringifyWithoutNull } from "./utils/misc";
+import { hashToArrayItem, stringifyWithoutNull, useAudioContext } from "./utils/misc";
 import {
     convertToOpenAIMessage,
     getMutationsFromMessages,
@@ -35,6 +35,7 @@ import { PlayableClip } from "./types/loader";
 import { usePlayAudioTrack } from "./hooks/audio";
 
 const App: React.FC = () => {
+    const {audioContext, activateAudio} = useAudioContext();
     const [messages, setMessages] = useState<(Message | AssistantMessage)[]>(
         []
     );
@@ -330,13 +331,14 @@ const App: React.FC = () => {
     // Playback control functions
     const handlePlayPause = () => {
         setIsPlaying((prev) => !prev);
+        activateAudio()
     };
 
     const handleSeek = (time: number) => {
         setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)));
     };
 
-    usePlayAudioTrack(playableAudioClips, currentTimeMs, isPlaying);
+    usePlayAudioTrack(audioContext, playableAudioClips, currentTimeMs, isPlaying);
 
     return (
         <div className="h-screen flex flex-col bg-zinc-950">
