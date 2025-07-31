@@ -1,7 +1,6 @@
 import z from "zod";
 import { ClipSchema } from "./timeline";
 import * as PIXI from "pixi.js";
-import { UseQueryResult } from "@tanstack/react-query";
 
 export const PlayableClipSchema = ClipSchema.extend({
     type: z.enum(["image", "video", "audio"]),

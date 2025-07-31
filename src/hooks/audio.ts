@@ -1,6 +1,6 @@
 import { usePlayableLoader } from "./loader";
 import { PlayableClip } from "../types/loader";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 // I mean this is basically like a component but there's no visuals
 export const usePlayAudioTrack = (

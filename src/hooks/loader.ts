@@ -1,4 +1,4 @@
-import { useQueries, UseQueryResult } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import * as PIXI from "pixi.js";
 import { LoadedClip, PlayableClip, PlayableMedia } from "../types/loader";
 import { useCallback, useMemo } from "react";

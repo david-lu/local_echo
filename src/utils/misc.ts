@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 export const stringifyWithoutNull = (obj: unknown): string => JSON.stringify(obj, (_key, value) => (value === null ? undefined : value));
 
