@@ -83,6 +83,7 @@ export const Timeline: React.FC<TimelineProps> = ({
             <button
               onClick={onExport}
               className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+              disabled={isExporting}
             >
               {isExporting ? 'Exporting...' : 'Download'}
             </button>
