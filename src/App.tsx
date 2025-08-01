@@ -30,6 +30,7 @@ import { TimelinePlayer } from './components/TimelinePlayer'
 import { useTicker } from './hooks/tick'
 import { PlayableClip } from './types/loader'
 import { usePlayAudioTrack } from './hooks/audio'
+import { exportVideo } from './utils/export'
 
 const App: React.FC = () => {
   const { audioContext, activateAudio } = useAudioContext()
@@ -310,6 +311,10 @@ const App: React.FC = () => {
     activateAudio()
   }
 
+  const handleExport = () => {
+    exportVideo(playableVisualClips, playableAudioClips, 'output.mp4', audioContext!)
+  }
+
   const handleSeek = (time: number) => {
     setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)))
   }
@@ -399,6 +404,7 @@ const App: React.FC = () => {
                 <Timeline
                   timeline={displayTimeline}
                   onResetTimeline={resetTimeline}
+                  onExport={handleExport}
                   onClipClick={handleClipClick}
                   currentTimeMs={currentTimeMs}
                   isPlaying={isPlaying}

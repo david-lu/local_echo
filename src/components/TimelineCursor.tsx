@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface TimelineCursorProps {
+  timelineContainer: HTMLDivElement | null
   currentTime: number
   maxEnd: number
   onSeek?: (time: number) => void
 }
 
-export const TimelineCursor: React.FC<TimelineCursorProps> = ({ currentTime, maxEnd, onSeek }) => {
+export const TimelineCursor: React.FC<TimelineCursorProps> = ({
+  timelineContainer,
+  currentTime,
+  maxEnd,
+  onSeek
+}) => {
   const [isDragging, setIsDragging] = useState(false)
   const position = (currentTime / maxEnd) * 100
 
@@ -20,7 +26,7 @@ export const TimelineCursor: React.FC<TimelineCursorProps> = ({ currentTime, max
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging || !onSeek) return
 
-    const timelineElement = document.querySelector('.timeline-container')
+    const timelineElement = timelineContainer
     if (!timelineElement) return
 
     const rect = timelineElement.getBoundingClientRect()

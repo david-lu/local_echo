@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import { Timeline as TimelineType, AudioClip, VisualClip } from '../types/timeline'
-import TimelineTrack from './TimelineTrack'
+import React, { useRef } from 'react'
+
+import { AudioClip, Timeline as TimelineType, VisualClip } from '../types/timeline'
+import { formatTime } from '../utils/misc'
+
 import TimelineAxis from './TimelineAxis'
 import TimelineCursor from './TimelineCursor'
-import { formatTime } from '../utils/misc'
+import TimelineTrack from './TimelineTrack'
 
 interface TimelineProps {
   timeline: TimelineType
   onResetTimeline?: () => void
+  onExport?: () => void
   onClipClick?: (clip: AudioClip | VisualClip) => void
   currentTimeMs?: number
   isPlaying?: boolean
@@ -18,6 +21,7 @@ interface TimelineProps {
 export const Timeline: React.FC<TimelineProps> = ({
   timeline,
   onResetTimeline,
+  onExport,
   onClipClick,
   currentTimeMs = 0,
   isPlaying = false,
@@ -30,6 +34,7 @@ export const Timeline: React.FC<TimelineProps> = ({
     ...timeline.visual_track.map((c) => c.start_ms + c.duration_ms),
     10000 // fallback
   )
+  const timelineContainerRef = useRef<HTMLDivElement>(null)
 
   // Helper to get percent width and position
   const getWidth = (start: number, end: number) => ((end - start) / maxEnd) * 100
@@ -72,25 +77,35 @@ export const Timeline: React.FC<TimelineProps> = ({
             )}
           </button>
           {formatTime(currentTimeMs)}
-          <button
-            onClick={onResetTimeline}
-            className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
-          >
-            Reset
-          </button>
+          <div>
+            <button
+              onClick={onExport}
+              className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+            >
+              Download
+            </button>
+            <button
+              onClick={onResetTimeline}
+              className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="flex-1 p-2">
-        <div className="space-y-2 relative timeline-container">
-          {/* Timeline Axis */}
+        <div
+          className="space-y-2 relative"
+          ref={timelineContainerRef}
+        >
           <TimelineAxis
             maxEnd={maxEnd}
             onSeek={onSeek}
           />
 
-          {/* Timeline Cursor */}
           <TimelineCursor
+            timelineContainer={timelineContainerRef.current}
             currentTime={currentTimeMs}
             maxEnd={maxEnd}
             onSeek={onSeek}
