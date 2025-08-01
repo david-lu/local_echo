@@ -45,6 +45,9 @@ const App: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTimeMs, setCurrentTimeMs] = useState(0)
 
+  // Export state
+  const [isExporting, setIsExporting] = useState(false)
+
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY
 
@@ -311,8 +314,10 @@ const App: React.FC = () => {
     activateAudio()
   }
 
-  const handleExport = () => {
-    exportVideo(playableVisualClips, playableAudioClips, 'output.mp4', audioContext!)
+  const handleExport = async () => {
+    setIsExporting(true)
+    await exportVideo(playableVisualClips, playableAudioClips, 'output.mp4', audioContext!)
+    setIsExporting(false)
   }
 
   const handleSeek = (time: number) => {
@@ -408,6 +413,7 @@ const App: React.FC = () => {
                   onClipClick={handleClipClick}
                   currentTimeMs={currentTimeMs}
                   isPlaying={isPlaying}
+                  isExporting={isExporting}
                   onPlayPause={handlePlayPause}
                   onSeek={handleSeek}
                 />
