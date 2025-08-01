@@ -52,7 +52,7 @@ export async function exportAudio(
   const decodedClips = await Promise.all(
     clips.map(async (clip) => {
       const fullBuffer = await fetchAndDecodeAudio(audioContext, clip.src)
-      const trimmed = trimAudioBuffer(audioContext, fullBuffer, clip.start_ms, clip.duration_ms)
+      const trimmed = trimAudioBuffer(audioContext, fullBuffer, clip.duration_ms)
       return { buffer: trimmed, startOffset: clip.start_ms }
     })
   )
@@ -70,15 +70,16 @@ async function fetchAndDecodeAudio(ctx: BaseAudioContext, src: string): Promise<
 function trimAudioBuffer(
   ctx: BaseAudioContext,
   buffer: AudioBuffer,
-  start_ms: number,
-  duration_ms: number
+  duration_ms: number,
+  offset_ms: number = 0
 ): AudioBuffer {
   const sampleRate = buffer.sampleRate
+  const start = Math.floor((offset_ms / 1000) * sampleRate)
   const length = Math.floor((duration_ms / 1000) * sampleRate)
   const trimmed = ctx.createBuffer(buffer.numberOfChannels, length, sampleRate)
 
   for (let ch = 0; ch < buffer.numberOfChannels; ch++) {
-    const channel = buffer.getChannelData(ch).slice(0, length)
+    const channel = buffer.getChannelData(ch).slice(start, start + length)
     trimmed.copyToChannel(channel, ch)
   }
 
