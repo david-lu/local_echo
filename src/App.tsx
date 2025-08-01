@@ -16,7 +16,8 @@ import {
   RemoveVisualMutationSchema,
   RetimeClipsMutationSchema
 } from './types/mutation'
-import { hashToArrayItem, stringifyWithoutNull, useAudioContext } from './utils/misc'
+import { hashToArrayItem, stringifyWithoutNull } from './utils/misc'
+import { useAudioContext } from './hooks/audio'
 import { convertToOpenAIMessage, getMutationsFromMessages } from './utils/mutation'
 import { getClipAtTime, refineTimeline } from './utils/timeline'
 import { getMutationFromToolCall } from './utils/mutation'

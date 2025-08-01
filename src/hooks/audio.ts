@@ -1,6 +1,7 @@
 import { usePlayableLoader } from './loader'
 import { PlayableClip } from '../types/loader'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { isApple } from '../utils/misc'
 
 // I mean this is basically like a component but there's no visuals
 export const usePlayAudioTrack = (
@@ -18,6 +19,7 @@ export const usePlayAudioTrack = (
     if (currentAudio && currentAudio.audio && isPlaying) {
       if (currentSourceRef.current?.buffer !== currentAudio.audio) {
         // Stop the current source
+        console.log('switching buffer', currentSourceRef.current)
         currentSourceRef.current?.stop()
         currentSourceRef.current?.disconnect()
         // New source
@@ -35,4 +37,24 @@ export const usePlayAudioTrack = (
       currentSourceRef.current = null
     }
   }, [isPlaying, playheadTimeMs])
+}
+
+export function useAudioContext() {
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(
+    isApple() ? null : new AudioContext()
+  )
+
+  // Yeah so this is only really needed for Safari.
+  // Which hides the audio context until first click.
+  // It's really annoying.
+  const activateAudio = useCallback(() => {
+    console.log('AudioContext state:', audioContext?.state)
+    console.log('activateAudio', audioContext)
+    if (!audioContext) {
+      const context = new AudioContext()
+      setAudioContext(context)
+    }
+  }, [audioContext])
+
+  return { audioContext, activateAudio }
 }

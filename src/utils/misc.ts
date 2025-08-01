@@ -1,5 +1,3 @@
-import { useCallback, useState } from 'react'
-
 export const stringifyWithoutNull = (obj: unknown): string =>
   JSON.stringify(obj, (_key, value) => (value === null ? undefined : value))
 
@@ -71,27 +69,6 @@ export function isApple() {
     /^((?!chrome|android).)*safari/i.test(ua) || (ua.includes('Version/') && ua.includes('Safari'))
 
   return isAppleDevice || isSafari
-}
-
-export function useAudioContext() {
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(
-    isApple() ? null : new AudioContext()
-  )
-
-  // Yeah so this is only really needed for Safari.
-  // Which hides the audio context until first click.
-  // It's really annoying.
-  const activateAudio = useCallback(() => {
-    if (!audioContext) {
-      const context = new AudioContext()
-      setAudioContext(context)
-      context.resume()
-    } else if (audioContext.state === 'suspended') {
-      audioContext.resume()
-    }
-  }, [audioContext])
-
-  return { audioContext, activateAudio }
 }
 
 export function range(start: number, stop?: number, step: number = 1): number[] {
