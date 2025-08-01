@@ -113,55 +113,6 @@ function placeAudioBuffersOnTimeline(
   return output
 }
 
-function audioBufferToWavBlob(buffer: AudioBuffer): Blob {
-  const numChannels = buffer.numberOfChannels
-  const sampleRate = buffer.sampleRate
-  const length = buffer.length
-  const bytesPerSample = 2
-  const blockAlign = numChannels * bytesPerSample
-  const byteRate = sampleRate * blockAlign
-  const dataSize = length * blockAlign
-  const totalSize = 44 + dataSize
-  const view = new DataView(new ArrayBuffer(totalSize))
-
-  let offset = 0
-  const writeStr = (str: string) => {
-    for (let i = 0; i < str.length; i++) view.setUint8(offset++, str.charCodeAt(i))
-  }
-  const write32 = (val: number) => {
-    view.setUint32(offset, val, true)
-    offset += 4
-  }
-  const write16 = (val: number) => {
-    view.setUint16(offset, val, true)
-    offset += 2
-  }
-
-  writeStr('RIFF')
-  write32(36 + dataSize)
-  writeStr('WAVEfmt ')
-  write32(16)
-  write16(1)
-  write16(numChannels)
-  write32(sampleRate)
-  write32(byteRate)
-  write16(blockAlign)
-  write16(bytesPerSample * 8)
-  writeStr('data')
-  write32(dataSize)
-
-  for (let i = 0; i < length; i++) {
-    for (let ch = 0; ch < numChannels; ch++) {
-      let sample = buffer.getChannelData(ch)[i]!
-      sample = Math.max(-1, Math.min(1, sample))
-      view.setInt16(offset, sample * 0x7fff, true)
-      offset += 2
-    }
-  }
-
-  return new Blob([view.buffer], { type: 'audio/wav' })
-}
-
 export async function exportVideo(
   visualClips: PlayableClip[],
   audioClips: PlayableClip[],
