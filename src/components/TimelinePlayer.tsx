@@ -185,7 +185,12 @@ export const TimelinePlayer: React.FC<Props> = ({
   // if (!allLoaded) return <div>Loading video assets...</div>;
 
   return (
-    <div className="h-full w-full">
+    <div className="relative flex h-full w-full">
+      {!allLoaded && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 text-white">
+          Loading...
+        </div>
+      )}
       <canvas
         id="pixi-canvas"
         ref={canvasRef}
