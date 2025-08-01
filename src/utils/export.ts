@@ -48,7 +48,7 @@ interface VideoExportOptions {
 export async function exportAudio(
   clips: PlayableClip[],
   audioContext: BaseAudioContext
-): Promise<Blob> {
+): Promise<AudioBuffer> {
   const decodedClips = await Promise.all(
     clips.map(async (clip) => {
       const fullBuffer = await fetchAndDecodeAudio(audioContext, clip.src)
@@ -58,8 +58,7 @@ export async function exportAudio(
   )
 
   const finalBuffer = placeAudioBuffersOnTimeline(audioContext, decodedClips)
-  const blob = audioBufferToWavBlob(finalBuffer)
-  return blob
+  return finalBuffer
 }
 
 async function fetchAndDecodeAudio(ctx: BaseAudioContext, src: string): Promise<AudioBuffer> {
@@ -258,14 +257,10 @@ export async function exportVideo(
     }
   }
 
-  await output.finalize()
+  const audioBuffer = await exportAudio(audioClips, audioContext)
+  audioSource.add(audioBuffer)
 
-  const audioBlob = await exportAudio(audioClips, audioContext)
-  const url = URL.createObjectURL(audioBlob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'combined.wav'
-  a.click()
+  await output.finalize()
 
   const buffer = output.target.buffer // ArrayBuffer containing the final MP4 file
   downloadFile(buffer!, filename)
