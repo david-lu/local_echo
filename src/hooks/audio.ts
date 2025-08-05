@@ -49,9 +49,12 @@ export function useAudioContext() {
   // It's really annoying.
   const activateAudio = useCallback(() => {
     console.log('activateAudio', audioContext)
-    if (!audioContext) {
+    if (!audioContext || audioContext.state === 'closed') {
       const context = new AudioContext()
       setAudioContext(context)
+      context.resume()
+    } else {
+      audioContext.resume()
     }
   }, [audioContext])
 

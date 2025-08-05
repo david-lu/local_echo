@@ -1,40 +1,8 @@
 import { useQueries } from '@tanstack/react-query'
-import * as PIXI from 'pixi.js'
-import { LoadedClip, PlayableClip, PlayableMedia } from '../types/loader'
+import { ALL_FORMATS, BlobSource, CanvasSink, Input, InputVideoTrack } from 'mediabunny'
 import { useCallback, useMemo } from 'react'
 
-function loadVideoElement(src: string): Promise<HTMLVideoElement> {
-  return new Promise((resolve, reject) => {
-    // console.log("loading video", src);
-    const video = document.createElement('video')
-    video.src = src
-    video.crossOrigin = 'anonymous'
-    video.muted = true
-    video.loop = false
-    video.autoplay = false
-    video.playsInline = true
-    video.preload = 'auto'
-
-    const onCanPlayThrough = () => {
-      cleanup()
-      resolve(video)
-    }
-    const onError = (e: any) => {
-      cleanup()
-      reject(e)
-    }
-
-    function cleanup() {
-      video.removeEventListener('canplaythrough', onCanPlayThrough)
-      video.removeEventListener('error', onError)
-    }
-
-    video.addEventListener('canplaythrough', onCanPlayThrough)
-    video.addEventListener('error', onError)
-
-    video.load()
-  })
-}
+import { LoadedClip, PlayableClip, PlayableMedia } from '../types/loader'
 
 function loadImageElement(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -70,12 +38,20 @@ export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioCon
 
             if (clip.type === 'video') {
               const blob = await response.blob()
-              const src = URL.createObjectURL(blob)
-              const video = await loadVideoElement(src)
-              const texture = PIXI.Texture.from(video)
+              const input = new Input({
+                source: new BlobSource(blob),
+                formats: ALL_FORMATS
+              })
+              const videoTrack = (await input.getPrimaryVideoTrack()) as InputVideoTrack
+              await videoTrack.canDecode()
+              const canvasSink = new CanvasSink(videoTrack, { poolSize: 2 })
               return {
-                video,
-                texture
+                response,
+                video: {
+                  input,
+                  videoTrack,
+                  canvasSink
+                }
               }
             } else if (clip.type === 'audio') {
               // console.log('DECODING AUDIO', audioContext)
@@ -92,10 +68,8 @@ export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioCon
               const blob = await response.blob()
               const src = URL.createObjectURL(blob)
               const image = await loadImageElement(src)
-              const texture = PIXI.Texture.from(image)
               return {
-                image,
-                texture
+                image
               }
             }
             return undefined
@@ -110,7 +84,6 @@ export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioCon
   const allLoaded = results.every((entry) => !entry.isLoading && !entry.isError)
 
   const loadedPlayables: LoadedClip[] = useMemo(() => {
-    console.log('results', results, clips)
     return clips.map((clip, idx) => {
       return {
         ...clip,

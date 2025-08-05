@@ -1,6 +1,7 @@
+import { CanvasSink, Input, InputVideoTrack } from 'mediabunny'
 import z from 'zod'
+
 import { ClipSchema } from './timeline'
-import * as PIXI from 'pixi.js'
 
 export const PlayableClipSchema = ClipSchema.extend({
   type: z.enum(['image', 'video', 'audio']),
@@ -8,11 +9,18 @@ export const PlayableClipSchema = ClipSchema.extend({
 })
 export type PlayableClip = z.infer<typeof PlayableClipSchema>
 
+export const VideoMediaSchema = z.object({
+  input: z.instanceof(Input),
+  videoTrack: z.instanceof(InputVideoTrack),
+  canvasSink: z.instanceof(CanvasSink)
+})
+export type VideoMedia = z.infer<typeof VideoMediaSchema>
+
 export const PlayableMediaSchema = z.object({
-  video: z.instanceof(HTMLVideoElement).optional(),
+  response: z.instanceof(Response).optional(),
+  video: VideoMediaSchema.optional(),
   image: z.instanceof(HTMLImageElement).optional(),
-  audio: z.instanceof(AudioBuffer).optional(),
-  texture: z.instanceof(PIXI.Texture).optional()
+  audio: z.instanceof(AudioBuffer).optional()
 })
 export type PlayableMedia = z.infer<typeof PlayableMediaSchema>
 
