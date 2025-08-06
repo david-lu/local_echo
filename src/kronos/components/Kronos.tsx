@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import Timeline from './Timeline'
 import { useAudioContext } from '../hooks/audio'
-import { TimelinePlayer } from './TimelinePlayer'
+import { VisualPlayer } from './VisualPlayer'
 import { useTicker } from '../hooks/tick'
 import { usePlayAudioTrack } from '../hooks/audio'
 import { exportVideo } from '../utils/export'
@@ -69,7 +69,7 @@ const Kronos: React.FC<KronosProps> = ({ audioTrack, visualTrack }) => {
     <div className="h-full flex flex-col bg-zinc-900 justify-between">
       {/* ClipDisplayer */}
       <div className="relative flex h-full w-full">
-        <TimelinePlayer
+        <VisualPlayer
           visualClips={visualTrack}
           playheadTimeMs={currentTimeMs}
           isLandscape={true}

@@ -5,14 +5,14 @@ import { LoadedClip, PlayableClip } from '../types/loader'
 import { WrappedCanvas } from 'mediabunny'
 import { objectFitContain } from '../utils/misc'
 
-type Props = {
+type VisualPlayerProps = {
   visualClips: PlayableClip[]
   playheadTimeMs: number
   isPlaying: boolean
   isLandscape: boolean
 }
 
-export const TimelinePlayer: React.FC<Props> = ({
+export const VisualPlayer: React.FC<VisualPlayerProps> = ({
   visualClips: clips,
   playheadTimeMs,
   isPlaying,
