@@ -1,18 +1,5 @@
-import { UseQueryResult } from '@tanstack/react-query'
-import { LoadedClip, AssetClip } from '../types/loader'
 import { Clip, Range } from '../types/timeline'
-import { Timeline, TimelineSchema } from '../../types/timeline'
 
-export function sortTimeline(timeline: Timeline): Timeline {
-  timeline.audio_track = timeline.audio_track.sort((a, b) => a.start_ms - b.start_ms)
-  timeline.visual_track = timeline.visual_track.sort((a, b) => a.start_ms - b.start_ms)
-  return timeline
-}
-
-export function parseTimeline(jsonData: unknown): Timeline {
-  const result = TimelineSchema.parse(jsonData)
-  return sortTimeline(result)
-}
 function getOverlapRange(a: Clip, b: Clip): Range | null {
   const start = Math.max(a.start_ms, b.start_ms)
   const end = Math.min(a.start_ms + a.duration_ms, b.start_ms + b.duration_ms)

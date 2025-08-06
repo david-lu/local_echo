@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 
 import { usePlayableLoader } from '../hooks/loader'
-import { LoadedClip, AssetClip } from '../types/loader'
+import { LoadedClip, AssetClip } from '../types/timeline'
 import { WrappedCanvas } from 'mediabunny'
 import { objectFitContain } from '../utils/misc'
 

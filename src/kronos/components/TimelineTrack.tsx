@@ -1,6 +1,6 @@
 import React from 'react'
 import TimelineClip from './TimelineClip'
-import { AssetClip } from '../types/loader'
+import { AssetClip } from '../types/timeline'
 
 interface TimelineTrackProps {
   clips: AssetClip[]

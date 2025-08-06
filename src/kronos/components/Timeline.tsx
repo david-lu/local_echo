@@ -7,7 +7,7 @@ import TimelineCursor from './TimelineCursor'
 import TimelineTrack from './TimelineTrack'
 import { getTotalDuration } from '../utils/timeline'
 import { Download, LoaderCircle, PauseCircle, PlayCircle, RotateCcw } from 'lucide-react'
-import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/loader'
+import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/timeline'
 
 interface TimelineProps {
   audioClips: PlayableAudioClip[]

@@ -5,7 +5,7 @@ import { VisualPlayer } from './VisualPlayer'
 import { useTicker } from '../hooks/tick'
 import { usePlayAudioTrack } from '../hooks/audio'
 import { exportVideo } from '../utils/export'
-import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/loader'
+import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/timeline'
 import { getTotalDuration } from '../utils/timeline'
 
 interface KronosProps {

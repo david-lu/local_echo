@@ -1,5 +1,5 @@
 import { usePlayableLoader } from './loader'
-import { AssetClip } from '../types/loader'
+import { AssetClip } from '../types/timeline'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isApple } from '../utils/misc'
 

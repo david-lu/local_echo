@@ -2,7 +2,7 @@ import { useQueries } from '@tanstack/react-query'
 import { ALL_FORMATS, BlobSource, CanvasSink, Input, InputVideoTrack } from 'mediabunny'
 import { useCallback, useMemo } from 'react'
 
-import { LoadedClip, AssetClip, PlayableMedia } from '../types/loader'
+import { LoadedClip, AssetClip, PlayableMedia } from '../types/timeline'
 
 function loadImageElement(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {

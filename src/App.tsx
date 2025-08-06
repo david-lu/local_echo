@@ -18,15 +18,15 @@ import {
 } from './types/mutation'
 import { hashToArrayItem, stringifyWithoutNull } from './kronos/utils/misc'
 import { convertToOpenAIMessage, getMutationsFromMessages } from './utils/mutation'
-import { refineTimeline } from './utils/refine'
+import { refineTimeline } from './utils/timeline'
 import { getMutationFromToolCall } from './utils/mutation'
 import { AGENT_PROMPT_LONG } from './prompts'
-import { parseTimeline } from './kronos/utils/timeline'
+import { parseTimeline } from './utils/timeline'
 import timelineJson from './data/sampleTimeline.json'
 import { zodFunction } from 'openai/helpers/zod'
 import { applyMutations } from './utils/mutation'
 import { v4 as uuidv4 } from 'uuid'
-import { PlayableAudioClip, PlayableVisualClip } from './kronos/types/loader'
+import { PlayableAudioClip, PlayableVisualClip } from './kronos/types/timeline'
 import Kronos from './kronos/components/Kronos'
 
 const App: React.FC = () => {

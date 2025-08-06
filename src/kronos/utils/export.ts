@@ -12,7 +12,7 @@ import {
   VideoSampleSink
 } from 'mediabunny'
 
-import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/loader'
+import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/timeline'
 import { downloadFile, objectFitContain, range } from './misc'
 
 function loadImage(src: string): Promise<HTMLImageElement> {
