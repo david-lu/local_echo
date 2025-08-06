@@ -48,8 +48,8 @@ export function useAudioContext() {
   // Which hides the audio context until first click.
   // It's really annoying.
   const activateAudio = useCallback(() => {
-    console.log('activateAudio', audioContext)
     if (!audioContext || audioContext.state === 'closed') {
+      console.log('activateAudio', audioContext)
       const context = new AudioContext()
       setAudioContext(context)
       context.resume()

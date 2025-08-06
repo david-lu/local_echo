@@ -29,56 +29,52 @@ export interface LoadedClips {
 export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioContext): LoadedClips {
   // console.log("usePlayableLoader", clips);
   const results = useQueries({
-    queries: useMemo(
-      () =>
-        clips.map((clip) => ({
-          queryKey: ['playable', clip.id, clip.src],
-          queryFn: async (): Promise<PlayableMedia | undefined> => {
-            const response = await fetch(clip.src)
+    queries: clips.map((clip) => ({
+      queryKey: ['playable', clip.id, clip.src],
+      queryFn: async (): Promise<PlayableMedia | undefined> => {
+        const response = await fetch(clip.src)
 
-            if (clip.asset_type === 'video') {
-              const blob = await response.blob()
-              const input = new Input({
-                source: new BlobSource(blob),
-                formats: ALL_FORMATS
-              })
-              const videoTrack = (await input.getPrimaryVideoTrack()) as InputVideoTrack
-              await videoTrack.canDecode()
-              const canvasSink = new CanvasSink(videoTrack, { poolSize: 2 })
-              return {
-                response,
-                video: {
-                  input,
-                  video_track: videoTrack,
-                  canvas_sink: canvasSink
-                }
-              }
-            } else if (clip.asset_type === 'audio') {
-              // console.log('DECODING AUDIO', audioContext)
-              if (!audioContext) throw new Error('AudioContext not available')
-              // console.log('DECODING', audioContext)
-              const arrayBuffer = await response.arrayBuffer()
-              // console.log('DECODING', arrayBuffer)
-              const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
-              // console.log('DECODING', audioBuffer)
-              return {
-                audio: audioBuffer
-              }
-            } else if (clip.asset_type === 'image') {
-              const blob = await response.blob()
-              const src = URL.createObjectURL(blob)
-              const image = await loadImageElement(src)
-              return {
-                image
-              }
+        if (clip.asset_type === 'video') {
+          const blob = await response.blob()
+          const input = new Input({
+            source: new BlobSource(blob),
+            formats: ALL_FORMATS
+          })
+          const videoTrack = (await input.getPrimaryVideoTrack()) as InputVideoTrack
+          await videoTrack.canDecode()
+          const canvasSink = new CanvasSink(videoTrack, { poolSize: 2 })
+          return {
+            response,
+            video: {
+              input,
+              video_track: videoTrack,
+              canvas_sink: canvasSink
             }
-            return undefined
-          },
-          staleTime: Infinity,
-          cacheTime: Infinity
-        })),
-      [clips, audioContext]
-    ) // <-- dependencies here
+          }
+        } else if (clip.asset_type === 'audio') {
+          // console.log('DECODING AUDIO', audioContext)
+          if (!audioContext) throw new Error('AudioContext not available')
+          // console.log('DECODING', audioContext)
+          const arrayBuffer = await response.arrayBuffer()
+          // console.log('DECODING', arrayBuffer)
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+          // console.log('DECODING', audioBuffer)
+          return {
+            audio: audioBuffer
+          }
+        } else if (clip.asset_type === 'image') {
+          const blob = await response.blob()
+          const src = URL.createObjectURL(blob)
+          const image = await loadImageElement(src)
+          return {
+            image
+          }
+        }
+        return undefined
+      },
+      staleTime: Infinity,
+      cacheTime: Infinity
+    })) // <-- dependencies here
   })
 
   const allLoaded = results.every((entry) => !entry.isLoading && !entry.isError)
