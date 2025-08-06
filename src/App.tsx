@@ -1,7 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { OpenAI } from 'openai'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import Timeline from './kronos/components/Timeline'
 import ChatContainer from './components/ChatContainer'
 import ChatInput from './components/ChatInput'
 import ClipDisplayer from './components/ClipDisplayer'
@@ -17,21 +16,16 @@ import {
   RetimeClipsMutationSchema
 } from './types/mutation'
 import { hashToArrayItem, stringifyWithoutNull } from './kronos/utils/misc'
-import { useAudioContext } from './kronos/hooks/audio'
 import { convertToOpenAIMessage, getMutationsFromMessages } from './utils/mutation'
-import { getClipAtTime, refineTimeline } from './utils/timeline'
+import { refineTimeline } from './utils/timeline'
 import { getMutationFromToolCall } from './utils/mutation'
-import { AGENT_PROMPT, AGENT_PROMPT_LONG } from './prompts'
+import { AGENT_PROMPT_LONG } from './prompts'
 import { parseTimeline } from './utils/timeline'
 import timelineJson from './data/sampleTimeline.json'
 import { zodFunction } from 'openai/helpers/zod'
 import { applyMutations } from './mutation'
 import { v4 as uuidv4 } from 'uuid'
-import { TimelinePlayer } from './kronos/components/TimelinePlayer'
-import { useTicker } from './kronos/hooks/tick'
-import { PlayableAudioClip, PlayableClip, PlayableVisualClip } from './kronos/types/loader'
-import { usePlayAudioTrack } from './kronos/hooks/audio'
-import { exportVideo } from './kronos/utils/export'
+import { PlayableAudioClip, PlayableVisualClip } from './kronos/types/loader'
 import Kronos from './kronos/components/Kronos'
 
 const App: React.FC = () => {
@@ -217,11 +211,6 @@ const App: React.FC = () => {
     }
   }
 
-  const resetTimeline = () => {
-    setCurrentTimeline({ audio_track: [], visual_track: [] })
-    setMessages([])
-  }
-
   const acceptChanges = (partialMessages: Message[]) => {
     setAgentState('idle')
     const mutations = getMutationsFromMessages(partialMessages)
@@ -276,16 +265,6 @@ const App: React.FC = () => {
 
     return { displayTimeline, playableVisualClips, playableAudioClips }
   }, [currentTimeline, partialMessages])
-
-  // Calculate timeline duration
-  const timelineDuration = useMemo(() => {
-    const maxEnd = Math.max(
-      ...displayTimeline.audio_track.map((c) => c.start_ms + c.duration_ms),
-      ...displayTimeline.visual_track.map((c) => c.start_ms + c.duration_ms),
-      10000 // fallback
-    )
-    return maxEnd
-  }, [displayTimeline])
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950">
