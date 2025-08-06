@@ -48,6 +48,7 @@ export const TimelinePlayer: React.FC<Props> = ({
     }
   }, [])
 
+  // TODO: Every clip should have one of these to allow for some transition between clips
   const initIterator = async (visual: LoadedClip) => {
     asyncIndex.current++
     const currentAsyncIndex = asyncIndex.current
