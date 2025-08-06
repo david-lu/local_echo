@@ -7,16 +7,7 @@ import TimelineAxis from './TimelineAxis'
 import TimelineCursor from './TimelineCursor'
 import TimelineTrack from './TimelineTrack'
 import { getTotalDuration } from '../../utils/timeline'
-import {
-  Download,
-  LoaderCircle,
-  LoaderPinwheel,
-  LucidePause,
-  LucidePlay,
-  PauseCircle,
-  PlayCircle,
-  RotateCcw
-} from 'lucide-react'
+import { Download, LoaderCircle, PauseCircle, PlayCircle, RotateCcw } from 'lucide-react'
 
 interface TimelineProps {
   timeline: TimelineType
