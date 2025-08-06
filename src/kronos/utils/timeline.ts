@@ -1,7 +1,7 @@
 import { UseQueryResult } from '@tanstack/react-query'
-import { LoadedClip, AssetClip } from '../kronos/types/loader'
-import { Clip, Range } from '../kronos/types/timeline'
-import { Timeline, TimelineSchema, RefinedTimeline } from '../types/timeline'
+import { LoadedClip, AssetClip } from '../types/loader'
+import { Clip, Range } from '../types/timeline'
+import { Timeline, TimelineSchema } from '../../types/timeline'
 
 export function sortTimeline(timeline: Timeline): Timeline {
   timeline.audio_track = timeline.audio_track.sort((a, b) => a.start_ms - b.start_ms)
@@ -85,17 +85,6 @@ export const getGaps = (clips: Clip[], timeline_duration_ms?: number): Range[] =
 
   return gaps
 }
-export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
-  const totalDuration = getTotalDuration([...timeline.audio_track, ...timeline.visual_track])
-  const refinedTimeline: RefinedTimeline = {
-    ...timeline,
-    audio_track: refineTrack(timeline.audio_track),
-    visual_track: refineTrack(timeline.visual_track),
-    audio_gaps: getGaps(timeline.audio_track, totalDuration),
-    visual_gaps: getGaps(timeline.visual_track, totalDuration)
-  }
-  return refinedTimeline
-} // Convert JSON to Timeline with Zod validation
 
 export const getClipAtTime = (track: Clip[], time: number): Clip | null => {
   return (

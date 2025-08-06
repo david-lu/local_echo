@@ -1,5 +1,4 @@
 import React from 'react'
-import { AudioClip as AudioClipType, VisualClip as VisualClipType } from '../../types/timeline'
 import TimelineClip from './TimelineClip'
 import { AssetClip } from '../types/loader'
 

@@ -17,7 +17,7 @@ import {
   RemoveVisualMutation,
   RetimeClipsMutation
 } from '../types/mutation'
-import { refineTimeline } from './timeline'
+import { refineTimeline } from './refine'
 import { Timeline, AudioClip, VisualClip } from '../types/timeline'
 
 export const convertToOpenAIMessage = (message: Message) => {

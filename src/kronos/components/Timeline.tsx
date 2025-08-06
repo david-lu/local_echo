@@ -1,12 +1,11 @@
 import React, { useRef } from 'react'
 
-import { AudioClip, Timeline as TimelineType, VisualClip } from '../../types/timeline'
 import { formatTime } from '../utils/misc'
 
 import TimelineAxis from './TimelineAxis'
 import TimelineCursor from './TimelineCursor'
 import TimelineTrack from './TimelineTrack'
-import { getTotalDuration } from '../../utils/timeline'
+import { getTotalDuration } from '../utils/timeline'
 import { Download, LoaderCircle, PauseCircle, PlayCircle, RotateCcw } from 'lucide-react'
 import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/loader'
 

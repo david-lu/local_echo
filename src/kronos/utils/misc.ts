@@ -1,3 +1,5 @@
+import { Size, Rect } from '../types/shape'
+
 export const stringifyWithoutNull = (obj: unknown): string =>
   JSON.stringify(obj, (_key, value) => (value === null ? undefined : value))
 
@@ -13,18 +15,6 @@ export const formatTime = (ms: number): string => {
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds
     .toString()
     .padStart(2, '0')}`
-}
-
-type Size = {
-  width: number
-  height: number
-}
-
-type Rect = {
-  width: number
-  height: number
-  x: number
-  y: number
 }
 
 export function objectFitContain(container: Size, child: Size): Rect {
