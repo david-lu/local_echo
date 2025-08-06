@@ -85,4 +85,16 @@ export function range(start: number, stop?: number, step: number = 1): number[] 
     result.push(i)
   }
   return result
+} // import { getTotalDuration } from '../utils/timeline'
+// Refactor this to something else
+export function downloadFile(arrayBuffer: ArrayBuffer, filename: string) {
+  const blob = new Blob([arrayBuffer], { type: 'video/mp4' }) // or correct MIME
+  const url = URL.createObjectURL(blob)
+
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+
+  URL.revokeObjectURL(url)
 }

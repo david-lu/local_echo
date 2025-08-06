@@ -12,22 +12,8 @@ import {
   VideoSampleSink
 } from 'mediabunny'
 
-import { PlayableClip } from '../types/loader'
-import { objectFitContain, range } from './misc'
-// import { getTotalDuration } from '../utils/timeline'
-
-// Refactor this to something else
-function downloadFile(arrayBuffer: ArrayBuffer, filename: string) {
-  const blob = new Blob([arrayBuffer], { type: 'video/mp4' }) // or correct MIME
-  const url = URL.createObjectURL(blob)
-
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  a.click()
-
-  URL.revokeObjectURL(url)
-}
+import { PlayableAudioClip, PlayableClip, PlayableVisualClip } from '../types/loader'
+import { downloadFile, objectFitContain, range } from './misc'
 
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -114,8 +100,8 @@ function placeAudioBuffersOnTimeline(
 }
 
 export async function exportVideo(
-  visualClips: PlayableClip[],
-  audioClips: PlayableClip[],
+  visualClips: PlayableVisualClip[],
+  audioClips: PlayableAudioClip[],
   filename: string,
   audioContext: BaseAudioContext,
   options: VideoExportOptions = {
@@ -182,7 +168,7 @@ export async function exportVideo(
       const frames = range(0, clip.duration_ms / 1000, 1 / options.fps)
       for await (const sample of sink.samplesAtTimestamps(frames)) {
         if (sample) {
-          console.log('drawing frame', sample.timestamp)
+          // console.log('drawing frame', sample.timestamp)
           ctx?.clearRect(0, 0, options.width, options.height)
           sample.draw(ctx!, fit.x, fit.y, fit.width, fit.height)
           sample.close()

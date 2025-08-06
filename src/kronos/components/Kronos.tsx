@@ -51,7 +51,7 @@ const Kronos: React.FC<KronosProps> = ({ audioTrack, visualTrack }) => {
 
   const handleExport = async () => {
     setIsExporting(true)
-    await exportVideo(audioTrack, visualTrack, 'output.mp4', audioContext!)
+    await exportVideo(visualTrack, audioTrack, 'output.mp4', audioContext!)
     setIsExporting(false)
   }
 
