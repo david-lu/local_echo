@@ -1,13 +1,14 @@
 import { CanvasSink, Input, InputVideoTrack } from 'mediabunny'
 import z from 'zod'
 
-import { AudioClipSchema, ClipSchema, VisualClipSchema } from './timeline'
+import { ClipSchema } from './timeline'
 
-export const PlayableClipSchema = ClipSchema.extend({
+export const AssetClipSchema = ClipSchema.extend({
   asset_type: z.enum(['image', 'video', 'audio']),
-  src: z.string()
+  src: z.string().optional(),
+  description: z.string().optional()
 })
-export type PlayableClip = z.infer<typeof PlayableClipSchema>
+export type AssetClip = z.infer<typeof AssetClipSchema>
 
 export const VideoMediaSchema = z.object({
   input: z.instanceof(Input),
@@ -24,19 +25,21 @@ export const PlayableMediaSchema = z.object({
 })
 export type PlayableMedia = z.infer<typeof PlayableMediaSchema>
 
-export const LoadedClipSchema = PlayableClipSchema.merge(PlayableMediaSchema).extend({
+export const LoadedClipSchema = AssetClipSchema.merge(PlayableMediaSchema).extend({
   isLoading: z.boolean().optional(),
   isError: z.boolean().optional(),
   error: z.string().optional()
 })
 export type LoadedClip = z.infer<typeof LoadedClipSchema>
 
-export const PlayableAudioClipSchema = PlayableClipSchema.merge(AudioClipSchema).extend({
-  asset_type: z.literal('audio')
+export const AudioAssetClipSchema = AssetClipSchema.extend({
+  asset_type: z.literal('audio'),
+  src: z.string()
 })
-export type PlayableAudioClip = z.infer<typeof PlayableAudioClipSchema>
+export type PlayableAudioClip = z.infer<typeof AudioAssetClipSchema>
 
-export const PlayableVisualClipSchema = PlayableClipSchema.merge(VisualClipSchema).extend({
-  asset_type: z.enum(['image', 'video'])
+export const VisualAssetClipSchema = AssetClipSchema.extend({
+  asset_type: z.enum(['image', 'video']),
+  src: z.string()
 })
-export type PlayableVisualClip = z.infer<typeof PlayableVisualClipSchema>
+export type PlayableVisualClip = z.infer<typeof VisualAssetClipSchema>

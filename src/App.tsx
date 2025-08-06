@@ -4,7 +4,8 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import ChatContainer from './components/ChatContainer'
 import ChatInput from './components/ChatInput'
 import ClipDisplayer from './components/ClipDisplayer'
-import { AudioClip, VisualClip, AgentState } from './kronos/types/timeline'
+import { AudioClip, VisualClip } from './types/timeline'
+import { AgentState } from './types/agent'
 import { Message, UserMessage, AssistantMessage } from './types/agent'
 import {
   AddVisualMutationSchema,
@@ -23,7 +24,7 @@ import { AGENT_PROMPT_LONG } from './prompts'
 import { parseTimeline } from './utils/timeline'
 import timelineJson from './data/sampleTimeline.json'
 import { zodFunction } from 'openai/helpers/zod'
-import { applyMutations } from './mutation'
+import { applyMutations } from './utils/mutation'
 import { v4 as uuidv4 } from 'uuid'
 import { PlayableAudioClip, PlayableVisualClip } from './kronos/types/loader'
 import Kronos from './kronos/components/Kronos'
@@ -247,7 +248,9 @@ const App: React.FC = () => {
               'https://images.pexels.com/photos/120049/pexels-photo-120049.jpeg',
               'https://images.pexels.com/photos/46505/swiss-shepherd-dog-dog-pet-portrait-46505.jpeg',
               'https://images.pexels.com/photos/485294/pexels-photo-485294.jpeg'
-            ])
+            ]),
+        description:
+          clip.image_generation_params?.prompt || clip.video_generation_params?.description
       }
     })
 
@@ -259,7 +262,8 @@ const App: React.FC = () => {
           'https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o-tone.mp3',
           'https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o.mp3',
           'https://ia801309.us.archive.org/9/items/Quran-MP3-Ghamdi/001.mp3'
-        ])
+        ]),
+        description: clip.audio_generation_params?.text
       }
     })
 
@@ -338,12 +342,7 @@ const App: React.FC = () => {
             <Kronos
               audioClips={playableAudioClips}
               visualClips={playableVisualClips}
-              onClipsChange={(newVisualTrack, newAudioTrack) => {
-                setCurrentTimeline({
-                  visual_track: newVisualTrack || currentTimeline.visual_track,
-                  audio_track: newAudioTrack || currentTimeline.audio_track
-                })
-              }}
+              onClipsChange={(newVisualTrack, newAudioTrack) => {}}
             />
           </Panel>
         </PanelGroup>

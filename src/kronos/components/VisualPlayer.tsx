@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react'
 
 import { usePlayableLoader } from '../hooks/loader'
-import { LoadedClip, PlayableClip } from '../types/loader'
+import { LoadedClip, AssetClip } from '../types/loader'
 import { WrappedCanvas } from 'mediabunny'
 import { objectFitContain } from '../utils/misc'
 
 type VisualPlayerProps = {
-  visualClips: PlayableClip[]
+  visualClips: AssetClip[]
   playheadTimeMs: number
   isPlaying: boolean
   isLandscape: boolean

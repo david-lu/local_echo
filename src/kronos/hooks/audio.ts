@@ -1,12 +1,12 @@
 import { usePlayableLoader } from './loader'
-import { PlayableClip } from '../types/loader'
+import { AssetClip } from '../types/loader'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isApple } from '../utils/misc'
 
 // I mean this is basically like a component but there's no visuals
 export const usePlayAudioTrack = (
   audioContext: AudioContext | null,
-  audioTrack: PlayableClip[],
+  audioTrack: AssetClip[],
   playheadTimeMs: number,
   isPlaying: boolean
 ) => {

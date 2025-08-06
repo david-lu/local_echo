@@ -1,6 +1,7 @@
 import { UseQueryResult } from '@tanstack/react-query'
-import { LoadedClip, PlayableClip } from '../kronos/types/loader'
-import { Timeline, TimelineSchema, Clip, Range, RefinedTimeline } from '../kronos/types/timeline'
+import { LoadedClip, AssetClip } from '../kronos/types/loader'
+import { Clip, Range } from '../kronos/types/timeline'
+import { Timeline, TimelineSchema, RefinedTimeline } from '../types/timeline'
 
 export function sortTimeline(timeline: Timeline): Timeline {
   timeline.audio_track = timeline.audio_track.sort((a, b) => a.start_ms - b.start_ms)

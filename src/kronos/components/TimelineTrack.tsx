@@ -1,13 +1,14 @@
 import React from 'react'
-import { AudioClip as AudioClipType, VisualClip as VisualClipType } from '../types/timeline'
+import { AudioClip as AudioClipType, VisualClip as VisualClipType } from '../../types/timeline'
 import TimelineClip from './TimelineClip'
+import { AssetClip } from '../types/loader'
 
 interface TimelineTrackProps {
-  clips: (AudioClipType | VisualClipType)[]
+  clips: AssetClip[]
   zIndex: number
   getWidth: (start: number, end: number) => number
   getLeft: (start: number) => number
-  onClipClick?: (clip: AudioClipType | VisualClipType) => void
+  onClipClick?: (clip: AssetClip) => void
   onClipMove?: (clipId: string, newStartMs: number) => void
   maxEnd: number
 }
@@ -31,11 +32,9 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
           const startPercent = getLeft(clip.start_ms)
           const widthPercent = getWidth(clip.start_ms, clip.start_ms + clip.duration_ms)
 
-          const isAudio = clip.type === 'audio'
+          const isAudio = clip.asset_type === 'audio'
           const color = isAudio ? 'bg-blue-500' : 'bg-emerald-500'
-          const content = isAudio
-            ? `${clip.speaker || 'Audio'}: ${clip.audio_generation_params?.text || ''}`
-            : `${clip.image_generation_params ? '🖼️' : '🎬'} ${clip.image_generation_params?.prompt || clip.video_generation_params?.description || ''}`
+          const content = clip.description
 
           return (
             <TimelineClip
@@ -43,7 +42,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
               startPercent={startPercent}
               widthPercent={widthPercent}
               color={color}
-              title={clip.type}
+              title={clip.asset_type}
               onClick={() => onClipClick?.(clip)}
             >
               <span className="px-2 text-xs truncate text-ellipsis overflow-hidden">{content}</span>

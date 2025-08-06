@@ -12,7 +12,7 @@ import {
   VideoSampleSink
 } from 'mediabunny'
 
-import { PlayableAudioClip, PlayableClip, PlayableVisualClip } from '../types/loader'
+import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/loader'
 import { downloadFile, objectFitContain, range } from './misc'
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -32,12 +32,12 @@ interface VideoExportOptions {
 }
 
 export async function exportAudio(
-  clips: PlayableClip[],
+  clips: AssetClip[],
   audioContext: BaseAudioContext
 ): Promise<AudioBuffer> {
   const decodedClips = await Promise.all(
     clips.map(async (clip) => {
-      const fullBuffer = await fetchAndDecodeAudio(audioContext, clip.src)
+      const fullBuffer = await fetchAndDecodeAudio(audioContext, clip.src!)
       const trimmed = trimAudioBuffer(audioContext, fullBuffer, clip.duration_ms)
       return { buffer: trimmed, startOffset: clip.start_ms }
     })
@@ -151,7 +151,7 @@ export async function exportVideo(
     lastFrameTime = (clip.start_ms + clip.duration_ms) / 1000
 
     if (clip.asset_type === 'video') {
-      const file = await fetch(clip.src)
+      const file = await fetch(clip.src!)
       const blob = await file.blob()
       const input = new Input({
         formats: ALL_FORMATS,
@@ -176,7 +176,7 @@ export async function exportVideo(
         }
       }
     } else if (clip.asset_type === 'image') {
-      const response = await fetch(clip.src)
+      const response = await fetch(clip.src!)
       const blob = await response.blob()
       const src = URL.createObjectURL(blob)
       const imageElement = await loadImage(src)

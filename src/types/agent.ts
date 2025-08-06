@@ -1,5 +1,10 @@
 import z from 'zod'
-import { TimelineSchema } from '../kronos/types/timeline'
+import { TimelineSchema } from './timeline'
+
+export const AgentStateSchema = z
+  .enum(['idle', 'processing', 'waiting'])
+  .describe('Current state of the AI agent')
+export type AgentState = z.infer<typeof AgentStateSchema>
 
 // COPY of ChatCompletionMessageToolCall
 export const ToolCallSchema = z
@@ -16,8 +21,8 @@ export const ToolCallSchema = z
   })
   .describe('Tool call to perform')
 export type ToolCall = z.infer<typeof ToolCallSchema>
-// Copy of ChatCompletionMessageToolCall
 
+// Copy of ChatCompletionMessageToolCall
 export const MessageSchema = z
   .object({
     // REQUIRED
@@ -48,4 +53,4 @@ export type UserMessage = z.infer<typeof UserMessageSchema>
 export const AssistantMessageSchema = MessageSchema.extend({
   role: z.literal('assistant').describe("Message role indicating it's from the AI system")
 }).describe('System message from AI with optional timeline mutations')
-export type AssistantMessage = z.infer<typeof AssistantMessageSchema>
+export type AssistantMessage = z.infer<typeof AssistantMessageSchema> // Agent state management

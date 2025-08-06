@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 
-import { AudioClip, Timeline as TimelineType, VisualClip } from '../types/timeline'
+import { AudioClip, Timeline as TimelineType, VisualClip } from '../../types/timeline'
 import { formatTime } from '../utils/misc'
 
 import TimelineAxis from './TimelineAxis'
@@ -8,12 +8,14 @@ import TimelineCursor from './TimelineCursor'
 import TimelineTrack from './TimelineTrack'
 import { getTotalDuration } from '../../utils/timeline'
 import { Download, LoaderCircle, PauseCircle, PlayCircle, RotateCcw } from 'lucide-react'
+import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/loader'
 
 interface TimelineProps {
-  timeline: TimelineType
+  audioClips: PlayableAudioClip[]
+  visualClips: PlayableVisualClip[]
   onResetTimeline?: () => void
   onExport?: () => void
-  onClipClick?: (clip: AudioClip | VisualClip) => void
+  onClipClick?: (clip: AssetClip) => void
   currentTimeMs?: number
   isPlaying?: boolean
   isExporting?: boolean
@@ -22,7 +24,8 @@ interface TimelineProps {
 }
 
 export const Timeline: React.FC<TimelineProps> = ({
-  timeline,
+  audioClips,
+  visualClips,
   onResetTimeline,
   onExport,
   onClipClick,
@@ -33,10 +36,7 @@ export const Timeline: React.FC<TimelineProps> = ({
   onSeek
 }) => {
   // Find the max end time for scaling
-  const maxEnd = Math.max(
-    10000,
-    getTotalDuration([...timeline.audio_track, ...timeline.visual_track])
-  )
+  const maxEnd = Math.max(10000, getTotalDuration([...audioClips, ...visualClips]))
   const timelineContainerRef = useRef<HTMLDivElement>(null)
 
   // Helper to get percent width and position
@@ -93,7 +93,7 @@ export const Timeline: React.FC<TimelineProps> = ({
 
           {/* Visual Track */}
           <TimelineTrack
-            clips={timeline.visual_track}
+            clips={visualClips}
             zIndex={1}
             getWidth={getWidth}
             getLeft={getLeft}
@@ -103,7 +103,7 @@ export const Timeline: React.FC<TimelineProps> = ({
 
           {/* Audio Track */}
           <TimelineTrack
-            clips={timeline.audio_track}
+            clips={audioClips}
             zIndex={2}
             getWidth={getWidth}
             getLeft={getLeft}

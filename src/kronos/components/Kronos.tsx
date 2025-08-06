@@ -5,8 +5,7 @@ import { VisualPlayer } from './VisualPlayer'
 import { useTicker } from '../hooks/tick'
 import { usePlayAudioTrack } from '../hooks/audio'
 import { exportVideo } from '../utils/export'
-import { AudioClip, VisualClip } from '../types/timeline'
-import { PlayableAudioClip, PlayableVisualClip } from '../types/loader'
+import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/loader'
 import { getTotalDuration } from '../../utils/timeline'
 
 interface KronosProps {
@@ -63,7 +62,7 @@ const Kronos: React.FC<KronosProps> = ({
     setIsExporting(false)
   }
 
-  const handleClipClick = (clip: AudioClip | VisualClip) => {
+  const handleClipClick = (clip: AssetClip) => {
     console.log('clip', clip)
   }
 
@@ -90,7 +89,8 @@ const Kronos: React.FC<KronosProps> = ({
       {/* Timeline Controls */}
       <div className="flex-shrink-1">
         <Timeline
-          timeline={{ audio_track: audioTrack, visual_track: visualTrack }}
+          audioClips={audioTrack}
+          visualClips={visualTrack}
           onResetTimeline={handleResetTimeline}
           onExport={handleExport}
           onClipClick={handleClipClick}

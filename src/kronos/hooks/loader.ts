@@ -2,7 +2,7 @@ import { useQueries } from '@tanstack/react-query'
 import { ALL_FORMATS, BlobSource, CanvasSink, Input, InputVideoTrack } from 'mediabunny'
 import { useCallback, useMemo } from 'react'
 
-import { LoadedClip, PlayableClip, PlayableMedia } from '../types/loader'
+import { LoadedClip, AssetClip, PlayableMedia } from '../types/loader'
 
 function loadImageElement(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -26,13 +26,13 @@ export interface LoadedClips {
 
 // TODO: SEPARATE CLIP SETTING LOGIC FROM LOADING LOGIC
 // THIS IS PREVENTING THE CLIPS FROM BEING UPDATED WHEN THE CLIP PARAMS CHANGES
-export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioContext): LoadedClips {
+export function usePlayableLoader(clips: AssetClip[], audioContext?: AudioContext): LoadedClips {
   // console.log("usePlayableLoader", clips);
   const results = useQueries({
     queries: clips.map((clip) => ({
       queryKey: ['playable', clip.id, clip.src],
       queryFn: async (): Promise<PlayableMedia | undefined> => {
-        const response = await fetch(clip.src)
+        const response = await fetch(clip.src!)
 
         if (clip.asset_type === 'video') {
           const blob = await response.blob()

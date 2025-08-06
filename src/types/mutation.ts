@@ -1,5 +1,5 @@
 import z from 'zod'
-import { VisualClipSchema, AudioClipSchema } from '../kronos/types/timeline'
+import { VisualClipSchema, AudioClipSchema } from './timeline'
 
 // Mutation schemas using extension pattern
 export const MutationTypeSchema = z
