@@ -129,18 +129,16 @@ export const TimelinePlayer: React.FC<Props> = ({
   // if (!allLoaded) return <div>Loading video assets...</div>;
 
   return (
-    <div className="relative flex h-full w-full">
-      <canvas
-        id="pixi-canvas"
-        ref={canvasRef}
-        style={{
-          // aspectRatio: width / height,
-          height: '100%',
-          width: '100%',
-          display: 'block',
-          objectFit: 'contain'
-        }}
-      />
-    </div>
+    <canvas
+      id="canvas"
+      ref={canvasRef}
+      style={{
+        // aspectRatio: width / height,
+        height: '100%',
+        width: '100%',
+        display: 'block',
+        objectFit: 'contain'
+      }}
+    />
   )
 }

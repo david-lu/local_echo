@@ -7,6 +7,7 @@ import { usePlayAudioTrack } from '../hooks/audio'
 import { exportVideo } from '../utils/export'
 import { AudioClip, VisualClip } from '../types/timeline'
 import { PlayableAudioClip, PlayableVisualClip } from '../types/loader'
+import { getTotalDuration } from '../../utils/timeline'
 
 interface KronosProps {
   audioTrack: PlayableAudioClip[]
@@ -26,14 +27,10 @@ const Kronos: React.FC<KronosProps> = ({ audioTrack, visualTrack }) => {
   usePlayAudioTrack(audioContext, audioTrack, currentTimeMs, isPlaying)
 
   // Calculate timeline duration
-  const timelineDuration = useMemo(() => {
-    const maxEnd = Math.max(
-      ...audioTrack.map((c) => c.start_ms + c.duration_ms),
-      ...visualTrack.map((c) => c.start_ms + c.duration_ms),
-      10000 // fallback
-    )
-    return maxEnd
-  }, [audioTrack, visualTrack])
+  const timelineDuration = useMemo(
+    () => getTotalDuration([...audioTrack, ...visualTrack]),
+    [audioTrack, visualTrack]
+  )
 
   useTicker((deltaMs: number) => {
     setCurrentTimeMs((prev) => {
@@ -71,12 +68,14 @@ const Kronos: React.FC<KronosProps> = ({ audioTrack, visualTrack }) => {
   return (
     <div className="h-full flex flex-col bg-zinc-900 justify-between">
       {/* ClipDisplayer */}
-      <TimelinePlayer
-        visualClips={visualTrack}
-        playheadTimeMs={currentTimeMs}
-        isLandscape={true}
-        isPlaying={isPlaying}
-      />
+      <div className="relative flex h-full w-full">
+        <TimelinePlayer
+          visualClips={visualTrack}
+          playheadTimeMs={currentTimeMs}
+          isLandscape={true}
+          isPlaying={isPlaying}
+        />
+      </div>
 
       {/* Timeline Controls */}
       <div className="flex-shrink-1">
