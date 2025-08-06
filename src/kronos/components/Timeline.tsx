@@ -6,6 +6,17 @@ import { formatTime } from '../utils/misc'
 import TimelineAxis from './TimelineAxis'
 import TimelineCursor from './TimelineCursor'
 import TimelineTrack from './TimelineTrack'
+import { getTotalDuration } from '../../utils/timeline'
+import {
+  Download,
+  LoaderCircle,
+  LoaderPinwheel,
+  LucidePause,
+  LucidePlay,
+  PauseCircle,
+  PlayCircle,
+  RotateCcw
+} from 'lucide-react'
 
 interface TimelineProps {
   timeline: TimelineType
@@ -32,9 +43,8 @@ export const Timeline: React.FC<TimelineProps> = ({
 }) => {
   // Find the max end time for scaling
   const maxEnd = Math.max(
-    ...timeline.audio_track.map((c) => c.start_ms + c.duration_ms),
-    ...timeline.visual_track.map((c) => c.start_ms + c.duration_ms),
-    10000 // fallback
+    10000,
+    getTotalDuration([...timeline.audio_track, ...timeline.visual_track])
   )
   const timelineContainerRef = useRef<HTMLDivElement>(null)
 
@@ -52,46 +62,22 @@ export const Timeline: React.FC<TimelineProps> = ({
             }}
             className="flex items-center justify-center w-8 h-8 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 rounded-md transition-colors"
           >
-            {isPlaying ? (
-              <svg
-                className="w-4 h-4 text-zinc-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="w-4 h-4 text-zinc-300"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
+            {isPlaying ? <PauseCircle /> : <PlayCircle />}
           </button>
           {formatTime(currentTimeMs)}
-          <div>
+          <div className="flex items-center gap-2">
             <button
               onClick={onExport}
               className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
               disabled={isExporting}
             >
-              {isExporting ? 'Exporting...' : 'Download'}
+              {isExporting ? <LoaderCircle className="animate-spin" /> : <Download />}
             </button>
             <button
               onClick={onResetTimeline}
               className="px-2 py-1 text-xs border border-zinc-700 rounded-md text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 transition-colors"
             >
-              Reset
+              <RotateCcw />
             </button>
           </div>
         </div>
