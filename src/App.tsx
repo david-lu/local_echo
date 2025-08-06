@@ -1,11 +1,11 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { OpenAI } from 'openai'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import Timeline from './components/Timeline'
+import Timeline from './kronos/components/Timeline'
 import ChatContainer from './components/ChatContainer'
 import ChatInput from './components/ChatInput'
 import ClipDisplayer from './components/ClipDisplayer'
-import { AudioClip, VisualClip, AgentState } from './types/timeline'
+import { AudioClip, VisualClip, AgentState } from './kronos/types/timeline'
 import { Message, UserMessage, AssistantMessage } from './types/agent'
 import {
   AddVisualMutationSchema,
@@ -16,8 +16,8 @@ import {
   RemoveVisualMutationSchema,
   RetimeClipsMutationSchema
 } from './types/mutation'
-import { hashToArrayItem, stringifyWithoutNull } from './utils/misc'
-import { useAudioContext } from './hooks/audio'
+import { hashToArrayItem, stringifyWithoutNull } from './kronos/utils/misc'
+import { useAudioContext } from './kronos/hooks/audio'
 import { convertToOpenAIMessage, getMutationsFromMessages } from './utils/mutation'
 import { getClipAtTime, refineTimeline } from './utils/timeline'
 import { getMutationFromToolCall } from './utils/mutation'
@@ -27,11 +27,11 @@ import timelineJson from './data/sampleTimeline.json'
 import { zodFunction } from 'openai/helpers/zod'
 import { applyMutations } from './mutation'
 import { v4 as uuidv4 } from 'uuid'
-import { TimelinePlayer } from './components/TimelinePlayer'
-import { useTicker } from './hooks/tick'
-import { PlayableClip } from './types/loader'
-import { usePlayAudioTrack } from './hooks/audio'
-import { exportVideo } from './utils/export'
+import { TimelinePlayer } from './kronos/components/TimelinePlayer'
+import { useTicker } from './kronos/hooks/tick'
+import { PlayableClip } from './kronos/types/loader'
+import { usePlayAudioTrack } from './kronos/hooks/audio'
+import { exportVideo } from './kronos/utils/export'
 
 const App: React.FC = () => {
   const { audioContext, activateAudio } = useAudioContext()

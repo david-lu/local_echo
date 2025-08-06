@@ -1,5 +1,5 @@
 import z from 'zod'
-import { TimelineSchema } from './timeline'
+import { TimelineSchema } from '../kronos/types/timeline'
 
 // COPY of ChatCompletionMessageToolCall
 export const ToolCallSchema = z

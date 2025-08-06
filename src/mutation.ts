@@ -1,4 +1,4 @@
-import { Timeline, AudioClip, VisualClip } from './types/timeline'
+import { Timeline, AudioClip, VisualClip } from './kronos/types/timeline'
 import {
   AddVisualMutation,
   AddAudioMutation,

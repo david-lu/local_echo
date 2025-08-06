@@ -1,5 +1,5 @@
 import React from 'react'
-import { AudioClip, Clip, VisualClip } from '../types/timeline'
+import { AudioClip, Clip, VisualClip } from '../kronos/types/timeline'
 
 interface ClipDisplayerProps {
   selectedClip: Clip | null
