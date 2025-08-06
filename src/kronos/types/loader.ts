@@ -1,18 +1,18 @@
 import { CanvasSink, Input, InputVideoTrack } from 'mediabunny'
 import z from 'zod'
 
-import { ClipSchema } from './timeline'
+import { AudioClipSchema, ClipSchema, VisualClipSchema } from './timeline'
 
 export const PlayableClipSchema = ClipSchema.extend({
-  type: z.enum(['image', 'video', 'audio']),
+  asset_type: z.enum(['image', 'video', 'audio']),
   src: z.string()
 })
 export type PlayableClip = z.infer<typeof PlayableClipSchema>
 
 export const VideoMediaSchema = z.object({
   input: z.instanceof(Input),
-  videoTrack: z.instanceof(InputVideoTrack),
-  canvasSink: z.instanceof(CanvasSink)
+  video_track: z.instanceof(InputVideoTrack),
+  canvas_sink: z.instanceof(CanvasSink)
 })
 export type VideoMedia = z.infer<typeof VideoMediaSchema>
 
@@ -30,3 +30,13 @@ export const LoadedClipSchema = PlayableClipSchema.merge(PlayableMediaSchema).ex
   error: z.string().optional()
 })
 export type LoadedClip = z.infer<typeof LoadedClipSchema>
+
+export const PlayableAudioClipSchema = PlayableClipSchema.merge(AudioClipSchema).extend({
+  asset_type: z.literal('audio')
+})
+export type PlayableAudioClip = z.infer<typeof PlayableAudioClipSchema>
+
+export const PlayableVisualClipSchema = PlayableClipSchema.merge(VisualClipSchema).extend({
+  asset_type: z.enum(['image', 'video'])
+})
+export type PlayableVisualClip = z.infer<typeof PlayableVisualClipSchema>

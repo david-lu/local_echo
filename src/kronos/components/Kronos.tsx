@@ -1,0 +1,99 @@
+import React, { useState, useRef, useMemo, useEffect } from 'react'
+import Timeline from './Timeline'
+import { useAudioContext } from '../hooks/audio'
+import { TimelinePlayer } from './TimelinePlayer'
+import { useTicker } from '../hooks/tick'
+import { usePlayAudioTrack } from '../hooks/audio'
+import { exportVideo } from '../utils/export'
+import { AudioClip, VisualClip } from '../types/timeline'
+import { PlayableAudioClip, PlayableVisualClip } from '../types/loader'
+
+interface KronosProps {
+  audioTrack: PlayableAudioClip[]
+  visualTrack: PlayableVisualClip[]
+}
+
+const Kronos: React.FC<KronosProps> = ({ audioTrack, visualTrack }) => {
+  const { audioContext, activateAudio } = useAudioContext()
+
+  // Playback state
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTimeMs, setCurrentTimeMs] = useState(0)
+
+  // Export state
+  const [isExporting, setIsExporting] = useState(false)
+
+  usePlayAudioTrack(audioContext, audioTrack, currentTimeMs, isPlaying)
+
+  // Calculate timeline duration
+  const timelineDuration = useMemo(() => {
+    const maxEnd = Math.max(
+      ...audioTrack.map((c) => c.start_ms + c.duration_ms),
+      ...visualTrack.map((c) => c.start_ms + c.duration_ms),
+      10000 // fallback
+    )
+    return maxEnd
+  }, [audioTrack, visualTrack])
+
+  useTicker((deltaMs: number) => {
+    setCurrentTimeMs((prev) => {
+      const newTime = prev + deltaMs
+      if (newTime >= timelineDuration) {
+        setIsPlaying(false)
+        return 0
+      }
+      return newTime
+    })
+  }, isPlaying)
+
+  // Playback control functions
+  const handlePlayPause = () => {
+    setIsPlaying((prev) => !prev)
+    activateAudio()
+  }
+
+  const handleExport = async () => {
+    setIsExporting(true)
+    await exportVideo(audioTrack, visualTrack, 'output.mp4', audioContext!)
+    setIsExporting(false)
+  }
+
+  const handleClipClick = (clip: AudioClip | VisualClip) => {
+    console.log('clip', clip)
+  }
+
+  const handleResetTimeline = () => {}
+
+  const handleSeek = (time: number) => {
+    setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)))
+  }
+
+  return (
+    <div className="h-full flex flex-col bg-zinc-900 justify-between">
+      {/* ClipDisplayer */}
+      <TimelinePlayer
+        visualClips={visualTrack}
+        playheadTimeMs={currentTimeMs}
+        isLandscape={true}
+        isPlaying={isPlaying}
+      />
+
+      {/* Timeline Controls */}
+      <div className="flex-shrink-1">
+        <Timeline
+          timeline={{ audio_track: audioTrack, visual_track: visualTrack }}
+          onResetTimeline={handleResetTimeline}
+          onExport={handleExport}
+          onClipClick={handleClipClick}
+          currentTimeMs={currentTimeMs}
+          isPlaying={isPlaying}
+          isExporting={isExporting}
+          onPlayPause={handlePlayPause}
+          onSeek={handleSeek}
+        />
+      </div>
+    </div>
+  )
+}
+
+export default Kronos

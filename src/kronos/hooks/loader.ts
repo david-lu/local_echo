@@ -36,7 +36,7 @@ export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioCon
           queryFn: async (): Promise<PlayableMedia | undefined> => {
             const response = await fetch(clip.src)
 
-            if (clip.type === 'video') {
+            if (clip.asset_type === 'video') {
               const blob = await response.blob()
               const input = new Input({
                 source: new BlobSource(blob),
@@ -49,11 +49,11 @@ export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioCon
                 response,
                 video: {
                   input,
-                  videoTrack,
-                  canvasSink
+                  video_track: videoTrack,
+                  canvas_sink: canvasSink
                 }
               }
-            } else if (clip.type === 'audio') {
+            } else if (clip.asset_type === 'audio') {
               // console.log('DECODING AUDIO', audioContext)
               if (!audioContext) throw new Error('AudioContext not available')
               // console.log('DECODING', audioContext)
@@ -64,7 +64,7 @@ export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioCon
               return {
                 audio: audioBuffer
               }
-            } else if (clip.type === 'image') {
+            } else if (clip.asset_type === 'image') {
               const blob = await response.blob()
               const src = URL.createObjectURL(blob)
               const image = await loadImageElement(src)

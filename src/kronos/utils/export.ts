@@ -164,7 +164,7 @@ export async function exportVideo(
     }
     lastFrameTime = (clip.start_ms + clip.duration_ms) / 1000
 
-    if (clip.type === 'video') {
+    if (clip.asset_type === 'video') {
       const file = await fetch(clip.src)
       const blob = await file.blob()
       const input = new Input({
@@ -189,7 +189,7 @@ export async function exportVideo(
           await videoSource.add(clip.start_ms / 1000 + sample.timestamp, sample.duration)
         }
       }
-    } else if (clip.type === 'image') {
+    } else if (clip.asset_type === 'image') {
       const response = await fetch(clip.src)
       const blob = await response.blob()
       const src = URL.createObjectURL(blob)

@@ -29,25 +29,18 @@ import { applyMutations } from './mutation'
 import { v4 as uuidv4 } from 'uuid'
 import { TimelinePlayer } from './kronos/components/TimelinePlayer'
 import { useTicker } from './kronos/hooks/tick'
-import { PlayableClip } from './kronos/types/loader'
+import { PlayableAudioClip, PlayableClip, PlayableVisualClip } from './kronos/types/loader'
 import { usePlayAudioTrack } from './kronos/hooks/audio'
 import { exportVideo } from './kronos/utils/export'
+import Kronos from './kronos/components/Kronos'
 
 const App: React.FC = () => {
-  const { audioContext, activateAudio } = useAudioContext()
   const [messages, setMessages] = useState<(Message | AssistantMessage)[]>([])
   const [agentState, setAgentState] = useState<AgentState>('idle')
   const [error, setError] = useState<string | null>(null)
   const [currentTimeline, setCurrentTimeline] = useState(parseTimeline(timelineJson))
   const [partialMessages, setPartialMessages] = useState<Message[]>([])
   const [selectedClip, setSelectedClip] = useState<AudioClip | VisualClip | null>(null)
-
-  // Playback state
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTimeMs, setCurrentTimeMs] = useState(0)
-
-  // Export state
-  const [isExporting, setIsExporting] = useState(false)
 
   // Get API key from environment variables
   const apiKey = process.env.REACT_APP_OPENAI_API_KEY
@@ -246,19 +239,15 @@ const App: React.FC = () => {
     setMessages([])
   }
 
-  const handleClipClick = (clip: AudioClip | VisualClip) => {
-    setSelectedClip(clip)
-  }
-
   const { displayTimeline, playableVisualClips, playableAudioClips } = useMemo(() => {
     // console.log("new display timeline");
     const mutations = getMutationsFromMessages(partialMessages)
     const displayTimeline = applyMutations(currentTimeline, mutations)
 
-    const playableVisualClips: PlayableClip[] = displayTimeline.visual_track.map((clip) => {
+    const playableVisualClips: PlayableVisualClip[] = displayTimeline.visual_track.map((clip) => {
       return {
         ...clip,
-        type: clip.video_asset_id ? 'video' : 'image',
+        asset_type: clip.video_asset_id ? 'video' : 'image',
         src: clip.video_asset_id
           ? hashToArrayItem(clip.id, [
               'https://videos.pexels.com/video-files/855971/855971-hd_1920_1080_30fps.mp4',
@@ -273,10 +262,10 @@ const App: React.FC = () => {
       }
     })
 
-    const playableAudioClips: PlayableClip[] = displayTimeline.audio_track.map((clip) => {
+    const playableAudioClips: PlayableAudioClip[] = displayTimeline.audio_track.map((clip) => {
       return {
         ...clip,
-        type: 'audio',
+        asset_type: 'audio',
         src: hashToArrayItem(clip.id, [
           'https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o-tone.mp3',
           'https://ia800204.us.archive.org/28/items/twakalto/ida-lmar2o.mp3',
@@ -297,35 +286,6 @@ const App: React.FC = () => {
     )
     return maxEnd
   }, [displayTimeline])
-
-  useTicker((deltaMs) => {
-    setCurrentTimeMs((prev) => {
-      const newTime = prev + deltaMs
-      if (newTime >= timelineDuration) {
-        setIsPlaying(false)
-        return 0
-      }
-      return newTime
-    })
-  }, isPlaying)
-
-  // Playback control functions
-  const handlePlayPause = () => {
-    setIsPlaying((prev) => !prev)
-    activateAudio()
-  }
-
-  const handleExport = async () => {
-    setIsExporting(true)
-    await exportVideo(playableVisualClips, playableAudioClips, 'output.mp4', audioContext!)
-    setIsExporting(false)
-  }
-
-  const handleSeek = (time: number) => {
-    setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)))
-  }
-
-  usePlayAudioTrack(audioContext, playableAudioClips, currentTimeMs, isPlaying)
 
   return (
     <div className="h-screen flex flex-col bg-zinc-950">
@@ -396,30 +356,10 @@ const App: React.FC = () => {
             defaultSize={50}
             minSize={40}
           >
-            <div className="h-full flex flex-col bg-zinc-900 justify-between">
-              {/* ClipDisplayer */}
-              <TimelinePlayer
-                visualClips={playableVisualClips}
-                playheadTimeMs={currentTimeMs}
-                isLandscape={true}
-                isPlaying={isPlaying}
-              />
-
-              {/* Timeline Controls */}
-              <div className="flex-shrink-1">
-                <Timeline
-                  timeline={displayTimeline}
-                  onResetTimeline={resetTimeline}
-                  onExport={handleExport}
-                  onClipClick={handleClipClick}
-                  currentTimeMs={currentTimeMs}
-                  isPlaying={isPlaying}
-                  isExporting={isExporting}
-                  onPlayPause={handlePlayPause}
-                  onSeek={handleSeek}
-                />
-              </div>
-            </div>
+            <Kronos
+              audioTrack={playableAudioClips}
+              visualTrack={playableVisualClips}
+            />
           </Panel>
         </PanelGroup>
       </div>

@@ -57,7 +57,7 @@ export const TimelinePlayer: React.FC<Props> = ({
     }
     if (visual?.video) {
       const playbackTime = (playheadTimeMs - visual!.start_ms) / 1000
-      videoFrameIterator.current = visual.video.canvasSink.canvases(playbackTime)
+      videoFrameIterator.current = visual.video.canvas_sink.canvases(playbackTime)
 
       const currentFrame = await videoFrameIterator.current.next()
       if (currentFrame.value && currentAsyncIndex === asyncIndex.current) {
