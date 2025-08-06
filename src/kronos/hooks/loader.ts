@@ -83,17 +83,15 @@ export function usePlayableLoader(clips: PlayableClip[], audioContext?: AudioCon
 
   const allLoaded = results.every((entry) => !entry.isLoading && !entry.isError)
 
-  const loadedPlayables: LoadedClip[] = useMemo(() => {
-    return clips.map((clip, idx) => {
-      return {
-        ...clip,
-        ...results?.[idx]?.data,
-        isLoading: results?.[idx]?.isLoading,
-        isError: results?.[idx]?.isError,
-        error: results?.[idx]?.error?.message
-      }
-    })
-  }, [...results.flatMap((r) => [r.data, r.isLoading, r.isError, r.error]), clips])
+  const loadedPlayables: LoadedClip[] = clips.map((clip, idx) => {
+    return {
+      ...clip,
+      ...results?.[idx]?.data,
+      isLoading: results?.[idx]?.isLoading,
+      isError: results?.[idx]?.isError,
+      error: results?.[idx]?.error?.message
+    }
+  })
 
   const getLoadedClipAtTime = useCallback(
     (timeMs: number): LoadedClip | undefined => {

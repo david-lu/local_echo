@@ -336,8 +336,14 @@ const App: React.FC = () => {
             minSize={40}
           >
             <Kronos
-              audioTrack={playableAudioClips}
-              visualTrack={playableVisualClips}
+              audioClips={playableAudioClips}
+              visualClips={playableVisualClips}
+              onClipsChange={(newVisualTrack, newAudioTrack) => {
+                setCurrentTimeline({
+                  visual_track: newVisualTrack || currentTimeline.visual_track,
+                  audio_track: newAudioTrack || currentTimeline.audio_track
+                })
+              }}
             />
           </Panel>
         </PanelGroup>

@@ -10,11 +10,19 @@ import { PlayableAudioClip, PlayableVisualClip } from '../types/loader'
 import { getTotalDuration } from '../../utils/timeline'
 
 interface KronosProps {
-  audioTrack: PlayableAudioClip[]
-  visualTrack: PlayableVisualClip[]
+  visualClips: PlayableVisualClip[]
+  audioClips: PlayableAudioClip[]
+  onClipsChange?: (
+    newVisualTrack?: PlayableVisualClip[],
+    newAudioTrack?: PlayableAudioClip[]
+  ) => void
 }
 
-const Kronos: React.FC<KronosProps> = ({ audioTrack, visualTrack }) => {
+const Kronos: React.FC<KronosProps> = ({
+  visualClips: visualTrack,
+  audioClips: audioTrack,
+  onClipsChange
+}) => {
   const { audioContext, activateAudio } = useAudioContext()
 
   // Playback state
@@ -59,7 +67,9 @@ const Kronos: React.FC<KronosProps> = ({ audioTrack, visualTrack }) => {
     console.log('clip', clip)
   }
 
-  const handleResetTimeline = () => {}
+  const handleResetTimeline = () => {
+    onClipsChange?.([], [])
+  }
 
   const handleSeek = (time: number) => {
     setCurrentTimeMs(Math.max(0, Math.min(time, timelineDuration)))
