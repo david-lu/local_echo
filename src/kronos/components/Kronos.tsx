@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import Timeline from './Timeline'
 import { useAudioContext } from '../hooks/audio'
 import { VisualPlayer } from './VisualPlayer'
