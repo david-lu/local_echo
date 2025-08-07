@@ -31,7 +31,7 @@ export function usePlayableLoader(clips: AssetClip[], audioContext?: AudioContex
   const results = useQueries({
     queries: clips.map((clip) => ({
       queryKey: ['playable', clip.id, clip.src],
-      queryFn: async (): Promise<PlayableMedia | undefined> => {
+      queryFn: async (): Promise<PlayableMedia | null> => {
         const response = await fetch(clip.src!)
 
         if (clip.asset_type === 'video') {
@@ -70,7 +70,7 @@ export function usePlayableLoader(clips: AssetClip[], audioContext?: AudioContex
             image
           }
         }
-        return undefined
+        return null
       },
       staleTime: Infinity,
       cacheTime: Infinity
