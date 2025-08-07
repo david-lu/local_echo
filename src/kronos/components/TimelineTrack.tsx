@@ -8,8 +8,6 @@ interface TimelineTrackProps {
   getWidth: (start: number, end: number) => number
   getLeft: (start: number) => number
   onClipClick?: (clip: AssetClip) => void
-  onClipMove?: (clipId: string, newStartMs: number) => void
-  maxEnd: number
 }
 
 export const TimelineTrack: React.FC<TimelineTrackProps> = ({
@@ -17,9 +15,7 @@ export const TimelineTrack: React.FC<TimelineTrackProps> = ({
   zIndex,
   getWidth,
   getLeft,
-  onClipClick,
-  onClipMove,
-  maxEnd
+  onClipClick
 }) => {
   return (
     <div className="flex items-center gap-2">
