@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 
 export function useTicker(callback: (deltaMs: number) => void, enabled: boolean) {
-  const frame = useRef<number>()
-  const lastTime = useRef<number>()
+  const frame = useRef<number | undefined>(undefined)
+  const lastTime = useRef<number | undefined>(undefined)
   const savedCallback = useRef(callback)
 
   // Always use the latest callback without re-subscribing
