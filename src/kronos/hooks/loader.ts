@@ -1,6 +1,6 @@
 import { useQueries } from '@tanstack/react-query'
 import { ALL_FORMATS, BlobSource, CanvasSink, Input, InputVideoTrack } from 'mediabunny'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 
 import { LoadedClip, AssetClip, PlayableMedia } from '../types/timeline'
 
