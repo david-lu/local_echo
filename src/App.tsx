@@ -26,7 +26,7 @@ import timelineJson from './data/sampleTimeline.json'
 import { zodFunction } from 'openai/helpers/zod'
 import { applyMutations } from './utils/mutation'
 import { v4 as uuidv4 } from 'uuid'
-import { PlayableAudioClip, PlayableVisualClip } from './kronos/types/timeline'
+import { AudioAssetClip, VisualAssetClip } from './kronos/types/timeline'
 import Kronos from './kronos/components/Kronos'
 
 const App: React.FC = () => {
@@ -234,7 +234,7 @@ const App: React.FC = () => {
     const mutations = getMutationsFromMessages(partialMessages)
     const displayTimeline = applyMutations(currentTimeline, mutations)
 
-    const playableVisualClips: PlayableVisualClip[] = displayTimeline.visual_track.map((clip) => {
+    const playableVisualClips: VisualAssetClip[] = displayTimeline.visual_track.map((clip) => {
       return {
         ...clip,
         asset_type: clip.video_asset_id ? 'video' : 'image',
@@ -254,7 +254,7 @@ const App: React.FC = () => {
       }
     })
 
-    const playableAudioClips: PlayableAudioClip[] = displayTimeline.audio_track.map((clip) => {
+    const playableAudioClips: AudioAssetClip[] = displayTimeline.audio_track.map((clip) => {
       return {
         ...clip,
         asset_type: 'audio',

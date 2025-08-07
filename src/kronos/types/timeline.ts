@@ -52,10 +52,10 @@ export const AudioAssetClipSchema = AssetClipSchema.extend({
   asset_type: z.literal('audio'),
   src: z.string()
 })
-export type PlayableAudioClip = z.infer<typeof AudioAssetClipSchema>
+export type AudioAssetClip = z.infer<typeof AudioAssetClipSchema>
 
 export const VisualAssetClipSchema = AssetClipSchema.extend({
   asset_type: z.enum(['image', 'video']),
   src: z.string()
 })
-export type PlayableVisualClip = z.infer<typeof VisualAssetClipSchema>
+export type VisualAssetClip = z.infer<typeof VisualAssetClipSchema>

@@ -12,7 +12,7 @@ import {
   VideoSampleSink
 } from 'mediabunny'
 
-import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/timeline'
+import { AudioAssetClip, AssetClip, VisualAssetClip } from '../types/timeline'
 import { downloadFile, objectFitContain, range } from './misc'
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -100,8 +100,8 @@ function placeAudioBuffersOnTimeline(
 }
 
 export async function exportVideo(
-  visualClips: PlayableVisualClip[],
-  audioClips: PlayableAudioClip[],
+  visualClips: VisualAssetClip[],
+  audioClips: AudioAssetClip[],
   filename: string,
   audioContext: BaseAudioContext,
   options: VideoExportOptions = {

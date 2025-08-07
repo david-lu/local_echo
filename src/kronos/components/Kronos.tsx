@@ -5,16 +5,13 @@ import { VisualPlayer } from './VisualPlayer'
 import { useTicker } from '../hooks/tick'
 import { usePlayAudioTrack } from '../hooks/audio'
 import { exportVideo } from '../utils/export'
-import { PlayableAudioClip, AssetClip, PlayableVisualClip } from '../types/timeline'
+import { AudioAssetClip, AssetClip, VisualAssetClip } from '../types/timeline'
 import { getTotalDuration } from '../utils/timeline'
 
 interface KronosProps {
-  visualClips: PlayableVisualClip[]
-  audioClips: PlayableAudioClip[]
-  onClipsChange?: (
-    newVisualTrack?: PlayableVisualClip[],
-    newAudioTrack?: PlayableAudioClip[]
-  ) => void
+  visualClips: VisualAssetClip[]
+  audioClips: AudioAssetClip[]
+  onClipsChange?: (newVisualTrack?: VisualAssetClip[], newAudioTrack?: AudioAssetClip[]) => void
   onClipClick?: (clip: AssetClip) => void
 }
 
