@@ -19,7 +19,7 @@ export const TimelineClip: React.FC<TimelineClipProps> = ({
 }) => {
   return (
     <div
-      className={`absolute h-full ${color} text-xs text-white flex items-center justify-center rounded-md border border-white/30 shadow-md hover:shadow-lg hover:opacity-[0.8] transition-all duration-200 cursor-pointer`}
+      className={`absolute h-full ${color} text-xs text-white flex items-center justify-center rounded border border-white/30 shadow-md hover:shadow-lg hover:opacity-[0.8] transition-all duration-200 cursor-pointer`}
       style={{
         left: startPercent + '%',
         width: widthPercent + '%'
