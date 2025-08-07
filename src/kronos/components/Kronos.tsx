@@ -15,12 +15,14 @@ interface KronosProps {
     newVisualTrack?: PlayableVisualClip[],
     newAudioTrack?: PlayableAudioClip[]
   ) => void
+  onClipClick?: (clip: AssetClip) => void
 }
 
 const Kronos: React.FC<KronosProps> = ({
   visualClips: visualTrack,
   audioClips: audioTrack,
-  onClipsChange
+  onClipsChange,
+  onClipClick
 }) => {
   const { audioContext, activateAudio } = useAudioContext()
 
@@ -64,6 +66,7 @@ const Kronos: React.FC<KronosProps> = ({
 
   const handleClipClick = (clip: AssetClip) => {
     console.log('clip', clip)
+    onClipClick?.(clip)
   }
 
   const handleResetTimeline = () => {
@@ -76,7 +79,6 @@ const Kronos: React.FC<KronosProps> = ({
 
   return (
     <div className="h-full flex flex-col bg-zinc-900 justify-between">
-      {/* ClipDisplayer */}
       <div className="relative flex h-full w-full">
         <VisualPlayer
           visualClips={visualTrack}

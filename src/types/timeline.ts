@@ -22,7 +22,8 @@ export const AudioClipSchema = ClipSchema.extend({
   audio_asset_id: z
     .string()
     .nullable()
-    .describe('ID of the generated audio asset, null if not yet generated')
+    .describe('ID of the generated audio asset, null if not yet generated'),
+  speaker: z.string().nullable().describe('Name of the speaker, null if not yet generated')
 }).describe('Audio clip with text-to-speech generation capabilities')
 export type AudioClip = z.infer<typeof AudioClipSchema>
 
@@ -86,7 +87,8 @@ export const VisualExtensionSchema = z
     video_asset_id: z
       .string()
       .nullable()
-      .describe('ID of the generated video asset, null if not yet generated')
+      .describe('ID of the generated video asset, null if not yet generated'),
+    speaker: z.string().nullable().describe('Name of the speaker, null if not yet generated')
   })
   .describe('Visual extension with an image asset')
 export type VisualExtension = z.infer<typeof VisualExtensionSchema>

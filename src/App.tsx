@@ -343,6 +343,11 @@ const App: React.FC = () => {
               audioClips={playableAudioClips}
               visualClips={playableVisualClips}
               onClipsChange={(newVisualTrack, newAudioTrack) => {}}
+              onClipClick={(clip) => {
+                const audioClip = displayTimeline.audio_track.find((c) => c.id === clip.id)
+                const visualClip = displayTimeline.visual_track.find((c) => c.id === clip.id)
+                setSelectedClip(audioClip || visualClip || null)
+              }}
             />
           </Panel>
         </PanelGroup>
