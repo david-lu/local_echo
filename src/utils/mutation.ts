@@ -245,15 +245,17 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
       for (const retime of retimeClipsMutation.retimes) {
         const audioIndex = newTimeline.audio_track.findIndex((clip) => clip.id === retime.clip_id)
         const visualIndex = newTimeline.visual_track.findIndex((clip) => clip.id === retime.clip_id)
-        if (audioIndex !== -1) {
+
+        if (audioIndex !== -1 && retime.type === 'retime_audio') {
           const audioClip = newTimeline.audio_track[audioIndex]
           newTimeline.audio_track[audioIndex] = {
             ...audioClip,
-            start_ms: retime.start_time_ms ?? audioClip.start_ms,
-            duration_ms: retime.duration_ms ?? audioClip.duration_ms
+            start_ms: retime.start_time_ms ?? audioClip.start_ms
+            // Audio clips cannot have their duration changed
           }
         }
-        if (visualIndex !== -1) {
+
+        if (visualIndex !== -1 && retime.type === 'retime_visual') {
           const visualClip = newTimeline.visual_track[visualIndex]
           newTimeline.visual_track[visualIndex] = {
             ...visualClip,

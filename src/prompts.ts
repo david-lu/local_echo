@@ -54,7 +54,6 @@ Handling gaps:
 Audio-specific timing and text rules:
 - The "text" in audio_generation_params directly determines the expected duration of an audio clip.
 - Estimate audio duration as **15 characters per second** based on the length of "text."
-- The actual duration of an audio clip (end_ms - start_ms) must stay within **±20%** of this estimated duration.
 - If you modify "text," adjust the clip’s duration accordingly.
 - Never allow the audio clip duration and "text" length to be significantly mismatched.
 

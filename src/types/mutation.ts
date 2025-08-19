@@ -25,7 +25,9 @@ export type MutationType = z.infer<typeof MutationTypeSchema>
 export const BaseMutationSchema = z
   .object({
     type: MutationTypeSchema.describe('Type of mutation to perform'),
-    description: z.string().describe('Description of what the mutation is doing')
+    description: z
+      .string()
+      .describe('Description of what the mutation is doing. This should be a sentence, not a JSON.')
   })
   .describe('Base mutation schema with type and description')
 export type BaseMutation = z.infer<typeof BaseMutationSchema>
@@ -101,24 +103,33 @@ export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>
 
 // export const AudioRetimeMutationSchema = BaseMutationSchema.extend({
 
+export const RetimeAudioSchema = z.object({
+  type: z.literal('retime_audio').describe('Retime an audio clip'),
+  clip_id: z.string().describe('ID of the clip to shift'),
+  start_time_ms: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('New start time of the clip in milliseconds')
+})
+export type RetimeAudioMutation = z.infer<typeof RetimeAudioSchema>
+
+export const RetimeVisualSchema = z.object({
+  type: z.literal('retime_visual').describe('Retime a visual clip'),
+  clip_id: z.string().describe('ID of the clip to shift'),
+  start_time_ms: z
+    .number()
+    .nullable()
+    .optional()
+    .describe('New start time of the clip in milliseconds'),
+  duration_ms: z.number().nullable().optional().describe('New duration of the clip in milliseconds')
+})
+export type RetimeVisualMutation = z.infer<typeof RetimeVisualSchema>
+
 export const RetimeClipsMutationSchema = BaseMutationSchema.extend({
   type: z.literal('retime_clips'),
   retimes: z
-    .array(
-      z.object({
-        clip_id: z.string().describe('ID of the clip to shift'),
-        start_time_ms: z
-          .number()
-          .nullable()
-          .optional()
-          .describe('New start time of the clip in milliseconds'),
-        duration_ms: z
-          .number()
-          .nullable()
-          .optional()
-          .describe('New duration of the clip in milliseconds')
-      })
-    )
+    .array(z.union([RetimeAudioSchema, RetimeVisualSchema]))
     .describe('Array of retimes to apply to the clips')
 }).describe('Retime the noted clips by the given amount')
 
