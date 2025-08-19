@@ -1,9 +1,16 @@
 import z from 'zod'
-import { VisualClipSchema, AudioClipSchema } from './timeline'
+import {
+  VisualClipSchema,
+  AudioClipSchema,
+  VisualExtensionSchema,
+  AudioExtensionSchema
+} from './timeline'
+import { ClipSchema } from '../kronos/types/timeline'
 
 // Mutation schemas using extension pattern
 export const MutationTypeSchema = z
   .enum([
+    'add_scene',
     'add_visual',
     'remove_visual',
     'add_audio',
@@ -25,32 +32,42 @@ export type BaseMutation = z.infer<typeof BaseMutationSchema>
 
 export const AddSceneMutationSchema = BaseMutationSchema.extend({
   type: z.literal('add_scene').describe('Add both a visual and audio clip to the timeline'),
-  visual_clip: VisualClipSchema.describe('Visual clip to add'),
-  audio_clip: AudioClipSchema.describe('Audio clip to add')
+  visual_clip: VisualExtensionSchema.describe('Visual clip to add'),
+  audio_clip: AudioExtensionSchema.describe('Audio clip to add'),
+  duration: ClipSchema.describe('Start time and duration of the scene'),
+  displace: z.boolean().describe('Whether to displace other clips to make room for the new clip')
 }).describe('Mutation to add a new scene')
 export type AddSceneMutation = z.infer<typeof AddSceneMutationSchema>
 
 export const AddVisualMutationSchema = BaseMutationSchema.extend({
   type: z.literal('add_visual').describe('Add a new visual clip to the timeline'),
-  clip: VisualClipSchema.describe('Visual clip to add')
+  clip: VisualClipSchema.describe('Visual clip to add'),
+  displace: z.boolean().describe('Whether to displace other clips to make room for the new clip')
 }).describe('Mutation to add a new visual clip')
 export type AddVisualMutation = z.infer<typeof AddVisualMutationSchema>
 
 export const AddAudioMutationSchema = BaseMutationSchema.extend({
   type: z.literal('add_audio').describe('Add a new audio clip to the timeline'),
-  clip: AudioClipSchema.describe('Audio clip to add')
+  clip: AudioClipSchema.describe('Audio clip to add'),
+  displace: z.boolean().describe('Whether to displace other clips to make room for the new clip')
 }).describe('Mutation to add a new audio clip')
 export type AddAudioMutation = z.infer<typeof AddAudioMutationSchema>
 
 export const RemoveVisualMutationSchema = BaseMutationSchema.extend({
   type: z.literal('remove_visual').describe('Remove a visual clip from the timeline'),
-  clip_id: z.string().describe('ID of the visual clip to remove')
+  clip_id: z.string().describe('ID of the visual clip to remove'),
+  displace: z
+    .boolean()
+    .describe('Whether to fill in the gap by shifting the clips after the removed clip')
 }).describe('Mutation to remove a visual clip by ID')
 export type RemoveVisualMutation = z.infer<typeof RemoveVisualMutationSchema>
 
 export const RemoveAudioMutationSchema = BaseMutationSchema.extend({
   type: z.literal('remove_audio').describe('Remove an audio clip from the timeline'),
-  clip_id: z.string().describe('ID of the audio clip to remove')
+  clip_id: z.string().describe('ID of the audio clip to remove'),
+  displace: z
+    .boolean()
+    .describe('Whether to fill in the gap by shifting the clips after the removed clip')
 }).describe('Mutation to remove an audio clip by ID')
 export type RemoveAudioMutation = z.infer<typeof RemoveAudioMutationSchema>
 
@@ -65,6 +82,8 @@ export const ModifyAudioMutationSchema = BaseMutationSchema.extend({
   clip: AudioClipSchema.describe('Updated audio clip data')
 }).describe('Mutation to modify an existing audio clip')
 export type ModifyAudioMutation = z.infer<typeof ModifyAudioMutationSchema>
+
+// export const AudioRetimeMutationSchema = BaseMutationSchema.extend({
 
 export const RetimeClipsMutationSchema = BaseMutationSchema.extend({
   type: z.literal('retime_clips'),

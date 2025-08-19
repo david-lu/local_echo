@@ -14,7 +14,8 @@ import {
   ModifyVisualMutationSchema,
   RemoveAudioMutationSchema,
   RemoveVisualMutationSchema,
-  RetimeClipsMutationSchema
+  RetimeClipsMutationSchema,
+  AddSceneMutationSchema
 } from './types/mutation'
 import { hashToArrayItem, stringifyWithoutNull } from './kronos/utils/misc'
 import { convertToOpenAIMessage, getMutationsFromMessages } from './utils/mutation'
@@ -168,6 +169,10 @@ const App: React.FC = () => {
             zodFunction({
               name: 'modify_audio',
               parameters: ModifyAudioMutationSchema
+            }),
+            zodFunction({
+              name: 'add_scene',
+              parameters: AddSceneMutationSchema
             }),
             zodFunction({
               name: 'retime_clips',
@@ -342,7 +347,13 @@ const App: React.FC = () => {
             <Kronos
               audioClips={playableAudioClips}
               visualClips={playableVisualClips}
-              onClipsChange={(newVisualTrack, newAudioTrack) => {}}
+              onTracksChange={(newVisualTrack, newAudioTrack) => {
+                setCurrentTimeline({
+                  ...currentTimeline,
+                  visual_track: [],
+                  audio_track: []
+                })
+              }}
               onClipClick={(clip) => {
                 const audioClip = displayTimeline.audio_track.find((c) => c.id === clip.id)
                 const visualClip = displayTimeline.visual_track.find((c) => c.id === clip.id)

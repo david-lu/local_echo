@@ -11,14 +11,14 @@ import { getTotalDuration } from '../utils/timeline'
 interface KronosProps {
   visualClips: VisualAssetClip[]
   audioClips: AudioAssetClip[]
-  onClipsChange?: (newVisualTrack?: VisualAssetClip[], newAudioTrack?: AudioAssetClip[]) => void
+  onTracksChange?: (newVisualTrack?: VisualAssetClip[], newAudioTrack?: AudioAssetClip[]) => void
   onClipClick?: (clip: AssetClip) => void
 }
 
 const Kronos: React.FC<KronosProps> = ({
   visualClips: visualTrack,
   audioClips: audioTrack,
-  onClipsChange,
+  onTracksChange: onClipsChange,
   onClipClick
 }) => {
   const { audioContext, activateAudio } = useAudioContext()

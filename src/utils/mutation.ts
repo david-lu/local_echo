@@ -15,10 +15,13 @@ import {
   ModifyVisualMutation,
   RemoveAudioMutation,
   RemoveVisualMutation,
-  RetimeClipsMutation
+  RetimeClipsMutation,
+  AddSceneMutation,
+  AddSceneMutationSchema
 } from '../types/mutation'
 import { refineTimeline } from './timeline'
 import { Timeline, AudioClip, VisualClip } from '../types/timeline'
+import { v4 as uuidv4 } from 'uuid'
 
 export const convertToOpenAIMessage = (message: Message) => {
   // Extract only the properties that OpenAI API expects
@@ -59,6 +62,8 @@ export const getMutationFromToolCall = (
       return ModifyAudioMutationSchema.parse(mutation)
     } else if (toolCall.function.name === 'retime_clips') {
       return RetimeClipsMutationSchema.parse(mutation)
+    } else if (toolCall.function.name === 'add_scene') {
+      return AddSceneMutationSchema.parse(mutation)
     }
   } catch (error) {
     console.error('Error parsing tool call arguments:', error)
@@ -92,6 +97,26 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
   }
 
   switch (mutation.type) {
+    case 'add_scene':
+      const addSceneMutation = mutation as AddSceneMutation
+      const visualClip: VisualClip = {
+        id: uuidv4(),
+        type: 'visual',
+        ...addSceneMutation.visual_clip,
+        start_ms: addSceneMutation.duration.start_ms,
+        duration_ms: addSceneMutation.duration.duration_ms
+      }
+      const audioClip: AudioClip = {
+        id: uuidv4(),
+        type: 'audio',
+        ...addSceneMutation.audio_clip,
+        start_ms: addSceneMutation.duration.start_ms,
+        duration_ms: addSceneMutation.duration.duration_ms
+      }
+      newTimeline.visual_track.push(visualClip)
+      newTimeline.audio_track.push(audioClip)
+      break
+
     case 'add_audio':
       const addAudioMutation = mutation as AddAudioMutation
       newTimeline.audio_track.push(addAudioMutation.clip as AudioClip)

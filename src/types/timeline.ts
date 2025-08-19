@@ -10,8 +10,7 @@ export const AudioGenerationParamsSchema = z
   .describe('Parameters for text-to-speech audio generation')
 export type AudioGenerationParams = z.infer<typeof AudioGenerationParamsSchema>
 
-export const AudioClipSchema = ClipSchema.extend({
-  type: z.literal('audio').describe('Type identifier for audio clips'),
+export const AudioExtensionSchema = z.object({
   audio_generation_params: AudioGenerationParamsSchema.nullable().describe(
     'Text-to-speech parameters, null if audio is pre-generated'
   ),
@@ -24,7 +23,13 @@ export const AudioClipSchema = ClipSchema.extend({
     .nullable()
     .describe('ID of the generated audio asset, null if not yet generated'),
   speaker: z.string().nullable().describe('Name of the speaker, null if not yet generated')
-}).describe('Audio clip with text-to-speech generation capabilities')
+})
+
+export const AudioClipSchema = ClipSchema.merge(AudioExtensionSchema)
+  .extend({
+    type: z.literal('audio').describe('Type identifier for audio clips')
+  })
+  .describe('Audio clip with text-to-speech generation capabilities')
 export type AudioClip = z.infer<typeof AudioClipSchema>
 
 export const ImageGenerationTypeSchema = z
