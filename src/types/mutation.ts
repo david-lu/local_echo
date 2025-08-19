@@ -82,8 +82,16 @@ export const RetimeClipsMutationSchema = BaseMutationSchema.extend({
     .array(
       z.object({
         clip_id: z.string().describe('ID of the clip to shift'),
-        start_time_ms: z.number().describe('New start time of the clip in milliseconds'),
-        duration_ms: z.number().describe('New duration of the clip in milliseconds')
+        start_time_ms: z
+          .number()
+          .nullable()
+          .optional()
+          .describe('New start time of the clip in milliseconds'),
+        duration_ms: z
+          .number()
+          .nullable()
+          .optional()
+          .describe('New duration of the clip in milliseconds')
       })
     )
     .describe('Array of retimes to apply to the clips')

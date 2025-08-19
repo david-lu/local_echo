@@ -35,11 +35,10 @@ Always enforce timeline logic:
 - Audio clip start_ms must never fall between the start_ms and end_ms of another audio clip.
 - Visual clip start_ms must never fall between the start_ms and end_ms of another visual clip.
 - Maintain scene coherence when making edits.
-- The duration of a clip is always end_ms minus start_ms.
 - After or before adding a clip, you may need to shift the clips after the added clip to avoid overlaps.
 
 Adjusting adjacent clips:
-- If you change the duration or timing of a clip, check adjacent clips on the same track.
+- If you change the duration_ms or start_ms of a clip, check adjacent clips on the same track.
 - You may need to shift, trim, or extend adjacent clips to prevent overlaps or gaps — even if not explicitly requested — but only when necessary to preserve timeline logic or pacing.
 - Always respect the user’s original intent and avoid altering clip content unless required for timing or continuity.
 

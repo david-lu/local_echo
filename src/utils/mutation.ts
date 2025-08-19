@@ -185,17 +185,19 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
         const audioIndex = newTimeline.audio_track.findIndex((clip) => clip.id === retime.clip_id)
         const visualIndex = newTimeline.visual_track.findIndex((clip) => clip.id === retime.clip_id)
         if (audioIndex !== -1) {
+          const audioClip = newTimeline.audio_track[audioIndex]
           newTimeline.audio_track[audioIndex] = {
-            ...newTimeline.audio_track[audioIndex],
-            start_ms: retime.start_time_ms,
-            duration_ms: retime.duration_ms
+            ...audioClip,
+            start_ms: retime.start_time_ms ?? audioClip.start_ms,
+            duration_ms: retime.duration_ms ?? audioClip.duration_ms
           }
         }
         if (visualIndex !== -1) {
+          const visualClip = newTimeline.visual_track[visualIndex]
           newTimeline.visual_track[visualIndex] = {
-            ...newTimeline.visual_track[visualIndex],
-            start_ms: retime.start_time_ms,
-            duration_ms: retime.duration_ms
+            ...visualClip,
+            start_ms: retime.start_time_ms ?? visualClip.start_ms,
+            duration_ms: retime.duration_ms ?? visualClip.duration_ms
           }
         }
       }
