@@ -24,6 +24,7 @@ export const AudioExtensionSchema = z.object({
     .describe('ID of the generated audio asset, null if not yet generated'),
   speaker: z.string().nullable().describe('Name of the speaker, null if not yet generated')
 })
+export type AudioExtension = z.infer<typeof AudioExtensionSchema>
 
 export const AudioClipSchema = ClipSchema.merge(AudioExtensionSchema)
   .extend({

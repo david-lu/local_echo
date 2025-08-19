@@ -36,6 +36,8 @@ Always enforce timeline logic:
 - Visual clip start_ms must never fall between the start_ms and end_ms of another visual clip.
 - Maintain scene coherence when making edits.
 - After or before adding a clip, you may need to shift the clips after the added clip to avoid overlaps.
+- Be exact with the duration_ms and start_ms down to the millisecond.
+- A visual clip's duration_ms must NEVER exceed 10000ms.
 
 Adjusting adjacent clips:
 - If you change the duration_ms or start_ms of a clip, check adjacent clips on the same track.

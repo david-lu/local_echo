@@ -20,9 +20,11 @@ import {
   AddSceneMutationSchema
 } from '../types/mutation'
 import { refineTimeline, sortTimeline } from './timeline'
-import { Timeline, AudioClip, VisualClip } from '../types/timeline'
+import { Timeline, AudioClip, VisualClip, AudioExtension } from '../types/timeline'
 import { v4 as uuidv4 } from 'uuid'
 import { Clip } from '../kronos/types/timeline'
+
+export const CHARS_PER_SECOND = 15
 
 export const convertToOpenAIMessage = (message: Message) => {
   // Extract only the properties that OpenAI API expects
@@ -107,6 +109,11 @@ export const displaceClips = <T extends Clip>(
   return newTrack
 }
 
+function getAudioDurationMs(audioClip: AudioExtension): number {
+  const seconds = (audioClip.audio_generation_params?.text?.length || 0) / CHARS_PER_SECOND
+  return Math.round(seconds * 1000)
+}
+
 /**
  * Applies a single mutation to the timeline
  */
@@ -119,6 +126,7 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
   switch (mutation.type) {
     case 'add_scene':
       const addSceneMutation = mutation as AddSceneMutation
+      addSceneMutation.duration.duration_ms = getAudioDurationMs(addSceneMutation.audio_clip)
       if (addSceneMutation.displace) {
         newTimeline.visual_track = displaceClips<VisualClip>(
           newTimeline.visual_track,
@@ -153,6 +161,7 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
 
     case 'add_audio':
       const addAudioMutation = mutation as AddAudioMutation
+      addAudioMutation.clip.duration_ms = getAudioDurationMs(addAudioMutation.clip)
       if (addAudioMutation.displace) {
         newTimeline.audio_track = displaceClips<AudioClip>(
           newTimeline.audio_track,
