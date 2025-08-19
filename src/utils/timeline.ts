@@ -63,11 +63,17 @@ export const refineTimeline = (timeline: Timeline): RefinedTimeline => {
     clip.scene_index = i + 1
   }
   for (const audioClip of refinedTimeline.audio_track) {
-    for (const visualClip of refinedTimeline.visual_track) {
-      if (getOverlapRange(audioClip, visualClip)) {
-        audioClip.scene_index = visualClip.scene_index
-        break
-      }
+    // Set audio clip's scene index to visual with the most overlap
+    const ranges = refinedTimeline.visual_track
+      .map((visualClip) => {
+        return { range: getOverlapRange(audioClip, visualClip), clip: visualClip }
+      })
+      .filter((range) => range.range !== null)
+      .slice()
+      .sort((a: any, b: any) => b.range!.start_ms - a.range!.start_ms)
+
+    if (ranges.length > 0) {
+      audioClip.scene_index = ranges[0].clip.scene_index
     }
   }
   return refinedTimeline
