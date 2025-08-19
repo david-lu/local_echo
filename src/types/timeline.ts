@@ -122,7 +122,8 @@ export const RefinedSchema = z
         })
         .merge(RangeSchema)
     ),
-    end_ms: z.number().describe('End time of the clip in milliseconds')
+    end_ms: z.number().describe('End time of the clip in milliseconds'),
+    scene_index: z.number().describe('Which scene this clip belong to in the timeline')
   })
   .describe('An overlap between two clips in a timeline')
 

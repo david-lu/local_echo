@@ -1,38 +1,5 @@
 import { Clip, Range } from '../types/timeline'
 
-function getOverlapRange(a: Clip, b: Clip): Range | null {
-  const start = Math.max(a.start_ms, b.start_ms)
-  const end = Math.min(a.start_ms + a.duration_ms, b.start_ms + b.duration_ms)
-
-  if (start < end) {
-    return { start_ms: start, end_ms: end }
-  }
-
-  return null
-}
-
-export const refineClip = (clip: Clip, track: Clip[]) => {
-  const overlaps = []
-  for (const otherClip of track) {
-    const overlap = getOverlapRange(clip, otherClip)
-    if (overlap) {
-      overlaps.push({
-        clip_id: otherClip.id,
-        ...overlap
-      })
-    }
-  }
-  return {
-    ...clip,
-    overlaps: overlaps,
-    end_ms: clip.start_ms + clip.duration_ms
-  }
-}
-
-export const refineTrack = (track: Clip[]): any[] => {
-  return track.map((clip) => refineClip(clip, track))
-}
-
 export const getTotalDuration = (spans: Clip[]): number => {
   return spans.reduce((max, clip) => Math.max(max, clip.start_ms + clip.duration_ms), 0)
 }
