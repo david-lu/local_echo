@@ -22,6 +22,7 @@ import {
 import { refineTimeline } from './timeline'
 import { Timeline, AudioClip, VisualClip } from '../types/timeline'
 import { v4 as uuidv4 } from 'uuid'
+import { Clip } from '../kronos/types/timeline'
 
 export const convertToOpenAIMessage = (message: Message) => {
   // Extract only the properties that OpenAI API expects
@@ -85,6 +86,21 @@ export const getMutationsFromMessages = (messages: Message[]): BaseMutation[] =>
     }
   }
   return mutations
+}
+
+export const displaceClips = (track: Clip[], threshold_ms: number, displace_ms: number) => {
+  const newTrack: Clip[] = []
+  for (const clip of track) {
+    if (threshold_ms <= clip.start_ms) {
+      newTrack.push({
+        ...clip,
+        start_ms: clip.start_ms + displace_ms
+      })
+    } else {
+      newTrack.push(clip)
+    }
+  }
+  return newTrack
 }
 
 /**
