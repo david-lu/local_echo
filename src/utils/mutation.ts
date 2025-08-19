@@ -19,7 +19,7 @@ import {
   AddSceneMutation,
   AddSceneMutationSchema
 } from '../types/mutation'
-import { refineTimeline } from './timeline'
+import { refineTimeline, sortTimeline } from './timeline'
 import { Timeline, AudioClip, VisualClip } from '../types/timeline'
 import { v4 as uuidv4 } from 'uuid'
 import { Clip } from '../kronos/types/timeline'
@@ -115,6 +115,20 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
   switch (mutation.type) {
     case 'add_scene':
       const addSceneMutation = mutation as AddSceneMutation
+      if (addSceneMutation.displace) {
+        newTimeline.visual_track = displaceClips(
+          newTimeline.visual_track,
+          addSceneMutation.duration.start_ms,
+          addSceneMutation.duration.duration_ms
+        ) as VisualClip[]
+      }
+      if (addSceneMutation.displace) {
+        newTimeline.audio_track = displaceClips(
+          newTimeline.audio_track,
+          addSceneMutation.duration.start_ms,
+          addSceneMutation.duration.duration_ms
+        ) as AudioClip[]
+      }
       const visualClip: VisualClip = {
         id: uuidv4(),
         type: 'visual',
@@ -135,11 +149,25 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
 
     case 'add_audio':
       const addAudioMutation = mutation as AddAudioMutation
+      if (addAudioMutation.displace) {
+        newTimeline.audio_track = displaceClips(
+          newTimeline.audio_track,
+          addAudioMutation.clip.start_ms,
+          addAudioMutation.clip.duration_ms
+        ) as AudioClip[]
+      }
       newTimeline.audio_track.push(addAudioMutation.clip as AudioClip)
       break
 
     case 'add_visual':
       const addVisualMutation = mutation as AddVisualMutation
+      if (addVisualMutation.displace) {
+        newTimeline.visual_track = displaceClips(
+          newTimeline.visual_track,
+          addVisualMutation.clip.start_ms,
+          addVisualMutation.clip.duration_ms
+        ) as VisualClip[]
+      }
       newTimeline.visual_track.push(addVisualMutation.clip as VisualClip)
       break
 
@@ -148,7 +176,17 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
       const index = newTimeline.audio_track.findIndex(
         (clip) => clip.id === removeAudioMutation.clip_id
       )
-      if (index !== -1) newTimeline.audio_track.splice(index, 1)
+      if (index !== -1) {
+        if (removeAudioMutation.displace) {
+          const audioClip = newTimeline.audio_track[index]
+          newTimeline.audio_track = displaceClips(
+            newTimeline.audio_track,
+            audioClip.start_ms,
+            -audioClip.duration_ms
+          ) as AudioClip[]
+        }
+        newTimeline.audio_track.splice(index, 1)
+      }
       break
     }
 
@@ -157,7 +195,17 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
       const index = newTimeline.visual_track.findIndex(
         (clip) => clip.id === removeVisualMutation.clip_id
       )
-      if (index !== -1) newTimeline.visual_track.splice(index, 1)
+      if (index !== -1) {
+        if (removeVisualMutation.displace) {
+          const visualClip = newTimeline.visual_track[index]
+          newTimeline.visual_track = displaceClips(
+            newTimeline.visual_track,
+            visualClip.start_ms + visualClip.duration_ms,
+            -visualClip.duration_ms
+          ) as VisualClip[]
+        }
+        newTimeline.visual_track.splice(index, 1)
+      }
       break
     }
 
@@ -205,7 +253,7 @@ export function applyMutation(timeline: Timeline, mutation: BaseMutation): Timel
     }
   }
 
-  return newTimeline
+  return sortTimeline(newTimeline)
 }
 
 /**
